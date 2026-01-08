@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LED Club Bar Controller</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎉 LED Club Bar Controller 🎉</h1>
+        </header>
+
+        <div class="control-panel">
+            <!-- Color Picker -->
+            <div class="section">
+                <h2>Custom Color</h2>
+                <div class="color-picker-container">
+                    <input type="color" id="colorPicker" value="#ff0000">
+                    <input type="range" id="brightness" min="0" max="255" value="255">
+                    <label for="brightness">Brightness: <span id="brightnessValue">255</span></label>
+                    <button onclick="setCustomColor()">Apply Color</button>
+                </div>
+            </div>
+
+            <!-- Preset Colors -->
+            <div class="section">
+                <h2>Preset Colors</h2>
+                <div class="color-buttons">
+                    <button class="color-btn red" onclick="setColor(255,0,0)">Red</button>
+                    <button class="color-btn green" onclick="setColor(0,255,0)">Green</button>
+                    <button class="color-btn blue" onclick="setColor(0,0,255)">Blue</button>
+                    <button class="color-btn yellow" onclick="setColor(255,255,0)">Yellow</button>
+                    <button class="color-btn cyan" onclick="setColor(0,255,255)">Cyan</button>
+                    <button class="color-btn magenta" onclick="setColor(255,0,255)">Magenta</button>
+                    <button class="color-btn white" onclick="setColor(255,255,255)">White</button>
+                </div>
+            </div>
+
+            <!-- Effects -->
+            <div class="section">
+                <h2>Effects</h2>
+                <div class="effect-buttons">
+                    <button onclick="startEffect('rainbow')">Rainbow Wave</button>
+                    <button onclick="startEffect('pulse')">Pulse</button>
+                    <button onclick="startEffect('fast')">Fast Cycle</button>
+                    <button onclick="startEffect('gradient')">Gradient</button>
+                </div>
+            </div>
+
+            <!-- Control -->
+            <div class="section">
+                <h2>Control</h2>
+                <div class="control-buttons">
+                    <button class="stop-btn" onclick="stopEffect()">Stop Effect</button>
+                    <button class="off-btn" onclick="turnOff()">Turn Off</button>
+                </div>
+            </div>
+
+            <!-- ADC Reading -->
+            <div class="section">
+                <h2>ADC Reading</h2>
+                <div class="adc-display">
+                    <div class="adc-value" id="adcValue">--</div>
+                    <div class="adc-info" id="adcInfo">Samples: 0</div>
+                    <button class="download-btn" onclick="downloadCSV()">Download CSV</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="status" id="status">Ready</div>
+    </div>
+
+    <script src="script.js" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>
+
+

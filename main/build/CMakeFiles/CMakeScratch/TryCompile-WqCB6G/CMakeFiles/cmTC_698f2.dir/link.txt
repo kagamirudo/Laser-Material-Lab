@@ -1,0 +1,1 @@
+/usr/bin/cc  -arch x86_64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names  -v -Wl,-v CMakeFiles/cmTC_698f2.dir/CMakeCCompilerABI.c.o -o cmTC_698f2

@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/kagamirudo/002/build/favicon.ico.S
+
+/Users/kagamirudo/002/build/index.html.S
+
+/Users/kagamirudo/002/build/script.js.S
+
+/Users/kagamirudo/002/build/server_cert.pem.S
+
+/Users/kagamirudo/002/build/server_key.pem.S
+
+/Users/kagamirudo/002/build/style.css.S
+

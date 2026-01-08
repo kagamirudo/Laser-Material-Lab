@@ -1,0 +1,13 @@
+Command: make -j 10 all
+/Users/kagamirudo/002/main/002.c: In function 'app_main':
+/Users/kagamirudo/002/main/002.c:278:29: error: 'SDCARD_MOUNT_POINT' undeclared (first use in this function)
+  278 |     const char *test_path = SDCARD_MOUNT_POINT "/test.txt";
+      |                             ^~~~~~~~~~~~~~~~~~
+/Users/kagamirudo/002/main/002.c:278:29: note: each undeclared identifier is reported only once for each function it appears in
+/Users/kagamirudo/002/main/002.c:278:48: error: expected ',' or ';' before string constant
+  278 |     const char *test_path = SDCARD_MOUNT_POINT "/test.txt";
+      |                                                ^~~~~~~~~~~
+make[2]: *** [esp-idf/main/CMakeFiles/__idf_main.dir/002.c.obj] Error 1
+make[2]: *** Waiting for unfinished jobs....
+make[1]: *** [esp-idf/main/CMakeFiles/__idf_main.dir/all] Error 2
+make: *** [all] Error 2

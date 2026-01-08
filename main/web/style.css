@@ -1,0 +1,216 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #fff;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-size: 2.5em;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    margin-bottom: 10px;
+}
+
+.control-panel {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.section:last-child {
+    border-bottom: none;
+}
+
+.section h2 {
+    margin-bottom: 15px;
+    font-size: 1.5em;
+    color: #fff;
+}
+
+.color-picker-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+#colorPicker {
+    width: 100px;
+    height: 100px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+#brightness {
+    width: 100%;
+    height: 8px;
+    border-radius: 5px;
+    background: rgba(255,255,255,0.3);
+    outline: none;
+    -webkit-appearance: none;
+}
+
+#brightness::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.color-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 15px;
+}
+
+.color-btn {
+    padding: 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.color-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.color-btn.red { background: #ff4444; }
+.color-btn.green { background: #44ff44; }
+.color-btn.blue { background: #4444ff; }
+.color-btn.yellow { background: #ffff44; color: #333; }
+.color-btn.cyan { background: #44ffff; color: #333; }
+.color-btn.magenta { background: #ff44ff; }
+.color-btn.white { background: #ffffff; color: #333; }
+
+.effect-buttons, .control-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.effect-buttons button, .control-buttons button {
+    padding: 15px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    border: 2px solid rgba(255,255,255,0.3);
+}
+
+.effect-buttons button:hover {
+    background: rgba(255,255,255,0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.stop-btn {
+    background: rgba(255, 200, 0, 0.3) !important;
+    border-color: rgba(255, 200, 0, 0.5) !important;
+}
+
+.off-btn {
+    background: rgba(255, 0, 0, 0.3) !important;
+    border-color: rgba(255, 0, 0, 0.5) !important;
+}
+
+.control-buttons button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.status {
+    margin-top: 20px;
+    text-align: center;
+    padding: 15px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+button:active {
+    transform: translateY(0) !important;
+}
+
+.adc-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.adc-value {
+    font-size: 3em;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    min-height: 1.2em;
+    font-family: 'Courier New', monospace;
+}
+
+.adc-info {
+    font-size: 1em;
+    color: rgba(255,255,255,0.8);
+}
+
+.download-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(0, 200, 255, 0.3);
+    color: #fff;
+    border: 2px solid rgba(0, 200, 255, 0.5);
+}
+
+.download-btn:hover {
+    background: rgba(0, 200, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+

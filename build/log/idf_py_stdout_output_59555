@@ -1,0 +1,1036 @@
+Command: /Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/python /Users/kagamirudo/esp-idf-v5.5.1/tools/idf_monitor.py -p /dev/cu.usbmodem1101 -b 115200 --toolchain-prefix xtensa-esp32s3-elf- --target esp32s3 --revision 0 /Users/kagamirudo/002/build/002.elf /Users/kagamirudo/002/build/bootloader/bootloader.elf -m '/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/python' '/Users/kagamirudo/esp-idf-v5.5.1/tools/idf.py'
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x40379d52
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x158c
+load:0x403c8700,len:0xd24
+load:0x403cb700,len:0x2f34
+entry 0x403c8924
+[0;32mI (24) boot: ESP-IDF v5.5.1 2nd stage bootloader[0m
+[0;32mI (24) boot: compile time Dec 18 2025 13:52:19[0m
+[0;32mI (25) boot: Multicore bootloader[0m
+[0;32mI (25) boot: chip revision: v0.2[0m
+[0;32mI (27) boot: efuse block revision: v1.3[0m
+[0;32mI (31) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (35) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (39) boot.esp32s3: SPI Flash Size : 16MB[0m
+[0;32mI (43) boot: Enabling RNG early entropy source...[0m
+[0;32mI (47) boot: Partition Table:[0m
+[0;32mI (50) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (56) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (62) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (69) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (76) boot: End of partition table[0m
+[0;32mI (79) esp_image: segment 0: paddr=00010020 vaddr=3c0b0020 size=24ca0h (150688) map[0m
+[0;32mI (113) esp_image: segment 1: paddr=00034cc8 vaddr=3fc9ab00 size=04aech ( 19180) load[0m
+[0;32mI (117) esp_image: segment 2: paddr=000397bc vaddr=40374000 size=0685ch ( 26716) load[0m
+[0;32mI (123) esp_image: segment 3: paddr=00040020 vaddr=42000020 size=a0cb4h (658612) map[0m
+[0;32mI (240) esp_image: segment 4: paddr=000e0cdc vaddr=4037a85c size=10208h ( 66056) load[0m
+[0;32mI (255) esp_image: segment 5: paddr=000f0eec vaddr=50000000 size=00020h (    32) load[0m
+[0;32mI (264) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (264) boot: Disabling RNG early entropy source...[0m
+[0;32mI (275) cpu_start: Multicore app[0m
+[0;32mI (284) cpu_start: Pro cpu start user code[0m
+[0;32mI (284) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (284) app_init: Application information:[0m
+[0;32mI (284) app_init: Project name:     002[0m
+[0;32mI (287) app_init: App version:      1[0m
+[0;32mI (291) app_init: Compile time:     Dec 18 2025 13:53:51[0m
+[0;32mI (296) app_init: ELF file SHA256:  b139b9528...[0m
+[0;32mI (300) app_init: ESP-IDF:          v5.5.1[0m
+[0;32mI (304) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (308) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (312) efuse_init: Chip rev:         v0.2[0m
+[0;32mI (316) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (322) heap_init: At 3FCA3470 len 000462A0 (280 KiB): RAM[0m
+[0;32mI (327) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (332) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (337) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (344) spi_flash: detected chip: generic[0m
+[0;32mI (346) spi_flash: flash io: dio[0m
+[0;32mI (350) sleep_gpio: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (356) sleep_gpio: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (363) main_task: Started on CPU0[0m
+[0;32mI (373) main_task: Calling app_main()[0m
+[0;32mI (373) LASER_SENSOR: Starting Laser and Light Sensor Application[0m
+[0;32mI (403) LASER_SENSOR: Laser initialized on GPIO 6[0m
+[0;32mI (403) LASER_SENSOR: ADC calibration (curve fitting) enabled[0m
+[0;32mI (403) LASER_SENSOR: Light sensor initialized on GPIO 4 (ADC1_CH3)[0m
+[0;32mI (403) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (413) pp: pp rom version: e7ae62f[0m
+[0;32mI (413) net80211: net80211 rom version: e7ae62f[0m
+[0;32mI (433) wifi:wifi driver task: 3fcee7f0, prio:23, stack:6656, core=0[0m
+[0;32mI (443) wifi:wifi firmware version: 14da9b7[0m
+[0;32mI (443) wifi:wifi certification version: v7.0[0m
+[0;32mI (443) wifi:config NVS flash: enabled[0m
+[0;32mI (443) wifi:config nano formatting: disabled[0m
+[0;32mI (453) wifi:Init data frame dynamic rx buffer num: 32[0m
+[0;32mI (453) wifi:Init static rx mgmt buffer num: 5[0m
+[0;32mI (453) wifi:Init management short buffer num: 32[0m
+[0;32mI (463) wifi:Init dynamic tx buffer num: 32[0m
+[0;32mI (463) wifi:Init static tx FG buffer num: 2[0m
+[0;32mI (473) wifi:Init static rx buffer size: 1600[0m
+[0;32mI (473) wifi:Init static rx buffer num: 10[0m
+[0;32mI (473) wifi:Init dynamic rx buffer num: 32[0m
+[0;32mI (483) wifi_init: rx ba win: 6[0m
+[0;32mI (483) wifi_init: accept mbox: 6[0m
+[0;32mI (483) wifi_init: tcpip mbox: 32[0m
+[0;32mI (493) wifi_init: udp mbox: 6[0m
+[0;32mI (493) wifi_init: tcp mbox: 6[0m
+[0;32mI (493) wifi_init: tcp tx win: 5760[0m
+[0;32mI (503) wifi_init: tcp rx win: 5760[0m
+[0;32mI (503) wifi_init: tcp mss: 1440[0m
+[0;32mI (503) wifi_init: WiFi IRAM OP enabled[0m
+[0;32mI (513) LASER_SENSOR: Light sensor reading: raw=116, 105 mV[0m
+[0;32mI (513) wifi_init: WiFi RX IRAM OP enabled[0m
+[0;32mI (523) phy_init: phy_version 701,f4f1da3a,Mar  3 2025,15:50:10[0m
+[0;32mI (563) wifi:mode : sta (10:b4:1d:eb:16:ec)[0m
+[0;32mI (563) wifi:enable tsf[0m
+[0;32mI (563) WIFI: WiFi station initialized. Connecting to: Kagami Rudo 2.4G[0m
+[0;32mI (573) WIFI: WiFi connecting...[0m
+[0;32mI (613) LASER_SENSOR: Light sensor reading: raw=609, 533 mV[0m
+[0;32mI (713) LASER_SENSOR: Light sensor reading: raw=1079, 928 mV[0m
+[0;32mI (813) LASER_SENSOR: Light sensor reading: raw=1812, 1543 mV[0m
+[0;32mI (913) LASER_SENSOR: Light sensor reading: raw=2698, 2279 mV[0m
+[0;32mI (1013) LASER_SENSOR: Light sensor reading: raw=3858, 3064 mV[0m
+[0;32mI (1113) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (1213) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (1313) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (1413) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (1513) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (1613) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (1713) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (1813) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (1913) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (2013) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (2113) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (2213) LASER_SENSOR: Light sensor reading: raw=4066, 3152 mV[0m
+[0;32mI (2313) LASER_SENSOR: Light sensor reading: raw=3728, 2997 mV[0m
+[0;32mI (2413) LASER_SENSOR: Light sensor reading: raw=3112, 2599 mV[0m
+[0;32mI (2513) LASER_SENSOR: Light sensor reading: raw=2891, 2432 mV[0m
+[0;32mI (2613) LASER_SENSOR: Light sensor reading: raw=2253, 1913 mV[0m
+[0;32mI (2713) LASER_SENSOR: Light sensor reading: raw=1452, 1241 mV[0m
+[0;32mI (2813) LASER_SENSOR: Light sensor reading: raw=758, 660 mV[0m
+[0;32mI (2913) LASER_SENSOR: Light sensor reading: raw=187, 169 mV[0m
+[0;32mI (2983) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (3013) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (3113) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (3213) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (3313) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (3413) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (3513) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (3613) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (3713) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (3813) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (3913) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (4013) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (4113) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (4213) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (4313) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (4413) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (4513) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (4613) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (4713) LASER_SENSOR: Light sensor reading: raw=1, 0 mV[0m
+[0;32mI (4813) LASER_SENSOR: Light sensor reading: raw=34, 30 mV[0m
+[0;32mI (4913) LASER_SENSOR: Light sensor reading: raw=238, 214 mV[0m
+[0;32mI (5013) LASER_SENSOR: Light sensor reading: raw=561, 495 mV[0m
+[0;32mI (5113) LASER_SENSOR: Light sensor reading: raw=1240, 1064 mV[0m
+[0;32mI (5213) LASER_SENSOR: Light sensor reading: raw=1460, 1248 mV[0m
+[0;32mI (5313) LASER_SENSOR: Light sensor reading: raw=2648, 2238 mV[0m
+[0;32mI (5393) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (5413) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (5513) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (5613) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (5713) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (5813) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (5913) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (6013) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (6113) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (6213) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (6313) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (6413) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (6513) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (6613) LASER_SENSOR: Light sensor reading: raw=4017, 3133 mV[0m
+[0;32mI (6713) LASER_SENSOR: Light sensor reading: raw=3804, 3036 mV[0m
+[0;32mI (6813) LASER_SENSOR: Light sensor reading: raw=3338, 2759 mV[0m
+[0;32mI (6913) LASER_SENSOR: Light sensor reading: raw=2913, 2448 mV[0m
+[0;32mI (7013) LASER_SENSOR: Light sensor reading: raw=2361, 2003 mV[0m
+[0;32mI (7113) LASER_SENSOR: Light sensor reading: raw=1505, 1285 mV[0m
+[0;32mI (7213) LASER_SENSOR: Light sensor reading: raw=729, 635 mV[0m
+[0;32mI (7313) LASER_SENSOR: Light sensor reading: raw=205, 184 mV[0m
+[0;32mI (7413) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (7513) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (7613) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (7713) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (7813) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (7813) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (7913) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (8013) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (8113) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (8213) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (8313) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (8413) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (8513) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (8613) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (8713) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (8813) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (8913) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (9013) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (9113) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (9213) LASER_SENSOR: Light sensor reading: raw=1, 0 mV[0m
+[0;32mI (9313) LASER_SENSOR: Light sensor reading: raw=10, 8 mV[0m
+[0;32mI (9413) LASER_SENSOR: Light sensor reading: raw=718, 627 mV[0m
+[0;32mI (9513) LASER_SENSOR: Light sensor reading: raw=475, 420 mV[0m
+[0;32mI (9613) LASER_SENSOR: Light sensor reading: raw=1147, 985 mV[0m
+[0;32mI (9713) LASER_SENSOR: Light sensor reading: raw=1766, 1504 mV[0m
+[0;32mI (9813) LASER_SENSOR: Light sensor reading: raw=3434, 2823 mV[0m
+[0;32mI (9913) LASER_SENSOR: Light sensor reading: raw=4018, 3134 mV[0m
+[0;32mI (10013) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10113) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10213) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10223) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (10313) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10413) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10513) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10613) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10713) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10813) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10913) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (11013) LASER_SENSOR: Light sensor reading: raw=3968, 3112 mV[0m
+[0;32mI (11113) LASER_SENSOR: Light sensor reading: raw=3736, 3003 mV[0m
+[0;32mI (11213) LASER_SENSOR: Light sensor reading: raw=3421, 2813 mV[0m
+[0;32mI (11313) LASER_SENSOR: Light sensor reading: raw=3065, 2565 mV[0m
+[0;32mI (11413) LASER_SENSOR: Light sensor reading: raw=1967, 1674 mV[0m
+[0;32mI (11513) LASER_SENSOR: Light sensor reading: raw=1670, 1422 mV[0m
+[0;32mI (11613) LASER_SENSOR: Light sensor reading: raw=957, 827 mV[0m
+[0;32mI (11713) LASER_SENSOR: Light sensor reading: raw=466, 411 mV[0m
+[0;32mI (11813) LASER_SENSOR: Light sensor reading: raw=39, 35 mV[0m
+[0;32mI (11913) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (12013) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (12113) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (12213) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (12313) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (12413) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (12513) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (12613) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (12643) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (12713) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (12813) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (12913) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (13013) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (13113) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (13213) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (13313) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (13413) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (13513) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (13613) LASER_SENSOR: Light sensor reading: raw=2, 1 mV[0m
+Guru Meditation Error: Core  0 panic'ed (Interrupt wdt timeout on CPU0). 
+
+Core  0 register dump:
+PC      : 0x40379d52  PS      : 0x00060134  A0      : 0x8209f0bd  A1      : 0x3fca76f0  
+A2      : 0x00000000  A3      : 0x0000cdcd  A4      : 0x8037cff5  A5      : 0x3fca6cc0  
+A6      : 0x00060023  A7      : 0x00000000  A8      : 0x8200ed16  A9      : 0x3fca76b0  
+A10     : 0x00000000  A11     : 0x00000001  A12     : 0x8037cff5  A13     : 0x3fca7600  
+A14     : 0x00060023  A15     : 0x3fca78c4  SAR     : 0x00000000  EXCCAUSE: 0x00000005  
+EXCVADDR: 0x00000000  LBEG    : 0x00000000  LEND    : 0x00000000  LCOUNT  : 0x00000000  
+
+
+Backtrace: 0x40379d4f:0x3fca76f0 0x4209f0ba:0x3fca7710 0x4037de81:0x3fca7730 0x4037cc75:0x3fca7750
+
+
+Core  1 register dump:
+PC      : 0x40379d52  PS      : 0x00060134  A0      : 0x8209f0bd  A1      : 0x3fca7e50  
+A2      : 0x00000000  A3      : 0x00000000  A4      : 0x3fca4d10  A5      : 0x3fca4cf0  
+A6      : 0x40375a4c  A7      : 0x00000001  A8      : 0x8200ed16  A9      : 0x3fca7e10  
+A10     : 0x00000000  A11     : 0x00000000  A12     : 0x3fca4cf0  A13     : 0x3fca4cd0  
+A14     : 0x00000001  A15     : 0x3fca8024  SAR     : 0x00000000  EXCCAUSE: 0x00000005  
+EXCVADDR: 0x00000000  LBEG    : 0x00000000  LEND    : 0x00000000  LCOUNT  : 0x00000000  
+
+
+Backtrace: 0x40379d4f:0x3fca7e50 0x4209f0ba:0x3fca7e70 0x4037de81:0x3fca7e90 0x4037cc75:0x3fca7eb0
+
+
+
+
+ELF file SHA256: b139b9528
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037c114
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x158c
+load:0x403c8700,len:0xd24
+load:0x403cb700,len:0x2f34
+entry 0x403c8924
+[0;32mI (24) boot: ESP-IDF v5.5.1 2nd stage bootloader[0m
+[0;32mI (24) boot: compile time Dec 18 2025 13:52:19[0m
+[0;32mI (24) boot: Multicore bootloader[0m
+[0;32mI (24) boot: chip revision: v0.2[0m
+[0;32mI (27) boot: efuse block revision: v1.3[0m
+[0;32mI (31) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (34) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (38) boot.esp32s3: SPI Flash Size : 16MB[0m
+[0;32mI (42) boot: Enabling RNG early entropy source...[0m
+[0;32mI (47) boot: Partition Table:[0m
+[0;32mI (49) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (55) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (62) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (68) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (75) boot: End of partition table[0m
+[0;32mI (78) esp_image: segment 0: paddr=00010020 vaddr=3c0b0020 size=24ca0h (150688) map[0m
+[0;32mI (112) esp_image: segment 1: paddr=00034cc8 vaddr=3fc9ab00 size=04aech ( 19180) load[0m
+[0;32mI (117) esp_image: segment 2: paddr=000397bc vaddr=40374000 size=0685ch ( 26716) load[0m
+[0;32mI (123) esp_image: segment 3: paddr=00040020 vaddr=42000020 size=a0cb4h (658612) map[0m
+[0;32mI (240) esp_image: segment 4: paddr=000e0cdc vaddr=4037a85c size=10208h ( 66056) load[0m
+[0;32mI (255) esp_image: segment 5: paddr=000f0eec vaddr=50000000 size=00020h (    32) load[0m
+[0;32mI (264) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (264) boot: Disabling RNG early entropy source...[0m
+[0;32mI (274) cpu_start: Multicore app[0m
+[0;32mI (283) cpu_start: Pro cpu start user code[0m
+[0;32mI (283) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (283) app_init: Application information:[0m
+[0;32mI (284) app_init: Project name:     002[0m
+[0;32mI (287) app_init: App version:      1[0m
+[0;32mI (290) app_init: Compile time:     Dec 18 2025 13:53:51[0m
+[0;32mI (295) app_init: ELF file SHA256:  b139b9528...[0m
+[0;32mI (300) app_init: ESP-IDF:          v5.5.1[0m
+[0;32mI (303) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (307) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (311) efuse_init: Chip rev:         v0.2[0m
+[0;32mI (315) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (321) heap_init: At 3FCA3470 len 000462A0 (280 KiB): RAM[0m
+[0;32mI (327) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (332) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (337) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (343) spi_flash: detected chip: generic[0m
+[0;32mI (346) spi_flash: flash io: dio[0m
+[0;32mI (350) sleep_gpio: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (355) sleep_gpio: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (362) main_task: Started on CPU0[0m
+[0;32mI (372) main_task: Calling app_main()[0m
+[0;32mI (372) LASER_SENSOR: Starting Laser and Light Sensor Application[0m
+[0;32mI (402) LASER_SENSOR: Laser initialized on GPIO 6[0m
+[0;32mI (402) LASER_SENSOR: ADC calibration (curve fitting) enabled[0m
+[0;32mI (402) LASER_SENSOR: Light sensor initialized on GPIO 4 (ADC1_CH3)[0m
+[0;32mI (402) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (412) pp: pp rom version: e7ae62f[0m
+[0;32mI (412) net80211: net80211 rom version: e7ae62f[0m
+[0;32mI (432) wifi:wifi driver task: 3fcee7f0, prio:23, stack:6656, core=0[0m
+[0;32mI (442) wifi:wifi firmware version: 14da9b7[0m
+[0;32mI (442) wifi:wifi certification version: v7.0[0m
+[0;32mI (442) wifi:config NVS flash: enabled[0m
+[0;32mI (442) wifi:config nano formatting: disabled[0m
+[0;32mI (452) wifi:Init data frame dynamic rx buffer num: 32[0m
+[0;32mI (452) wifi:Init static rx mgmt buffer num: 5[0m
+[0;32mI (452) wifi:Init management short buffer num: 32[0m
+[0;32mI (462) wifi:Init dynamic tx buffer num: 32[0m
+[0;32mI (462) wifi:Init static tx FG buffer num: 2[0m
+[0;32mI (472) wifi:Init static rx buffer size: 1600[0m
+[0;32mI (472) wifi:Init static rx buffer num: 10[0m
+[0;32mI (472) wifi:Init dynamic rx buffer num: 32[0m
+[0;32mI (482) wifi_init: rx ba win: 6[0m
+[0;32mI (482) wifi_init: accept mbox: 6[0m
+[0;32mI (482) wifi_init: tcpip mbox: 32[0m
+[0;32mI (492) wifi_init: udp mbox: 6[0m
+[0;32mI (492) wifi_init: tcp mbox: 6[0m
+[0;32mI (492) wifi_init: tcp tx win: 5760[0m
+[0;32mI (502) wifi_init: tcp rx win: 5760[0m
+[0;32mI (502) wifi_init: tcp mss: 1440[0m
+[0;32mI (502) wifi_init: WiFi IRAM OP enabled[0m
+[0;32mI (512) LASER_SENSOR: Light sensor reading: raw=4076, 3155 mV[0m
+[0;32mI (512) wifi_init: WiFi RX IRAM OP enabled[0m
+[0;32mI (522) phy_init: phy_version 701,f4f1da3a,Mar  3 2025,15:50:10[0m
+[0;32mI (562) wifi:mode : sta (10:b4:1d:eb:16:ec)[0m
+[0;32mI (562) wifi:enable tsf[0m
+[0;32mI (562) WIFI: WiFi station initialized. Connecting to: Kagami Rudo 2.4G[0m
+[0;32mI (562) WIFI: WiFi connecting...[0m
+[0;32mI (612) LASER_SENSOR: Light sensor reading: raw=3811, 3040 mV[0m
+[0;32mI (712) LASER_SENSOR: Light sensor reading: raw=3456, 2837 mV[0m
+[0;32mI (812) LASER_SENSOR: Light sensor reading: raw=1941, 1652 mV[0m
+[0;32mI (912) LASER_SENSOR: Light sensor reading: raw=2685, 2268 mV[0m
+[0;32mI (1012) LASER_SENSOR: Light sensor reading: raw=1983, 1686 mV[0m
+[0;32mI (1112) LASER_SENSOR: Light sensor reading: raw=1297, 1111 mV[0m
+[0;32mI (1212) LASER_SENSOR: Light sensor reading: raw=499, 440 mV[0m
+[0;32mI (1312) LASER_SENSOR: Light sensor reading: raw=133, 121 mV[0m
+[0;32mI (1412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (1512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (1612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (1712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (1812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (1912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (2012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (2112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (2212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (2312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (2412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (2512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (2612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (2712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (2812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (2912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (2982) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (3012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (3112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (3212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (3312) LASER_SENSOR: Light sensor reading: raw=1, 0 mV[0m
+[0;32mI (3412) LASER_SENSOR: Light sensor reading: raw=117, 106 mV[0m
+[0;32mI (3512) LASER_SENSOR: Light sensor reading: raw=209, 188 mV[0m
+[0;32mI (3612) LASER_SENSOR: Light sensor reading: raw=523, 462 mV[0m
+[0;32mI (3712) LASER_SENSOR: Light sensor reading: raw=1422, 1216 mV[0m
+[0;32mI (3812) LASER_SENSOR: Light sensor reading: raw=1625, 1386 mV[0m
+[0;32mI (3912) LASER_SENSOR: Light sensor reading: raw=2989, 2507 mV[0m
+[0;32mI (4012) LASER_SENSOR: Light sensor reading: raw=3649, 2954 mV[0m
+[0;32mI (4112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (4212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (4312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (4412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (4512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (4612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (4712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (4812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (4912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (5012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (5112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (5212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (5312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (5392) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (5412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (5512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (5612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (5712) LASER_SENSOR: Light sensor reading: raw=4018, 3134 mV[0m
+[0;32mI (5812) LASER_SENSOR: Light sensor reading: raw=3781, 3027 mV[0m
+[0;32mI (5912) LASER_SENSOR: Light sensor reading: raw=3388, 2793 mV[0m
+[0;32mI (6012) LASER_SENSOR: Light sensor reading: raw=3005, 2519 mV[0m
+[0;32mI (6112) LASER_SENSOR: Light sensor reading: raw=2617, 2214 mV[0m
+[0;32mI (6212) LASER_SENSOR: Light sensor reading: raw=1874, 1595 mV[0m
+[0;32mI (6312) LASER_SENSOR: Light sensor reading: raw=1859, 1582 mV[0m
+[0;32mI (6412) LASER_SENSOR: Light sensor reading: raw=1246, 1067 mV[0m
+[0;32mI (6512) LASER_SENSOR: Light sensor reading: raw=993, 858 mV[0m
+[0;32mI (6612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (6712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (6812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (6912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (7012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (7112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (7212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (7312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (7412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (7512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (7612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (7712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (7802) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (7812) LASER_SENSOR: Light sensor reading: raw=2, 1 mV[0m
+[0;32mI (7912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (8012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (8112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (8212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (8312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (8412) LASER_SENSOR: Light sensor reading: raw=6, 5 mV[0m
+[0;32mI (8512) LASER_SENSOR: Light sensor reading: raw=33, 29 mV[0m
+[0;32mI (8612) LASER_SENSOR: Light sensor reading: raw=153, 138 mV[0m
+[0;32mI (8712) LASER_SENSOR: Light sensor reading: raw=393, 348 mV[0m
+[0;32mI (8812) LASER_SENSOR: Light sensor reading: raw=693, 606 mV[0m
+[0;32mI (8912) LASER_SENSOR: Light sensor reading: raw=1092, 939 mV[0m
+[0;32mI (9012) LASER_SENSOR: Light sensor reading: raw=1479, 1263 mV[0m
+[0;32mI (9112) LASER_SENSOR: Light sensor reading: raw=2272, 1929 mV[0m
+[0;32mI (9212) LASER_SENSOR: Light sensor reading: raw=3030, 2539 mV[0m
+[0;32mI (9312) LASER_SENSOR: Light sensor reading: raw=3449, 2832 mV[0m
+[0;32mI (9412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (9512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (9612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (9712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (9812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (9912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10222) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (10312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (10912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (11012) LASER_SENSOR: Light sensor reading: raw=4030, 3137 mV[0m
+[0;32mI (11112) LASER_SENSOR: Light sensor reading: raw=3969, 3112 mV[0m
+[0;32mI (11212) LASER_SENSOR: Light sensor reading: raw=3878, 3073 mV[0m
+[0;32mI (11312) LASER_SENSOR: Light sensor reading: raw=3828, 3048 mV[0m
+[0;32mI (11412) LASER_SENSOR: Light sensor reading: raw=3623, 2939 mV[0m
+[0;32mI (11512) LASER_SENSOR: Light sensor reading: raw=3494, 2861 mV[0m
+[0;32mI (11612) LASER_SENSOR: Light sensor reading: raw=2984, 2503 mV[0m
+[0;32mI (11712) LASER_SENSOR: Light sensor reading: raw=2428, 2058 mV[0m
+[0;32mI (11812) LASER_SENSOR: Light sensor reading: raw=1696, 1445 mV[0m
+[0;32mI (11912) LASER_SENSOR: Light sensor reading: raw=919, 795 mV[0m
+[0;32mI (12012) LASER_SENSOR: Light sensor reading: raw=272, 243 mV[0m
+[0;32mI (12112) LASER_SENSOR: Light sensor reading: raw=44, 40 mV[0m
+[0;32mI (12212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (12312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (12412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (12512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (12612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (12632) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (12712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (12812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (12912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (13012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (13112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (13212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (13312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (13412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (13512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (13612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (13712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (13812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (13912) LASER_SENSOR: Light sensor reading: raw=1, 0 mV[0m
+[0;32mI (14012) LASER_SENSOR: Light sensor reading: raw=2, 1 mV[0m
+[0;32mI (14112) LASER_SENSOR: Light sensor reading: raw=524, 463 mV[0m
+[0;32mI (14212) LASER_SENSOR: Light sensor reading: raw=1, 0 mV[0m
+[0;32mI (14312) LASER_SENSOR: Light sensor reading: raw=20, 18 mV[0m
+[0;32mI (14412) LASER_SENSOR: Light sensor reading: raw=439, 389 mV[0m
+[0;32mI (14512) LASER_SENSOR: Light sensor reading: raw=1986, 1689 mV[0m
+[0;32mI (14612) LASER_SENSOR: Light sensor reading: raw=2455, 2082 mV[0m
+[0;32mI (14712) LASER_SENSOR: Light sensor reading: raw=3304, 2736 mV[0m
+[0;32mI (14812) LASER_SENSOR: Light sensor reading: raw=3672, 2966 mV[0m
+[0;32mI (14912) LASER_SENSOR: Light sensor reading: raw=4061, 3149 mV[0m
+[0;32mI (15012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (15052) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (15112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (15212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (15312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (15412) LASER_SENSOR: Light sensor reading: raw=4078, 3155 mV[0m
+[0;32mI (15512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (15612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (15712) LASER_SENSOR: Light sensor reading: raw=4092, 3160 mV[0m
+[0;32mI (15812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (15912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (16012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (16112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (16212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (16312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (16412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (16512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (16612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (16712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (16812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (16912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (17012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (17112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (17212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (17312) LASER_SENSOR: Light sensor reading: raw=4093, 3162 mV[0m
+[0;32mI (17412) LASER_SENSOR: Light sensor reading: raw=3944, 3103 mV[0m
+[0;32mI (17462) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (17512) LASER_SENSOR: Light sensor reading: raw=3706, 2985 mV[0m
+[0;32mI (17612) LASER_SENSOR: Light sensor reading: raw=3227, 2683 mV[0m
+[0;32mI (17712) LASER_SENSOR: Light sensor reading: raw=1929, 1641 mV[0m
+[0;32mI (17812) LASER_SENSOR: Light sensor reading: raw=1574, 1342 mV[0m
+[0;32mI (17912) LASER_SENSOR: Light sensor reading: raw=490, 433 mV[0m
+[0;32mI (18012) LASER_SENSOR: Light sensor reading: raw=51, 46 mV[0m
+[0;32mI (18112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (18212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (18312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (18412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (18512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (18612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (18712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (18812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (18912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (19012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (19112) LASER_SENSOR: Light sensor reading: raw=2, 1 mV[0m
+[0;32mI (19212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (19312) LASER_SENSOR: Light sensor reading: raw=1, 0 mV[0m
+[0;32mI (19412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (19512) LASER_SENSOR: Light sensor reading: raw=3, 2 mV[0m
+[0;32mI (19612) LASER_SENSOR: Light sensor reading: raw=1, 0 mV[0m
+[0;32mI (19712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (19812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (19872) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (19912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (20012) LASER_SENSOR: Light sensor reading: raw=1, 0 mV[0m
+[0;32mI (20112) LASER_SENSOR: Light sensor reading: raw=28, 25 mV[0m
+[0;32mI (20212) LASER_SENSOR: Light sensor reading: raw=137, 124 mV[0m
+[0;32mI (20312) LASER_SENSOR: Light sensor reading: raw=345, 307 mV[0m
+[0;32mI (20412) LASER_SENSOR: Light sensor reading: raw=925, 800 mV[0m
+[0;32mI (20512) LASER_SENSOR: Light sensor reading: raw=1041, 897 mV[0m
+[0;32mI (20612) LASER_SENSOR: Light sensor reading: raw=1626, 1385 mV[0m
+[0;32mI (20712) LASER_SENSOR: Light sensor reading: raw=1841, 1567 mV[0m
+[0;32mI (20812) LASER_SENSOR: Light sensor reading: raw=2996, 2512 mV[0m
+[0;32mI (20912) LASER_SENSOR: Light sensor reading: raw=3592, 2921 mV[0m
+[0;32mI (21012) LASER_SENSOR: Light sensor reading: raw=4073, 3154 mV[0m
+[0;32mI (21112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (21212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (21312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (21412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (21512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (21612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (21712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (21812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (21912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (22012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (22112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (22212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (22292) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (22312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (22412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (22512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (22612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (22712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (22812) LASER_SENSOR: Light sensor reading: raw=3974, 3115 mV[0m
+[0;32mI (22912) LASER_SENSOR: Light sensor reading: raw=3607, 2930 mV[0m
+[0;32mI (23012) LASER_SENSOR: Light sensor reading: raw=3127, 2610 mV[0m
+[0;32mI (23112) LASER_SENSOR: Light sensor reading: raw=2319, 1968 mV[0m
+[0;32mI (23212) LASER_SENSOR: Light sensor reading: raw=1589, 1355 mV[0m
+[0;32mI (23312) LASER_SENSOR: Light sensor reading: raw=789, 687 mV[0m
+[0;32mI (23412) LASER_SENSOR: Light sensor reading: raw=56, 51 mV[0m
+[0;32mI (23512) LASER_SENSOR: Light sensor reading: raw=9, 7 mV[0m
+[0;32mI (23612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (23712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (23812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (23912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (24012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (24112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (24212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (24312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (24412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (24512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (24612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (24702) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (24712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (24812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (24912) LASER_SENSOR: Light sensor reading: raw=1, 0 mV[0m
+[0;32mI (25012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (25112) LASER_SENSOR: Light sensor reading: raw=1, 0 mV[0m
+[0;32mI (25212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (25312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (25412) LASER_SENSOR: Light sensor reading: raw=15, 12 mV[0m
+[0;32mI (25512) LASER_SENSOR: Light sensor reading: raw=33, 29 mV[0m
+[0;32mI (25612) LASER_SENSOR: Light sensor reading: raw=128, 116 mV[0m
+[0;32mI (25712) LASER_SENSOR: Light sensor reading: raw=336, 300 mV[0m
+[0;32mI (25812) LASER_SENSOR: Light sensor reading: raw=625, 548 mV[0m
+[0;32mI (25912) LASER_SENSOR: Light sensor reading: raw=988, 853 mV[0m
+[0;32mI (26012) LASER_SENSOR: Light sensor reading: raw=1612, 1374 mV[0m
+[0;32mI (26112) LASER_SENSOR: Light sensor reading: raw=2219, 1884 mV[0m
+[0;32mI (26212) LASER_SENSOR: Light sensor reading: raw=2774, 2339 mV[0m
+[0;32mI (26312) LASER_SENSOR: Light sensor reading: raw=3623, 2939 mV[0m
+[0;32mI (26412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (26512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (26612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (26712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (26812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (26912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (27012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (27112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (27122) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (27212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (27312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (27412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (27512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (27612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (27712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (27812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (27912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (28012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (28112) LASER_SENSOR: Light sensor reading: raw=3976, 3116 mV[0m
+[0;32mI (28212) LASER_SENSOR: Light sensor reading: raw=2865, 2412 mV[0m
+[0;32mI (28312) LASER_SENSOR: Light sensor reading: raw=3115, 2601 mV[0m
+[0;32mI (28412) LASER_SENSOR: Light sensor reading: raw=1805, 1536 mV[0m
+[0;32mI (28512) LASER_SENSOR: Light sensor reading: raw=1639, 1398 mV[0m
+[0;32mI (28612) LASER_SENSOR: Light sensor reading: raw=956, 827 mV[0m
+[0;32mI (28712) LASER_SENSOR: Light sensor reading: raw=331, 295 mV[0m
+[0;32mI (28812) LASER_SENSOR: Light sensor reading: raw=25, 22 mV[0m
+[0;32mI (28912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (29012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (29112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (29212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (29312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (29412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (29512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (29532) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (29612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (29712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (29812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (29912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (30012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (30112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (30212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (30312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (30412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (30512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (30612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (30712) LASER_SENSOR: Light sensor reading: raw=33, 29 mV[0m
+[0;32mI (30812) LASER_SENSOR: Light sensor reading: raw=92, 84 mV[0m
+[0;32mI (30912) LASER_SENSOR: Light sensor reading: raw=253, 227 mV[0m
+[0;32mI (31012) LASER_SENSOR: Light sensor reading: raw=457, 404 mV[0m
+[0;32mI (31112) LASER_SENSOR: Light sensor reading: raw=810, 704 mV[0m
+[0;32mI (31212) LASER_SENSOR: Light sensor reading: raw=1300, 1114 mV[0m
+[0;32mI (31312) LASER_SENSOR: Light sensor reading: raw=2003, 1703 mV[0m
+[0;32mI (31412) LASER_SENSOR: Light sensor reading: raw=3467, 2843 mV[0m
+[0;32mI (31512) LASER_SENSOR: Light sensor reading: raw=3442, 2828 mV[0m
+[0;32mI (31612) LASER_SENSOR: Light sensor reading: raw=4083, 3157 mV[0m
+[0;32mI (31712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (31812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (31912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (31942) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (32012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (32112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (32212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (32312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (32412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (32512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (32612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (32712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (32812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (32912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (33012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (33112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (33212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (33312) LASER_SENSOR: Light sensor reading: raw=4068, 3153 mV[0m
+[0;32mI (33412) LASER_SENSOR: Light sensor reading: raw=3557, 2899 mV[0m
+[0;32mI (33512) LASER_SENSOR: Light sensor reading: raw=3397, 2798 mV[0m
+[0;32mI (33612) LASER_SENSOR: Light sensor reading: raw=2759, 2328 mV[0m
+[0;32mI (33712) LASER_SENSOR: Light sensor reading: raw=1881, 1599 mV[0m
+[0;32mI (33812) LASER_SENSOR: Light sensor reading: raw=1320, 1129 mV[0m
+[0;32mI (33912) LASER_SENSOR: Light sensor reading: raw=556, 488 mV[0m
+[0;32mI (34012) LASER_SENSOR: Light sensor reading: raw=59, 54 mV[0m
+[0;32mI (34112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (34212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (34312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (34362) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (34412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (34512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (34612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (34712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (34812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (34912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (35012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (35112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (35212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (35312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (35412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (35512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (35612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (35712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (35812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (35912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (36012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (36112) LASER_SENSOR: Light sensor reading: raw=28, 25 mV[0m
+[0;32mI (36212) LASER_SENSOR: Light sensor reading: raw=104, 94 mV[0m
+[0;32mI (36312) LASER_SENSOR: Light sensor reading: raw=282, 253 mV[0m
+[0;32mI (36412) LASER_SENSOR: Light sensor reading: raw=854, 740 mV[0m
+[0;32mI (36512) LASER_SENSOR: Light sensor reading: raw=1004, 865 mV[0m
+[0;32mI (36612) LASER_SENSOR: Light sensor reading: raw=1366, 1169 mV[0m
+[0;32mI (36712) LASER_SENSOR: Light sensor reading: raw=2059, 1750 mV[0m
+[0;32mI (36772) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (36812) LASER_SENSOR: Light sensor reading: raw=2802, 2362 mV[0m
+[0;32mI (36912) LASER_SENSOR: Light sensor reading: raw=3660, 2960 mV[0m
+[0;32mI (37012) LASER_SENSOR: Light sensor reading: raw=3862, 3065 mV[0m
+[0;32mI (37112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (37212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (37312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (37412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (37512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (37612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (37712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (37812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (37912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (38012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (38112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (38212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (38312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (38412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (38512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (38612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (38712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (38812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (38912) LASER_SENSOR: Light sensor reading: raw=3933, 3098 mV[0m
+[0;32mI (39012) LASER_SENSOR: Light sensor reading: raw=3667, 2964 mV[0m
+[0;32mI (39112) LASER_SENSOR: Light sensor reading: raw=3190, 2656 mV[0m
+[0;32mI (39192) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (39212) LASER_SENSOR: Light sensor reading: raw=2368, 2009 mV[0m
+[0;32mI (39312) LASER_SENSOR: Light sensor reading: raw=1903, 1619 mV[0m
+[0;32mI (39412) LASER_SENSOR: Light sensor reading: raw=478, 423 mV[0m
+[0;32mI (39512) LASER_SENSOR: Light sensor reading: raw=339, 301 mV[0m
+[0;32mI (39612) LASER_SENSOR: Light sensor reading: raw=46, 41 mV[0m
+[0;32mI (39712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (39812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (39912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (40012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (40112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (40212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (40312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (40412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (40512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (40612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (40712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (40812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (40912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (41012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (41112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (41212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (41312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (41412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (41512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (41602) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (41612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (41712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (41812) LASER_SENSOR: Light sensor reading: raw=20, 18 mV[0m
+[0;32mI (41912) LASER_SENSOR: Light sensor reading: raw=107, 96 mV[0m
+[0;32mI (42012) LASER_SENSOR: Light sensor reading: raw=273, 244 mV[0m
+[0;32mI (42112) LASER_SENSOR: Light sensor reading: raw=513, 453 mV[0m
+[0;32mI (42212) LASER_SENSOR: Light sensor reading: raw=1577, 1345 mV[0m
+[0;32mI (42312) LASER_SENSOR: Light sensor reading: raw=1206, 1034 mV[0m
+[0;32mI (42412) LASER_SENSOR: Light sensor reading: raw=2820, 2376 mV[0m
+[0;32mI (42512) LASER_SENSOR: Light sensor reading: raw=2429, 2060 mV[0m
+[0;32mI (42612) LASER_SENSOR: Light sensor reading: raw=3008, 2521 mV[0m
+[0;32mI (42712) LASER_SENSOR: Light sensor reading: raw=3691, 2978 mV[0m
+[0;32mI (42812) LASER_SENSOR: Light sensor reading: raw=4077, 3155 mV[0m
+[0;32mI (42912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (43012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (43112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (43212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (43312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (43412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (43512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (43612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (43712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (43812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (43912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (44012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (44012) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (44112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (44212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (44312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (44412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (44512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (44612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (44712) LASER_SENSOR: Light sensor reading: raw=4080, 3157 mV[0m
+[0;32mI (44812) LASER_SENSOR: Light sensor reading: raw=3891, 3079 mV[0m
+[0;32mI (44912) LASER_SENSOR: Light sensor reading: raw=3499, 2864 mV[0m
+[0;32mI (45012) LASER_SENSOR: Light sensor reading: raw=2969, 2492 mV[0m
+[0;32mI (45112) LASER_SENSOR: Light sensor reading: raw=2299, 1951 mV[0m
+[0;32mI (45212) LASER_SENSOR: Light sensor reading: raw=1908, 1624 mV[0m
+[0;32mI (45312) LASER_SENSOR: Light sensor reading: raw=945, 816 mV[0m
+[0;32mI (45412) LASER_SENSOR: Light sensor reading: raw=155, 140 mV[0m
+[0;32mI (45512) LASER_SENSOR: Light sensor reading: raw=154, 139 mV[0m
+[0;32mI (45612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (45712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (45812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (45912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (46012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (46112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (46212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (46312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (46412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (46432) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (46512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (46612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (46712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (46812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (46912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (47012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (47112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (47212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (47312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (47412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (47512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (47612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (47712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (47812) LASER_SENSOR: Light sensor reading: raw=4, 3 mV[0m
+[0;32mI (47912) LASER_SENSOR: Light sensor reading: raw=45, 40 mV[0m
+[0;32mI (48012) LASER_SENSOR: Light sensor reading: raw=164, 149 mV[0m
+[0;32mI (48112) LASER_SENSOR: Light sensor reading: raw=352, 313 mV[0m
+[0;32mI (48212) LASER_SENSOR: Light sensor reading: raw=666, 583 mV[0m
+[0;32mI (48312) LASER_SENSOR: Light sensor reading: raw=995, 859 mV[0m
+[0;32mI (48412) LASER_SENSOR: Light sensor reading: raw=1813, 1543 mV[0m
+[0;32mI (48512) LASER_SENSOR: Light sensor reading: raw=2077, 1765 mV[0m
+[0;32mI (48612) LASER_SENSOR: Light sensor reading: raw=2417, 2049 mV[0m
+[0;32mI (48712) LASER_SENSOR: Light sensor reading: raw=3361, 2775 mV[0m
+[0;32mI (48812) LASER_SENSOR: Light sensor reading: raw=3726, 2996 mV[0m
+[0;32mI (48842) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (48912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (49012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (49112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (49212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (49312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (49412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (49512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (49612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (49712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (49812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (49912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (50012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (50112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (50212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (50312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (50412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (50512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (50612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (50712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (50812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (50912) LASER_SENSOR: Light sensor reading: raw=4074, 3154 mV[0m
+[0;32mI (51012) LASER_SENSOR: Light sensor reading: raw=3951, 3106 mV[0m
+[0;32mI (51112) LASER_SENSOR: Light sensor reading: raw=3640, 2949 mV[0m
+[0;32mI (51212) LASER_SENSOR: Light sensor reading: raw=3160, 2634 mV[0m
+[0;32mI (51252) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (51312) LASER_SENSOR: Light sensor reading: raw=2399, 2035 mV[0m
+[0;32mI (51412) LASER_SENSOR: Light sensor reading: raw=1303, 1115 mV[0m
+[0;32mI (51512) LASER_SENSOR: Light sensor reading: raw=1147, 985 mV[0m
+[0;32mI (51612) LASER_SENSOR: Light sensor reading: raw=786, 684 mV[0m
+[0;32mI (51712) LASER_SENSOR: Light sensor reading: raw=196, 176 mV[0m
+[0;32mI (51812) LASER_SENSOR: Light sensor reading: raw=20, 18 mV[0m
+[0;32mI (51912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (52012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (52112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (52212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (52312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (52412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (52512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (52612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (52712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (52812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (52912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (53012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (53112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (53212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (53312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (53412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (53512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (53612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (53672) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (53712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (53812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (53912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (54012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (54112) LASER_SENSOR: Light sensor reading: raw=18, 15 mV[0m
+[0;32mI (54212) LASER_SENSOR: Light sensor reading: raw=109, 99 mV[0m
+[0;32mI (54312) LASER_SENSOR: Light sensor reading: raw=238, 214 mV[0m
+[0;32mI (54412) LASER_SENSOR: Light sensor reading: raw=643, 563 mV[0m
+[0;32mI (54512) LASER_SENSOR: Light sensor reading: raw=598, 526 mV[0m
+[0;32mI (54612) LASER_SENSOR: Light sensor reading: raw=1049, 902 mV[0m
+[0;32mI (54712) LASER_SENSOR: Light sensor reading: raw=1458, 1245 mV[0m
+[0;32mI (54812) LASER_SENSOR: Light sensor reading: raw=2087, 1774 mV[0m
+[0;32mI (54912) LASER_SENSOR: Light sensor reading: raw=2465, 2089 mV[0m
+[0;32mI (55012) LASER_SENSOR: Light sensor reading: raw=3208, 2668 mV[0m
+[0;32mI (55112) LASER_SENSOR: Light sensor reading: raw=3514, 2874 mV[0m
+[0;32mI (55212) LASER_SENSOR: Light sensor reading: raw=4021, 3134 mV[0m
+[0;32mI (55312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (55412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (55512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (55612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (55712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (55812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (55912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (56012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (56082) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (56112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (56212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (56312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (56412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (56512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (56612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (56712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (56812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (56912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (57012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (57112) LASER_SENSOR: Light sensor reading: raw=4074, 3154 mV[0m
+[0;32mI (57212) LASER_SENSOR: Light sensor reading: raw=3861, 3064 mV[0m
+[0;32mI (57312) LASER_SENSOR: Light sensor reading: raw=3547, 2894 mV[0m
+[0;32mI (57412) LASER_SENSOR: Light sensor reading: raw=2830, 2384 mV[0m
+[0;32mI (57512) LASER_SENSOR: Light sensor reading: raw=2677, 2263 mV[0m
+[0;32mI (57612) LASER_SENSOR: Light sensor reading: raw=2289, 1943 mV[0m
+[0;32mI (57712) LASER_SENSOR: Light sensor reading: raw=1680, 1431 mV[0m
+[0;32mI (57812) LASER_SENSOR: Light sensor reading: raw=904, 782 mV[0m
+[0;32mI (57912) LASER_SENSOR: Light sensor reading: raw=438, 388 mV[0m
+[0;32mI (58012) LASER_SENSOR: Light sensor reading: raw=105, 94 mV[0m
+[0;32mI (58112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (58212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (58312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (58412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (58502) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (58512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (58612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (58712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (58812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (58912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (59012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (59112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (59212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (59312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (59412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (59512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (59612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (59712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (59812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (59912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (60012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (60112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (60212) LASER_SENSOR: Light sensor reading: raw=34, 30 mV[0m
+[0;32mI (60312) LASER_SENSOR: Light sensor reading: raw=91, 83 mV[0m
+[0;32mI (60412) LASER_SENSOR: Light sensor reading: raw=385, 342 mV[0m
+[0;32mI (60512) LASER_SENSOR: Light sensor reading: raw=463, 410 mV[0m
+[0;32mI (60612) LASER_SENSOR: Light sensor reading: raw=801, 696 mV[0m
+[0;32mI (60712) LASER_SENSOR: Light sensor reading: raw=1135, 976 mV[0m
+[0;32mI (60812) LASER_SENSOR: Light sensor reading: raw=1579, 1348 mV[0m
+[0;32mI (60912) LASER_SENSOR: Light sensor reading: raw=2147, 1824 mV[0m
+[0;32mI (60912) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (61012) LASER_SENSOR: Light sensor reading: raw=2632, 2225 mV[0m
+[0;32mI (61112) LASER_SENSOR: Light sensor reading: raw=3783, 3027 mV[0m
+[0;32mI (61212) LASER_SENSOR: Light sensor reading: raw=3990, 3121 mV[0m
+[0;32mI (61312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (61412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (61512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (61612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (61712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (61812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (61912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (62012) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (62112) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (62212) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (62312) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (62412) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (62512) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (62612) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (62712) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (62812) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (62912) LASER_SENSOR: Light sensor reading: raw=4095, 3162 mV[0m
+[0;32mI (63012) LASER_SENSOR: Light sensor reading: raw=4016, 3133 mV[0m
+[0;32mI (63112) LASER_SENSOR: Light sensor reading: raw=3805, 3038 mV[0m
+[0;32mI (63212) LASER_SENSOR: Light sensor reading: raw=3422, 2815 mV[0m
+[0;32mI (63312) LASER_SENSOR: Light sensor reading: raw=2889, 2430 mV[0m
+[0;32mI (63322) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (63412) LASER_SENSOR: Light sensor reading: raw=1639, 1398 mV[0m
+[0;32mI (63512) LASER_SENSOR: Light sensor reading: raw=1422, 1216 mV[0m
+[0;32mI (63612) LASER_SENSOR: Light sensor reading: raw=706, 617 mV[0m
+[0;32mI (63712) LASER_SENSOR: Light sensor reading: raw=209, 188 mV[0m
+[0;32mI (63812) LASER_SENSOR: Light sensor reading: raw=47, 42 mV[0m
+[0;32mI (63912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (64012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (64112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (64212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (64312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (64412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (64512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (64612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (64712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (64812) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (64912) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (65012) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (65112) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (65212) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (65312) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (65412) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (65512) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (65612) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (65712) LASER_SENSOR: Light sensor reading: raw=0, 0 mV[0m
+[0;32mI (65742) WIFI: WiFi disconnected, retrying...[0m
+[0;32mI (65812) LASER_SENSOR: Light sensor reading: raw=63, 57 mV[0m
+[0;32mI (65912) LASER_SENSOR: Light sensor reading: raw=181, 163 mV[0m
+[0;32mI (66012) LASER_SENSOR: Light sensor reading: raw=409, 363 mV[0m
+[0;32mI (66112) LASER_SENSOR: Light sensor reading: raw=837, 726 mV[0m
+[0;32mI (66212) LASER_SENSOR: Light sensor reading: raw=1066, 918 mV[0m

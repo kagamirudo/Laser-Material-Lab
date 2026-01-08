@@ -1,0 +1,1608 @@
+
+---
+events:
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeDetermineSystem.cmake:12 (find_program)"
+      - "CMakeLists.txt"
+    mode: "program"
+    variable: "CMAKE_UNAME"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "uname"
+    candidate_directories:
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/opt/X11/bin/"
+      - "/Applications/VMware Fusion.app/Contents/Public/"
+      - "/Users/kagamirudo/miniconda3/bin/"
+      - "/Users/kagamirudo/miniconda3/condabin/"
+    searched_directories:
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/uname"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/uname"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/uname"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/uname"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/uname"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/uname"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/uname"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/uname"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/uname"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/uname"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/uname"
+      - "/usr/local/bin/uname"
+      - "/System/Cryptexes/App/usr/bin/uname"
+    found: "/usr/bin/uname"
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeDetermineSystem.cmake:212 (message)"
+      - "CMakeLists.txt"
+    message: |
+      The system is: Darwin - 25.1.0 - x86_64
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeUnixFindMake.cmake:5 (find_program)"
+      - "CMakeLists.txt"
+    mode: "program"
+    variable: "CMAKE_MAKE_PROGRAM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gmake"
+      - "make"
+      - "smake"
+    candidate_directories:
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/opt/X11/bin/"
+      - "/Applications/VMware Fusion.app/Contents/Public/"
+      - "/Users/kagamirudo/miniconda3/bin/"
+      - "/Users/kagamirudo/miniconda3/condabin/"
+    searched_directories:
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/gmake"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/gmake"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/gmake"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/gmake"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/gmake"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/gmake"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/gmake"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/gmake"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/gmake"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/gmake"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/gmake"
+      - "/usr/local/bin/gmake"
+      - "/System/Cryptexes/App/usr/bin/gmake"
+      - "/usr/bin/gmake"
+      - "/bin/gmake"
+      - "/usr/sbin/gmake"
+      - "/sbin/gmake"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/gmake"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/gmake"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/gmake"
+      - "/opt/pmk/env/global/bin/gmake"
+      - "/opt/X11/bin/gmake"
+      - "/Applications/VMware Fusion.app/Contents/Public/gmake"
+      - "/Users/kagamirudo/miniconda3/bin/gmake"
+      - "/Users/kagamirudo/miniconda3/condabin/gmake"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/make"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/make"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/make"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/make"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/make"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/make"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/make"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/make"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/make"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/make"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/make"
+      - "/usr/local/bin/make"
+      - "/System/Cryptexes/App/usr/bin/make"
+    found: "/usr/bin/make"
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCompiler.cmake:73 (find_program)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCCompiler.cmake:64 (_cmake_find_compiler)"
+      - "CMakeLists.txt"
+    mode: "program"
+    variable: "CMAKE_C_COMPILER"
+    description: "C compiler"
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "cc"
+      - "gcc"
+      - "cl"
+      - "bcc"
+      - "xlc"
+      - "icx"
+      - "clang"
+    candidate_directories:
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/opt/X11/bin/"
+      - "/Applications/VMware Fusion.app/Contents/Public/"
+      - "/Users/kagamirudo/miniconda3/bin/"
+      - "/Users/kagamirudo/miniconda3/condabin/"
+    searched_directories:
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/cc"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/cc"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/cc"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/cc"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/cc"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/cc"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/cc"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/cc"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/cc"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/cc"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/cc"
+      - "/usr/local/bin/cc"
+      - "/System/Cryptexes/App/usr/bin/cc"
+    found: "/usr/bin/cc"
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCCompilerId.c.in"
+    candidate_directories:
+      - "/usr/local/share/cmake/Modules/"
+    found: "/usr/local/share/cmake/Modules/CMakeCCompilerId.c.in"
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler: /usr/bin/cc 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+      
+      The C compiler identification is AppleClang, found in:
+        /Users/kagamirudo/001/main/build/CMakeFiles/4.2.0/CompilerIdC/a.out
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCompilerId.cmake:290 (message)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt"
+    message: |
+      Detecting C compiler apple sysroot: "/usr/bin/cc" "-E" "apple-sdk.c"
+        # 1 "apple-sdk.c"
+        # 1 "<built-in>" 1
+        # 1 "<built-in>" 3
+        # 433 "<built-in>" 3
+        # 1 "<command line>" 1
+        # 1 "<built-in>" 2
+        # 1 "apple-sdk.c" 2
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 1 3 4
+        # 89 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityVersions.h" 1 3 4
+        # 90 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 2 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/TargetConditionals.h" 1 3 4
+        # 91 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 2 3 4
+        # 207 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 1 3 4
+        # 196 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityVersions.h" 1 3 4
+        # 197 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 2 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h" 1 3 4
+        # 33 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityVersions.h" 1 3 4
+        # 34 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h" 2 3 4
+        # 198 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 2 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternalLegacy.h" 1 3 4
+        # 34 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternalLegacy.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h" 1 3 4
+        # 35 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternalLegacy.h" 2 3 4
+        # 199 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 2 3 4
+        # 208 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 2 3 4
+        # 2 "apple-sdk.c" 2
+        
+        
+      Found apple sysroot: /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt"
+    mode: "program"
+    variable: "CMAKE_AR"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ar"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/opt/X11/bin/"
+      - "/Applications/VMware Fusion.app/Contents/Public/"
+      - "/Users/kagamirudo/miniconda3/bin/"
+      - "/Users/kagamirudo/miniconda3/condabin/"
+    found: "/usr/bin/ar"
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt"
+    mode: "program"
+    variable: "CMAKE_RANLIB"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ranlib"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/opt/X11/bin/"
+      - "/Applications/VMware Fusion.app/Contents/Public/"
+      - "/Users/kagamirudo/miniconda3/bin/"
+      - "/Users/kagamirudo/miniconda3/condabin/"
+    found: "/usr/bin/ranlib"
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt"
+    mode: "program"
+    variable: "CMAKE_STRIP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "strip"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/opt/X11/bin/"
+      - "/Applications/VMware Fusion.app/Contents/Public/"
+      - "/Users/kagamirudo/miniconda3/bin/"
+      - "/Users/kagamirudo/miniconda3/condabin/"
+    found: "/usr/bin/strip"
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt"
+    mode: "program"
+    variable: "CMAKE_LINKER"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ld"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/opt/X11/bin/"
+      - "/Applications/VMware Fusion.app/Contents/Public/"
+      - "/Users/kagamirudo/miniconda3/bin/"
+      - "/Users/kagamirudo/miniconda3/condabin/"
+    found: "/usr/bin/ld"
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt"
+    mode: "program"
+    variable: "CMAKE_NM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "nm"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/opt/X11/bin/"
+      - "/Applications/VMware Fusion.app/Contents/Public/"
+      - "/Users/kagamirudo/miniconda3/bin/"
+      - "/Users/kagamirudo/miniconda3/condabin/"
+    found: "/usr/bin/nm"
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt"
+    mode: "program"
+    variable: "CMAKE_OBJDUMP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "objdump"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/opt/X11/bin/"
+      - "/Applications/VMware Fusion.app/Contents/Public/"
+      - "/Users/kagamirudo/miniconda3/bin/"
+      - "/Users/kagamirudo/miniconda3/condabin/"
+    found: "/usr/bin/objdump"
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt"
+    mode: "program"
+    variable: "CMAKE_OBJCOPY"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "objcopy"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/opt/X11/bin/"
+      - "/Applications/VMware Fusion.app/Contents/Public/"
+      - "/Users/kagamirudo/miniconda3/bin/"
+      - "/Users/kagamirudo/miniconda3/condabin/"
+    searched_directories:
+      - "/usr/bin/objcopy"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/objcopy"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/objcopy"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/objcopy"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/objcopy"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/objcopy"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/objcopy"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/objcopy"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/objcopy"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/objcopy"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/objcopy"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/objcopy"
+      - "/usr/local/bin/objcopy"
+      - "/System/Cryptexes/App/usr/bin/objcopy"
+      - "/bin/objcopy"
+      - "/usr/sbin/objcopy"
+      - "/sbin/objcopy"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/objcopy"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/objcopy"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/objcopy"
+      - "/opt/pmk/env/global/bin/objcopy"
+      - "/opt/X11/bin/objcopy"
+      - "/Applications/VMware Fusion.app/Contents/Public/objcopy"
+      - "/Users/kagamirudo/miniconda3/bin/objcopy"
+      - "/Users/kagamirudo/miniconda3/condabin/objcopy"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt"
+    mode: "program"
+    variable: "CMAKE_READELF"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "readelf"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/opt/X11/bin/"
+      - "/Applications/VMware Fusion.app/Contents/Public/"
+      - "/Users/kagamirudo/miniconda3/bin/"
+      - "/Users/kagamirudo/miniconda3/condabin/"
+    searched_directories:
+      - "/usr/bin/readelf"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/readelf"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/readelf"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/readelf"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/readelf"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/readelf"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/readelf"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/readelf"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/readelf"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/readelf"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/readelf"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/readelf"
+      - "/usr/local/bin/readelf"
+      - "/System/Cryptexes/App/usr/bin/readelf"
+      - "/bin/readelf"
+      - "/usr/sbin/readelf"
+      - "/sbin/readelf"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/readelf"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/readelf"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/readelf"
+      - "/opt/pmk/env/global/bin/readelf"
+      - "/opt/X11/bin/readelf"
+      - "/Applications/VMware Fusion.app/Contents/Public/readelf"
+      - "/Users/kagamirudo/miniconda3/bin/readelf"
+      - "/Users/kagamirudo/miniconda3/condabin/readelf"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt"
+    mode: "program"
+    variable: "CMAKE_DLLTOOL"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "dlltool"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/opt/X11/bin/"
+      - "/Applications/VMware Fusion.app/Contents/Public/"
+      - "/Users/kagamirudo/miniconda3/bin/"
+      - "/Users/kagamirudo/miniconda3/condabin/"
+    searched_directories:
+      - "/usr/bin/dlltool"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/dlltool"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/dlltool"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/dlltool"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/dlltool"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/dlltool"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/dlltool"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/dlltool"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/dlltool"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/dlltool"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/dlltool"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/dlltool"
+      - "/usr/local/bin/dlltool"
+      - "/System/Cryptexes/App/usr/bin/dlltool"
+      - "/bin/dlltool"
+      - "/usr/sbin/dlltool"
+      - "/sbin/dlltool"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/dlltool"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/dlltool"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/dlltool"
+      - "/opt/pmk/env/global/bin/dlltool"
+      - "/opt/X11/bin/dlltool"
+      - "/Applications/VMware Fusion.app/Contents/Public/dlltool"
+      - "/Users/kagamirudo/miniconda3/bin/dlltool"
+      - "/Users/kagamirudo/miniconda3/condabin/dlltool"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt"
+    mode: "program"
+    variable: "CMAKE_ADDR2LINE"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "addr2line"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/opt/X11/bin/"
+      - "/Applications/VMware Fusion.app/Contents/Public/"
+      - "/Users/kagamirudo/miniconda3/bin/"
+      - "/Users/kagamirudo/miniconda3/condabin/"
+    searched_directories:
+      - "/usr/bin/addr2line"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/addr2line"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/addr2line"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/addr2line"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/addr2line"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/addr2line"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/addr2line"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/addr2line"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/addr2line"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/addr2line"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/addr2line"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/addr2line"
+      - "/usr/local/bin/addr2line"
+      - "/System/Cryptexes/App/usr/bin/addr2line"
+      - "/bin/addr2line"
+      - "/usr/sbin/addr2line"
+      - "/sbin/addr2line"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/addr2line"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/addr2line"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/addr2line"
+      - "/opt/pmk/env/global/bin/addr2line"
+      - "/opt/X11/bin/addr2line"
+      - "/Applications/VMware Fusion.app/Contents/Public/addr2line"
+      - "/Users/kagamirudo/miniconda3/bin/addr2line"
+      - "/Users/kagamirudo/miniconda3/condabin/addr2line"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt"
+    mode: "program"
+    variable: "CMAKE_TAPI"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "tapi"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/opt/X11/bin/"
+      - "/Applications/VMware Fusion.app/Contents/Public/"
+      - "/Users/kagamirudo/miniconda3/bin/"
+      - "/Users/kagamirudo/miniconda3/condabin/"
+    searched_directories:
+      - "/usr/bin/tapi"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/tapi"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/tapi"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/tapi"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/tapi"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/tapi"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/tapi"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/tapi"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/tapi"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/tapi"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/tapi"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/tapi"
+      - "/usr/local/bin/tapi"
+      - "/System/Cryptexes/App/usr/bin/tapi"
+      - "/bin/tapi"
+      - "/usr/sbin/tapi"
+      - "/sbin/tapi"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/tapi"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/tapi"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/tapi"
+      - "/opt/pmk/env/global/bin/tapi"
+      - "/opt/X11/bin/tapi"
+      - "/Applications/VMware Fusion.app/Contents/Public/tapi"
+      - "/Users/kagamirudo/miniconda3/bin/tapi"
+      - "/Users/kagamirudo/miniconda3/condabin/tapi"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCompiler.cmake:54 (find_program)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:69 (_cmake_find_compiler)"
+      - "CMakeLists.txt"
+    mode: "program"
+    variable: "CMAKE_CXX_COMPILER"
+    description: "CXX compiler"
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "c++"
+      - "g++"
+      - "cl"
+      - "bcc"
+      - "icpx"
+      - "icx"
+      - "clang++"
+    candidate_directories:
+      - "/usr/bin/"
+    found: "/usr/bin/c++"
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "/usr/local/share/cmake/Modules/"
+    found: "/usr/local/share/cmake/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler: /usr/bin/c++ 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+      
+      The CXX compiler identification is AppleClang, found in:
+        /Users/kagamirudo/001/main/build/CMakeFiles/4.2.0/CompilerIdCXX/a.out
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCompilerId.cmake:290 (message)"
+      - "/usr/local/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt"
+    message: |
+      Detecting CXX compiler apple sysroot: "/usr/bin/c++" "-E" "apple-sdk.cpp"
+        # 1 "apple-sdk.cpp"
+        # 1 "<built-in>" 1
+        # 1 "<built-in>" 3
+        # 481 "<built-in>" 3
+        # 1 "<command line>" 1
+        # 1 "<built-in>" 2
+        # 1 "apple-sdk.cpp" 2
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 1 3 4
+        # 89 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityVersions.h" 1 3 4
+        # 90 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 2 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/TargetConditionals.h" 1 3 4
+        # 91 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 2 3 4
+        # 207 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 1 3 4
+        # 196 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityVersions.h" 1 3 4
+        # 197 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 2 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h" 1 3 4
+        # 33 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityVersions.h" 1 3 4
+        # 34 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h" 2 3 4
+        # 198 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 2 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternalLegacy.h" 1 3 4
+        # 34 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternalLegacy.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h" 1 3 4
+        # 35 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternalLegacy.h" 2 3 4
+        # 199 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 2 3 4
+        # 208 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 2 3 4
+        # 2 "apple-sdk.cpp" 2
+        
+        
+      Found apple sysroot: /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/local/share/cmake/Modules/Platform/Darwin.cmake:76 (find_program)"
+      - "/usr/local/share/cmake/Modules/CMakeSystemSpecificInformation.cmake:32 (include)"
+      - "CMakeLists.txt"
+    mode: "program"
+    variable: "CMAKE_INSTALL_NAME_TOOL"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "install_name_tool"
+    candidate_directories:
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/opt/X11/bin/"
+      - "/Applications/VMware Fusion.app/Contents/Public/"
+      - "/Users/kagamirudo/miniconda3/bin/"
+      - "/Users/kagamirudo/miniconda3/condabin/"
+    searched_directories:
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/install_name_tool"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table/install_name_tool"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update/install_name_tool"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin/install_name_tool"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin/install_name_tool"
+      - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/install_name_tool"
+      - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin/install_name_tool"
+      - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin/install_name_tool"
+      - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin/install_name_tool"
+      - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/install_name_tool"
+      - "/Users/kagamirudo/esp-idf-v5.5.1/tools/install_name_tool"
+      - "/usr/local/bin/install_name_tool"
+      - "/System/Cryptexes/App/usr/bin/install_name_tool"
+    found: "/usr/bin/install_name_tool"
+    search_context:
+      ENV{PATH}:
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/partition_table"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/components/app_update"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf-gdb/16.2_20250324/xtensa-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf-gdb/16.2_20250324/riscv32-esp-elf-gdb/bin"
+        - "/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20241119/riscv32-esp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/esp32ulp-elf/2.38_20240113/esp32ulp-elf/bin"
+        - "/Users/kagamirudo/.espressif/tools/openocd-esp32/v0.12.0-esp32-20250707/openocd-esp32/bin"
+        - "/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin"
+        - "/Users/kagamirudo/esp-idf-v5.5.1/tools"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/opt/X11/bin"
+        - "/Applications/VMware Fusion.app/Contents/Public"
+        - "/Users/kagamirudo/miniconda3/bin"
+        - "/Users/kagamirudo/miniconda3/condabin"
+      CMAKE_INSTALL_PREFIX: "/usr/local"

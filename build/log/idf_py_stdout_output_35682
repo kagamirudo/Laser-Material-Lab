@@ -1,0 +1,424 @@
+Command: /Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/python /Users/kagamirudo/esp-idf-v5.5.1/tools/idf_monitor.py -p /dev/cu.usbmodem1101 -b 115200 --toolchain-prefix xtensa-esp32s3-elf- --target esp32s3 --revision 0 /Users/kagamirudo/002/build/002.elf /Users/kagamirudo/002/build/bootloader/bootloader.elf -m '/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/python' '/Users/kagamirudo/esp-idf-v5.5.1/tools/idf.py'
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037795e
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x158c
+load:0x403c8700,len:0xd24
+load:0x403cb700,len:0x2f34
+entry 0x403c8924
+[0;32mI (24) boot: ESP-IDF v5.5.1 2nd stage bootloader[0m
+[0;32mI (24) boot: compile time Dec 18 2025 13:52:19[0m
+[0;32mI (25) boot: Multicore bootloader[0m
+[0;32mI (25) boot: chip revision: v0.2[0m
+[0;32mI (27) boot: efuse block revision: v1.3[0m
+[0;32mI (31) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (35) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (39) boot.esp32s3: SPI Flash Size : 16MB[0m
+[0;32mI (43) boot: Enabling RNG early entropy source...[0m
+[0;32mI (47) boot: Partition Table:[0m
+[0;32mI (50) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (56) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (62) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (69) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (76) boot: End of partition table[0m
+[0;32mI (79) esp_image: segment 0: paddr=00010020 vaddr=3c020020 size=0b89ch ( 47260) map[0m
+[0;32mI (95) esp_image: segment 1: paddr=0001b8c4 vaddr=3fc92900 size=02be0h ( 11232) load[0m
+[0;32mI (97) esp_image: segment 2: paddr=0001e4ac vaddr=40374000 size=01b6ch (  7020) load[0m
+[0;32mI (103) esp_image: segment 3: paddr=00020020 vaddr=42000020 size=1b190h (110992) map[0m
+[0;32mI (128) esp_image: segment 4: paddr=0003b1b8 vaddr=40375b6c size=0cc98h ( 52376) load[0m
+[0;32mI (140) esp_image: segment 5: paddr=00047e58 vaddr=50000000 size=00020h (    32) load[0m
+[0;32mI (146) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (146) boot: Disabling RNG early entropy source...[0m
+[0;32mI (158) cpu_start: Multicore app[0m
+[0;32mI (167) cpu_start: Pro cpu start user code[0m
+[0;32mI (167) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (167) app_init: Application information:[0m
+[0;32mI (167) app_init: Project name:     002[0m
+[0;32mI (170) app_init: App version:      1[0m
+[0;32mI (174) app_init: Compile time:     Dec 18 2025 13:53:51[0m
+[0;32mI (179) app_init: ELF file SHA256:  fb21c5318...[0m
+[0;32mI (183) app_init: ESP-IDF:          v5.5.1[0m
+[0;32mI (187) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (191) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (195) efuse_init: Chip rev:         v0.2[0m
+[0;32mI (199) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (205) heap_init: At 3FC95E58 len 000538B8 (334 KiB): RAM[0m
+[0;32mI (210) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (215) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (220) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (227) spi_flash: detected chip: generic[0m
+[0;32mI (229) spi_flash: flash io: dio[0m
+[0;32mI (233) sleep_gpio: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (239) sleep_gpio: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (246) main_task: Started on CPU0[0m
+[0;32mI (256) main_task: Calling app_main()[0m
+[0;32mI (256) LASER_ADC: Laser PWM + ADC sample (GPIO5 PWM, GPIO4 ADC)[0m
+[0;32mI (256) LASER_ADC: Laser PWM set full on @ GPIO5[0m
+[0;32mI (266) LASER_ADC: ADC initialized on GPIO4 (unit 0, channel 3)[0m
+ADC raw=211
+ADC raw=205
+ADC raw=203
+ADC raw=229
+ADC raw=267
+ADC raw=237
+ADC raw=240
+ADC raw=232
+ADC raw=251
+ADC raw=231
+ADC raw=232
+ADC raw=278
+ADC raw=242
+ADC raw=230
+ADC raw=232
+ADC raw=234
+ADC raw=279
+ADC raw=230
+ADC raw=247
+ADC raw=224
+ADC raw=225
+ADC raw=224
+ADC raw=221
+ADC raw=224
+ADC raw=211
+ADC raw=216
+ADC raw=198
+ADC raw=193
+ADC raw=195
+ADC raw=210
+ADC raw=219
+ADC raw=227
+ADC raw=200
+ADC raw=203
+ADC raw=195
+ADC raw=200
+ADC raw=200
+ADC raw=228
+ADC raw=211
+ADC raw=211
+ADC raw=218
+ADC raw=213
+ADC raw=229
+ADC raw=263
+ADC raw=232
+ADC raw=220
+ADC raw=212
+ADC raw=220
+ADC raw=259
+ADC raw=437
+ADC raw=277
+ADC raw=1287
+ADC raw=462
+ADC raw=890
+ADC raw=1297
+ADC raw=812
+ADC raw=795
+ADC raw=1320
+ADC raw=1033
+ADC raw=602
+ADC raw=640
+ADC raw=492
+ADC raw=260
+ADC raw=213
+ADC raw=213
+ADC raw=251
+ADC raw=215
+ADC raw=205
+ADC raw=208
+ADC raw=228
+ADC raw=205
+ADC raw=199
+ADC raw=200
+ADC raw=208
+ADC raw=255
+ADC raw=205
+ADC raw=222
+ADC raw=245
+ADC raw=264
+ADC raw=227
+ADC raw=201
+ADC raw=218
+ADC raw=204
+ADC raw=223
+ADC raw=222
+ADC raw=203
+ADC raw=212
+ADC raw=212
+ADC raw=202
+ADC raw=205
+ADC raw=216
+ADC raw=211
+ADC raw=218
+ADC raw=235
+ADC raw=234
+ADC raw=244
+ADC raw=228
+ADC raw=235
+ADC raw=224
+ADC raw=221
+ADC raw=220
+ADC raw=214
+ADC raw=252
+ADC raw=221
+ADC raw=241
+ADC raw=224
+ADC raw=229
+ADC raw=250
+ADC raw=232
+ADC raw=222
+ADC raw=202
+ADC raw=220
+ADC raw=210
+ADC raw=210
+ADC raw=202
+ADC raw=208
+ADC raw=213
+ADC raw=221
+ADC raw=249
+ADC raw=1547 [BEAM DETECTED]
+ADC raw=384
+ADC raw=307
+ADC raw=434
+ADC raw=518
+ADC raw=1013
+ADC raw=724
+ADC raw=831
+ADC raw=1150
+ADC raw=1762 [BEAM DETECTED]
+ADC raw=1842 [BEAM DETECTED]
+ADC raw=1533 [BEAM DETECTED]
+ADC raw=1570 [BEAM DETECTED]
+ADC raw=1728 [BEAM DETECTED]
+ADC raw=1255
+ADC raw=1959 [BEAM DETECTED]
+ADC raw=1534 [BEAM DETECTED]
+ADC raw=1052
+ADC raw=1502 [BEAM DETECTED]
+ADC raw=1500 [BEAM DETECTED]
+ADC raw=1687 [BEAM DETECTED]
+ADC raw=1647 [BEAM DETECTED]
+ADC raw=1833 [BEAM DETECTED]
+ADC raw=1834 [BEAM DETECTED]
+ADC raw=1799 [BEAM DETECTED]
+ADC raw=1533 [BEAM DETECTED]
+ADC raw=1890 [BEAM DETECTED]
+ADC raw=2015
+ADC raw=2029
+ADC raw=1563 [BEAM DETECTED]
+ADC raw=1558 [BEAM DETECTED]
+ADC raw=1852 [BEAM DETECTED]
+ADC raw=1853 [BEAM DETECTED]
+ADC raw=1802 [BEAM DETECTED]
+ADC raw=1817 [BEAM DETECTED]
+ADC raw=1853 [BEAM DETECTED]
+ADC raw=1870 [BEAM DETECTED]
+ADC raw=1905 [BEAM DETECTED]
+ADC raw=2056
+ADC raw=1986 [BEAM DETECTED]
+ADC raw=1752 [BEAM DETECTED]
+ADC raw=1679 [BEAM DETECTED]
+ADC raw=1696 [BEAM DETECTED]
+ADC raw=709
+ADC raw=1202
+ADC raw=1142
+ADC raw=1134
+ADC raw=220
+ADC raw=219
+ADC raw=221
+ADC raw=847
+ADC raw=1344
+ADC raw=1534 [BEAM DETECTED]
+ADC raw=1519 [BEAM DETECTED]
+ADC raw=1341
+ADC raw=218
+ADC raw=222
+ADC raw=1481 [BEAM DETECTED]
+ADC raw=1229
+ADC raw=884
+ADC raw=238
+ADC raw=223
+ADC raw=258
+ADC raw=474
+ADC raw=740
+ADC raw=1385
+ADC raw=1714 [BEAM DETECTED]
+ADC raw=445
+ADC raw=1337
+ADC raw=1262
+ADC raw=1209
+ADC raw=1301
+ADC raw=1856 [BEAM DETECTED]
+ADC raw=1072
+ADC raw=900
+ADC raw=1386
+ADC raw=1454 [BEAM DETECTED]
+ADC raw=1582 [BEAM DETECTED]
+ADC raw=1935 [BEAM DETECTED]
+ADC raw=1679 [BEAM DETECTED]
+ADC raw=1565 [BEAM DETECTED]
+ADC raw=982
+ADC raw=1116
+ADC raw=1187
+ADC raw=674
+ADC raw=492
+ADC raw=684
+ADC raw=260
+ADC raw=225
+ADC raw=325
+ADC raw=273
+ADC raw=739
+ADC raw=493
+ADC raw=230
+ADC raw=223
+ADC raw=1594 [BEAM DETECTED]
+ADC raw=222
+ADC raw=219
+ADC raw=613
+ADC raw=224
+ADC raw=218
+ADC raw=296
+ADC raw=227
+ADC raw=223
+ADC raw=224
+ADC raw=223
+ADC raw=221
+ADC raw=217
+ADC raw=227
+ADC raw=220
+ADC raw=222
+ADC raw=227
+ADC raw=231
+ADC raw=219
+ADC raw=219
+ADC raw=221
+ADC raw=222
+ADC raw=220
+ADC raw=222
+ADC raw=225
+ADC raw=216
+ADC raw=217
+ADC raw=317
+ADC raw=386
+ADC raw=679
+ADC raw=1304
+ADC raw=1566 [BEAM DETECTED]
+ADC raw=1332
+ADC raw=1237
+ADC raw=250
+ADC raw=294
+ADC raw=961
+ADC raw=1662 [BEAM DETECTED]
+ADC raw=1799 [BEAM DETECTED]
+ADC raw=1737 [BEAM DETECTED]
+ADC raw=1437 [BEAM DETECTED]
+ADC raw=1474 [BEAM DETECTED]
+ADC raw=1357
+ADC raw=1285
+ADC raw=1042
+ADC raw=334
+ADC raw=354
+ADC raw=227
+ADC raw=214
+ADC raw=223
+ADC raw=199
+ADC raw=258
+ADC raw=214
+ADC raw=255
+ADC raw=229
+ADC raw=212
+ADC raw=222
+ADC raw=215
+ADC raw=229
+ADC raw=219
+ADC raw=220
+ADC raw=268
+ADC raw=255
+ADC raw=277
+ADC raw=253
+ADC raw=272
+ADC raw=261
+ADC raw=260
+ADC raw=268
+ADC raw=254
+ADC raw=257
+ADC raw=257
+ADC raw=266
+ADC raw=274
+ADC raw=255
+ADC raw=267
+ADC raw=267
+ADC raw=264
+ADC raw=260
+ADC raw=261
+ADC raw=263
+ADC raw=309
+ADC raw=266
+ADC raw=264
+ADC raw=256
+ADC raw=265
+ADC raw=261
+ADC raw=269
+ADC raw=263
+ADC raw=263
+ADC raw=255
+ADC raw=263
+ADC raw=263
+ADC raw=263
+ADC raw=279
+ADC raw=265
+ADC raw=271
+ADC raw=273
+ADC raw=264
+ADC raw=273
+ADC raw=273
+ADC raw=273
+ADC raw=262
+ADC raw=272
+ADC raw=264
+ADC raw=287
+ADC raw=267
+ADC raw=309
+ADC raw=262
+ADC raw=258
+ADC raw=276
+ADC raw=273
+ADC raw=256
+ADC raw=270
+ADC raw=260
+ADC raw=269
+ADC raw=274
+ADC raw=289
+ADC raw=298
+ADC raw=258
+ADC raw=275
+ADC raw=259
+ADC raw=293
+ADC raw=266
+ADC raw=262
+ADC raw=247
+ADC raw=238
+ADC raw=212
+ADC raw=210
+ADC raw=229
+ADC raw=220
+ADC raw=221
+ADC raw=223
+ADC raw=247
+ADC raw=223
+ADC raw=230
+ADC raw=239
+ADC raw=224
+ADC raw=220
+ADC raw=225
+ADC raw=239
+ADC raw=221
+ADC raw=246
+ADC raw=226
+ADC raw=230
+ADC raw=227
+ADC raw=237
+ADC raw=231
+ADC raw=252
+ADC raw=231
