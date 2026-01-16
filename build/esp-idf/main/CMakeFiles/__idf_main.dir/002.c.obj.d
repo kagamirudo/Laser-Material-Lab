@@ -51,6 +51,10 @@ esp-idf/main/CMakeFiles/__idf_main.dir/002.c.obj: \
  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/machine/time.h \
  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/signal.h \
  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/signal.h \
+ /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/stat.h \
+ /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/errno.h \
+ /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/sys/errno.h \
+ /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/errno.h \
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_common/include/esp_err.h \
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_common/include/esp_compiler.h \
  /Users/kagamirudo/esp-idf-v5.5.1/components/log/include/esp_log.h \
@@ -149,7 +153,6 @@ esp-idf/main/CMakeFiles/__idf_main.dir/002.c.obj: \
  /Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/include/freertos/stream_buffer.h \
  /Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/include/freertos/event_groups.h \
  /Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/include/freertos/timers.h \
- /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/stat.h \
  /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/sys/termios.h \
  /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/sys/poll.h \
  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/dirent.h \
@@ -167,11 +170,17 @@ esp-idf/main/CMakeFiles/__idf_main.dir/002.c.obj: \
  /Users/kagamirudo/esp-idf-v5.5.1/components/soc/esp32s3/include/soc/gpio_pins.h \
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_gpio/include/driver/gpio_etm.h \
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/include/esp_etm.h \
+ /Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_gptimer/include/driver/gptimer.h \
+ /Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_gptimer/include/driver/gptimer_types.h \
+ /Users/kagamirudo/esp-idf-v5.5.1/components/hal/include/hal/timer_types.h \
+ /Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_gptimer/include/driver/gptimer_etm.h \
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_adc/include/esp_adc/adc_oneshot.h \
  /Users/kagamirudo/esp-idf-v5.5.1/components/hal/include/hal/adc_types.h \
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_adc/include/esp_adc/adc_cali.h \
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_adc/include/esp_adc/adc_cali_scheme.h \
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_adc/esp32s3/include/adc_cali_schemes.h \
+ /Users/kagamirudo/esp-idf-v5.5.1/components/esp_timer/include/esp_timer.h \
+ /Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/include/esp_task_wdt.h \
  /Users/kagamirudo/002/main/wifi.h \
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_event/include/esp_event.h \
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_wifi/include/esp_wifi.h \

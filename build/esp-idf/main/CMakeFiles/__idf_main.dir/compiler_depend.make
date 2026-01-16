@@ -13,6 +13,7 @@ esp-idf/main/CMakeFiles/__idf_main.dir/002.c.obj: /Users/kagamirudo/002/main/002
   /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/alloca.h \
   /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/assert.h \
   /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/dirent.h \
+  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/errno.h \
   /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/inttypes.h \
   /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/limits.h \
   /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/machine/_default_types.h \
@@ -43,6 +44,7 @@ esp-idf/main/CMakeFiles/__idf_main.dir/002.c.obj: /Users/kagamirudo/002/main/002
   /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/cdefs.h \
   /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/config.h \
   /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/dirent.h \
+  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/errno.h \
   /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/features.h \
   /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/lock.h \
   /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/reent.h \
@@ -79,6 +81,9 @@ esp-idf/main/CMakeFiles/__idf_main.dir/002.c.obj: /Users/kagamirudo/002/main/002
   /Users/kagamirudo/esp-idf-v5.5.1/components/esp_common/include/esp_types.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_gpio/include/driver/gpio.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_gpio/include/driver/gpio_etm.h \
+  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_gptimer/include/driver/gptimer.h \
+  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_gptimer/include/driver/gptimer_etm.h \
+  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_gptimer/include/driver/gptimer_types.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_ledc/include/driver/ledc.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/esp_event/include/esp_event.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/esp_event/include/esp_event_base.h \
@@ -103,6 +108,8 @@ esp-idf/main/CMakeFiles/__idf_main.dir/002.c.obj: /Users/kagamirudo/002/main/002
   /Users/kagamirudo/esp-idf-v5.5.1/components/esp_rom/include/esp_rom_sys.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/include/esp_private/crosscore_int.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/include/esp_system.h \
+  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/include/esp_task_wdt.h \
+  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_timer/include/esp_timer.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/esp_wifi/include/esp_wifi.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/esp_wifi/include/esp_wifi_crypto_types.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/esp_wifi/include/esp_wifi_default.h \
@@ -132,6 +139,7 @@ esp-idf/main/CMakeFiles/__idf_main.dir/002.c.obj: /Users/kagamirudo/002/main/002
   /Users/kagamirudo/esp-idf-v5.5.1/components/hal/include/hal/gpio_types.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/hal/include/hal/ledc_types.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/hal/include/hal/sha_types.h \
+  /Users/kagamirudo/esp-idf-v5.5.1/components/hal/include/hal/timer_types.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/heap/include/esp_heap_caps.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/heap/include/multi_heap.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/http_parser/http_parser.h \
@@ -224,6 +232,7 @@ esp-idf/main/CMakeFiles/__idf_main.dir/002.c.obj: /Users/kagamirudo/002/main/002
   /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/esp_newlib.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/stdio.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/sys/dirent.h \
+  /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/sys/errno.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/sys/lock.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/sys/poll.h \
   /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/sys/reent.h \
@@ -838,7 +847,11 @@ esp-idf/main/CMakeFiles/__idf_main.dir/wifi.c.obj: /Users/kagamirudo/002/main/wi
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_values.h:
 
-/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_types.h:
+/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_driver_common.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_compat.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_builtin_primitives.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_adjust_config_key_pair_types.h:
 
@@ -892,8 +905,6 @@ esp-idf/main/CMakeFiles/__idf_main.dir/wifi.c.obj: /Users/kagamirudo/002/main/wi
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/mbedtls/config_adjust_legacy_crypto.h:
 
-/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/mbedtls/cipher.h:
-
 /Users/kagamirudo/esp-idf-v5.5.1/components/esp_event/include/esp_event_base.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/mbedtls/ccm.h:
@@ -913,6 +924,8 @@ esp-idf/main/CMakeFiles/__idf_main.dir/wifi.c.obj: /Users/kagamirudo/002/main/wi
 /Users/kagamirudo/esp-idf-v5.5.1/components/log/include/esp_log_format.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/log/include/esp_log_buffer.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_gptimer/include/driver/gptimer_etm.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/mbedtls/config_adjust_ssl.h:
 
@@ -934,23 +947,11 @@ esp-idf/main/CMakeFiles/__idf_main.dir/wifi.c.obj: /Users/kagamirudo/002/main/wi
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/hal/include/hal/gpio_types.h:
 
-/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/build_info.h:
-
-/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/mbedtls/platform_time.h:
-
-/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_adjust_config_synonyms.h:
-
 /Users/kagamirudo/esp-idf-v5.5.1/components/fatfs/src/ff.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/mbedtls/ripemd160.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/freertos/esp_additions/include/freertos/idf_additions.h:
-
-/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_adjust_auto_enabled.h:
-
-/Users/kagamirudo/esp-idf-v5.5.1/components/log/include/esp_log_attr.h:
-
-/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/config/include/freertos/FreeRTOSConfig.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/esp_wifi/include/local/esp_wifi_types_native.h:
 
@@ -1004,19 +1005,9 @@ esp-idf/main/CMakeFiles/__idf_main.dir/wifi.c.obj: /Users/kagamirudo/002/main/wi
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/esp_wifi/include/esp_wifi.h:
 
-/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_struct.h:
-
-/Users/kagamirudo/esp-idf-v5.5.1/components/esp_rom/include/esp_rom_md5.h:
+/Users/kagamirudo/esp-idf-v5.5.1/components/esp_timer/include/esp_timer.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/esp_rom/include/esp_rom_gpio.h:
-
-/Users/kagamirudo/esp-idf-v5.5.1/components/xtensa/esp32s3/include/xtensa/config/core-isa.h:
-
-/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/machine/ieeefp.h:
-
-/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/limits.h:
-
-/Users/kagamirudo/esp-idf-v5.5.1/components/esp_partition/include/esp_partition.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/esp_netif/include/esp_netif_types.h:
 
@@ -1068,21 +1059,21 @@ esp-idf/main/CMakeFiles/__idf_main.dir/wifi.c.obj: /Users/kagamirudo/002/main/wi
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/esp_common/include/esp_compiler.h:
 
+/Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_gptimer/include/driver/gptimer_types.h:
+
 /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/lib/gcc/xtensa-esp-elf/14.2.0/include/stdarg.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/include/esp_memory_utils.h:
-
-/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_driver_common.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/mbedtls/x509.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/esp_common/include/esp_assert.h:
 
-/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_compat.h:
-
 /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/inttypes.h:
 
 /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/lib/gcc/xtensa-esp-elf/14.2.0/include/stdbool.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_gptimer/include/driver/gptimer.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/esp_adc/include/esp_adc/adc_oneshot.h:
 
@@ -1114,6 +1105,8 @@ esp-idf/main/CMakeFiles/__idf_main.dir/wifi.c.obj: /Users/kagamirudo/002/main/wi
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/include/freertos/FreeRTOS.h:
 
+/Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/sys/errno.h:
+
 /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/syslimits.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/log/include/esp_log_level.h:
@@ -1138,15 +1131,37 @@ esp-idf/main/CMakeFiles/__idf_main.dir/wifi.c.obj: /Users/kagamirudo/002/main/wi
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/esp_netif/include/esp_netif_ip_addr.h:
 
+/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_adjust_config_synonyms.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/build_info.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/mbedtls/platform_time.h:
+
 /Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/include/esp_ipc.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/log/include/esp_log_config.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/config/include/freertos/FreeRTOSConfig.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/log/include/esp_log_attr.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/esp-tls/esp_tls_errors.h:
 
 /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/signal.h:
 
 /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/strings.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_adjust_auto_enabled.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_types.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/hal/include/hal/timer_types.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/include/esp_etm.h:
+
+/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/machine/endian.h:
+
+/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/errno.h:
 
 /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/_newlib_version.h:
 
@@ -1170,10 +1185,6 @@ esp-idf/main/CMakeFiles/__idf_main.dir/wifi.c.obj: /Users/kagamirudo/002/main/wi
 
 /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/machine/_default_types.h:
 
-/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/include/esp_etm.h:
-
-/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/machine/endian.h:
-
 /Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/mbedtls/bignum.h:
 
 /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/_sigset.h:
@@ -1181,6 +1192,8 @@ esp-idf/main/CMakeFiles/__idf_main.dir/wifi.c.obj: /Users/kagamirudo/002/main/wi
 /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/_types.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/sys/select.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/include/esp_task_wdt.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/esp_netif/include/esp_netif.h:
 
@@ -1202,23 +1215,11 @@ esp-idf/main/CMakeFiles/__idf_main.dir/wifi.c.obj: /Users/kagamirudo/002/main/wi
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/hal/include/hal/aes_types.h:
 
-/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_builtin_primitives.h:
-
 /Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/port/include/mbedtls/bignum.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/mbedtls/chachapoly.h:
 
 /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/stdio.h:
-
-/Users/kagamirudo/esp-idf-v5.5.1/components/log/include/esp_log_color.h:
-
-/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/unistd.h:
-
-/Users/kagamirudo/esp-idf-v5.5.1/components/spiffs/include/esp_spiffs.h:
-
-/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_extra.h:
-
-/Users/kagamirudo/002/main/002.c:
 
 /Users/kagamirudo/002/main/server.h:
 
@@ -1227,6 +1228,24 @@ esp-idf/main/CMakeFiles/__idf_main.dir/wifi.c.obj: /Users/kagamirudo/002/main/wi
 /Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/mbedtls/x509_crt.h:
 
 /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/reent.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/port/include/sha1_alt.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/mbedtls/asn1.h:
+
+/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/cdefs.h:
+
+/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/_pthreadtypes.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/mbedtls/cipher.h:
+
+/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/machine/types.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/xtensa/esp32s3/include/xtensa/config/core-isa.h:
+
+/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/limits.h:
+
+/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/machine/ieeefp.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/soc/esp32s3/include/soc/gpio_pins.h:
 
@@ -1241,6 +1260,8 @@ config/sdkconfig.h:
 /Users/kagamirudo/esp-idf-v5.5.1/components/esp_rom/esp32s3/include/esp32s3/rom/ets_sys.h:
 
 /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/alloca.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/esp_partition/include/esp_partition.h:
 
 /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/_ansi.h:
 
@@ -1257,10 +1278,6 @@ config/sdkconfig.h:
 /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/lock.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/mbedtls/build_info.h:
-
-/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/reent.h:
-
-/Users/kagamirudo/esp-idf-v5.5.1/components/esp_rom/esp32s3/include/esp32s3/rom/sha.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/mbedtls/ecjpake.h:
 
@@ -1290,20 +1307,30 @@ config/sdkconfig.h:
 
 /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/lib/gcc/xtensa-esp-elf/14.2.0/include/syslimits.h:
 
-/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/port/include/sha1_alt.h:
-
-/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/mbedtls/asn1.h:
-
-/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/cdefs.h:
-
-/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/_pthreadtypes.h:
-
-/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/machine/types.h:
-
 /Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/mbedtls/chacha20.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_struct.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/esp_rom/include/esp_rom_md5.h:
+
+/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/errno.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/esp_rom/esp32s3/include/esp32s3/rom/sha.h:
+
+/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/reent.h:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/xtensa/include/xtensa_config.h:
 
 /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/machine/time.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/log/include/esp_log_color.h:
+
+/Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/unistd.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/spiffs/include/esp_spiffs.h:
+
+/Users/kagamirudo/esp-idf-v5.5.1/components/mbedtls/mbedtls/include/psa/crypto_extra.h:
+
+/Users/kagamirudo/002/main/002.c:
 
 /Users/kagamirudo/esp-idf-v5.5.1/components/hal/include/hal/adc_types.h:

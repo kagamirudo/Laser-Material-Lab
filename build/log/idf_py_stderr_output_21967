@@ -1,0 +1,281 @@
+Command: /Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/python /Users/kagamirudo/esp-idf-v5.5.1/tools/idf_monitor.py -p /dev/cu.usbmodem1301 -b 115200 --toolchain-prefix xtensa-esp32s3-elf- --target esp32s3 --revision 0 /Users/kagamirudo/002/build/002.elf /Users/kagamirudo/002/build/bootloader/bootloader.elf -m '/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/python' '/Users/kagamirudo/esp-idf-v5.5.1/tools/idf.py'
+[0;33m--- esp-idf-monitor 1.8.0 on /dev/cu.usbmodem1301 115200[0m
+[0;33m--- Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H[0m
+[0m--- 0x40041a79: [0;33mets_delay_us[0m[0m in [0;32mROM[0m
+[1;31m--- Error: read failed: [Errno 6] Device not configured[0m
+[0;33m--- Waiting for the device to reconnect[0m[0;33m.[0m[0;33m[0m
+[0m--- 0x4037bfc5: [0;33mpanic_abort[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/panic.c[0m[0m:[1;31m469[0m
+[0m--- 0x4037bf8d: [0;33mesp_system_abort[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/port/esp_system_chip.c[0m[0m:[1;31m87[0m
+[0m--- 0x40384769: [0;33m__assert_func[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/newlib/src/assert.c[0m[0m:[1;31m80[0m
+[0m--- 0x4037cec6: [0;33mspinlock_acquire[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/include/spinlock.h[0m[0m:[1;31m142[0m
+[0m--- (inlined by) [0;33mxPortEnterCriticalTimeout[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m479[0m
+[0m--- 0x4037caac: [0;33mvPortEnterCritical[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/include/freertos/portmacro.h[0m[0m:[1;31m567[0m
+[0m--- (inlined by) [0;33mxQueueSemaphoreTake[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/queue.c[0m[0m:[1;31m1727[0m
+[0m--- 0x4037cb86: [0;33mxQueueTakeMutexRecursive[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/queue.c[0m[0m:[1;31m835[0m
+[0m--- 0x40376865: [0;33mlock_acquire_generic[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/newlib/src/locks.c[0m[0m:[1;31m158[0m
+[0m--- 0x40376945: [0;33m_lock_acquire_recursive[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/newlib/src/locks.c[0m[0m:[1;31m174[0m
+[0m--- 0x40376a0f: [0;33m__retarget_lock_acquire_recursive[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/newlib/src/locks.c[0m[0m:[1;31m333[0m
+[0m--- 0x42087a6f: [0;33m_vfprintf_r[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/vfprintf.c[0m[0m:[1;31m846[0m
+[0m--- 0x42080ba5: [0;33mfprintf[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/fprintf.c[0m[0m:[1;31m54[0m
+[0m--- 0x4200b3c9: [0;33madc_task[0m[0m at [0;32m/Users/kagamirudo/002/main/002.c[0m[0m:[1;31m206[0m
+[0m--- 0x4037cc75: [0;33mvPortTaskWrapper[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m139[0m
+[0m--- 0x4037c114: [0;33mesp_restart_noos[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/port/soc/esp32s3/system_internal.c[0m[0m:[1;31m162[0m
+[0m--- 0x403c8700: [0;33m_stext[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+[0m--- 0x403c8924: [0;33mcall_start_cpu0[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m25[0m
+[0m--- 0x4037bfc5: [0;33mpanic_abort[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/panic.c[0m[0m:[1;31m469[0m
+[0m--- 0x4037bf8d: [0;33mesp_system_abort[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/port/esp_system_chip.c[0m[0m:[1;31m87[0m
+[0m--- 0x40384769: [0;33m__assert_func[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/newlib/src/assert.c[0m[0m:[1;31m80[0m
+[0m--- 0x4037cec6: [0;33mspinlock_acquire[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/include/spinlock.h[0m[0m:[1;31m142[0m
+[0m--- (inlined by) [0;33mxPortEnterCriticalTimeout[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m479[0m
+[0m--- 0x4037caac: [0;33mvPortEnterCritical[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/include/freertos/portmacro.h[0m[0m:[1;31m567[0m
+[0m--- (inlined by) [0;33mxQueueSemaphoreTake[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/queue.c[0m[0m:[1;31m1727[0m
+[0m--- 0x4037cb86: [0;33mxQueueTakeMutexRecursive[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/queue.c[0m[0m:[1;31m835[0m
+[0m--- 0x40376865: [0;33mlock_acquire_generic[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/newlib/src/locks.c[0m[0m:[1;31m158[0m
+[0m--- 0x40376945: [0;33m_lock_acquire_recursive[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/newlib/src/locks.c[0m[0m:[1;31m174[0m
+[0m--- 0x40376a0f: [0;33m__retarget_lock_acquire_recursive[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/newlib/src/locks.c[0m[0m:[1;31m333[0m
+[0m--- 0x42087a6f: [0;33m_vfprintf_r[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/vfprintf.c[0m[0m:[1;31m846[0m
+[0m--- 0x42080ba5: [0;33mfprintf[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/fprintf.c[0m[0m:[1;31m54[0m
+[0m--- 0x4200b3c9: [0;33madc_task[0m[0m at [0;32m/Users/kagamirudo/002/main/002.c[0m[0m:[1;31m206[0m
+[0m--- 0x4037cc75: [0;33mvPortTaskWrapper[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m139[0m
+[0m--- 0x42087bd8: [0;33m_vfprintf_r[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/vfprintf.c[0m[0m:[1;31m932[0m
+[0m--- 0x403c8700: [0;33m_stext[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+[0m--- 0x403c8924: [0;33mcall_start_cpu0[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m25[0m
+[0m--- 0x40374340: [0;33m_UserExceptionVector[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/xtensa/xtensa_vectors.S[0m[0m:[1;31m621[0m
+[0m--- 0x40056f5c: [0;33mmemcpy[0m[0m in [0;32mROM[0m
+[0m--- 0x40056f72: [0;33mmemcpy[0m[0m in [0;32mROM[0m
+[0m--- 0x4037433d: [0;33m_KernelExceptionVector[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+[0m--- 0x4201d889: [0;33mhttpd_resp_send[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_txrx.c[0m[0m:[1;31m301[0m
+[0m--- 0x4200bf1a: [0;33mcsv_download_handler[0m[0m at [0;32m/Users/kagamirudo/002/main/server.c[0m[0m:[1;31m118[0m
+[0m--- 0x4201e02b: [0;33mhttpd_uri[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_uri.c[0m[0m:[1;31m337[0m
+[0m--- 0x4201e8fd: [0;33mhttpd_parse_req[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_parse.c[0m[0m:[1;31m685[0m
+[0m--- 0x4201e9a6: [0;33mhttpd_req_new[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_parse.c[0m[0m:[1;31m821[0m
+[0m--- 0x4201d4dc: [0;33mhttpd_sess_process[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m427[0m
+[0m--- 0x4201c71e: [0;33mhttpd_process_session[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m267[0m
+[0m--- 0x4209216f: [0;33mhttpd_sess_enum[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m50[0m
+[0m--- 0x4201ceda: [0;33mhttpd_server[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m317[0m
+[0m--- 0x4201cf47: [0;33mhttpd_thread[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m339[0m
+[0m--- 0x4037cc75: [0;33mvPortTaskWrapper[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m139[0m
+[0m--- 0x40379d52: [0;33mesp_cpu_wait_for_intr[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/cpu.c[0m[0m:[1;31m64[0m
+[0m--- 0x40375a4c: [0;33mipc_task[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/esp_ipc.c[0m[0m:[1;31m53[0m
+[0m--- 0x40379d4f: [0;33mxt_utils_wait_for_intr[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/xtensa/include/xt_utils.h[0m[0m:[1;31m82[0m
+[0m--- (inlined by) [0;33mesp_cpu_wait_for_intr[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/cpu.c[0m[0m:[1;31m55[0m
+[0m--- 0x42098e3a: [0;33mesp_vApplicationIdleHook[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/freertos_hooks.c[0m[0m:[1;31m58[0m
+[0m--- 0x4037de81: [0;33mprvIdleTask[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m4350[0m
+[0m--- 0x4037cc75: [0;33mvPortTaskWrapper[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m139[0m
+[0m--- 0x4037c114: [0;33mesp_restart_noos[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/port/soc/esp32s3/system_internal.c[0m[0m:[1;31m162[0m
+[0m--- 0x403c8700: [0;33m_stext[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+[0m--- 0x403c8924: [0;33mcall_start_cpu0[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m25[0m
+[0m--- 0x40056f5c: [0;33mmemcpy[0m[0m in [0;32mROM[0m
+[0m--- 0x40056f72: [0;33mmemcpy[0m[0m in [0;32mROM[0m
+[0m--- 0x4201d889: [0;33mhttpd_resp_send[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_txrx.c[0m[0m:[1;31m301[0m
+[0m--- 0x4200bf1a: [0;33mcsv_download_handler[0m[0m at [0;32m/Users/kagamirudo/002/main/server.c[0m[0m:[1;31m118[0m
+[0m--- 0x4201e02b: [0;33mhttpd_uri[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_uri.c[0m[0m:[1;31m337[0m
+[0m--- 0x4201e8fd: [0;33mhttpd_parse_req[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_parse.c[0m[0m:[1;31m685[0m
+[0m--- 0x4201e9a6: [0;33mhttpd_req_new[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_parse.c[0m[0m:[1;31m821[0m
+[0m--- 0x4201d4dc: [0;33mhttpd_sess_process[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m427[0m
+[0m--- 0x4201c71e: [0;33mhttpd_process_session[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m267[0m
+[0m--- 0x4209216f: [0;33mhttpd_sess_enum[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m50[0m
+[0m--- 0x4201ceda: [0;33mhttpd_server[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m317[0m
+[0m--- 0x4201cf47: [0;33mhttpd_thread[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m339[0m
+[0m--- 0x4037cc75: [0;33mvPortTaskWrapper[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m139[0m
+[0m--- 0x4037c114: [0;33mesp_restart_noos[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/port/soc/esp32s3/system_internal.c[0m[0m:[1;31m162[0m
+[0m--- 0x403c8700: [0;33m_stext[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+[0m--- 0x403c8924: [0;33mcall_start_cpu0[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m25[0m
+[0m--- 0x4037bfc5: [0;33mpanic_abort[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/panic.c[0m[0m:[1;31m469[0m
+[0m--- 0x4037bf8d: [0;33mesp_system_abort[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/port/esp_system_chip.c[0m[0m:[1;31m87[0m
+[0m--- 0x40384769: [0;33m__assert_func[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/newlib/src/assert.c[0m[0m:[1;31m80[0m
+[0m--- 0x4037cec6: [0;33mspinlock_acquire[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/include/spinlock.h[0m[0m:[1;31m142[0m
+[0m--- (inlined by) [0;33mxPortEnterCriticalTimeout[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m479[0m
+[0m--- 0x4037caac: [0;33mvPortEnterCritical[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/include/freertos/portmacro.h[0m[0m:[1;31m567[0m
+[0m--- (inlined by) [0;33mxQueueSemaphoreTake[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/queue.c[0m[0m:[1;31m1727[0m
+[0m--- 0x4037cb86: [0;33mxQueueTakeMutexRecursive[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/queue.c[0m[0m:[1;31m835[0m
+[0m--- 0x40376865: [0;33mlock_acquire_generic[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/newlib/src/locks.c[0m[0m:[1;31m158[0m
+[0m--- 0x40376945: [0;33m_lock_acquire_recursive[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/newlib/src/locks.c[0m[0m:[1;31m174[0m
+[0m--- 0x40376a0f: [0;33m__retarget_lock_acquire_recursive[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/newlib/src/locks.c[0m[0m:[1;31m333[0m
+[0m--- 0x42087a6f: [0;33m_vfprintf_r[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/vfprintf.c[0m[0m:[1;31m846[0m
+[0m--- 0x42080ba5: [0;33mfprintf[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/fprintf.c[0m[0m:[1;31m54[0m
+[0m--- 0x4200b3c9: [0;33madc_task[0m[0m at [0;32m/Users/kagamirudo/002/main/002.c[0m[0m:[1;31m206[0m
+[0m--- 0x4037cc75: [0;33mvPortTaskWrapper[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m139[0m
+[0m--- 0x42087c1c: [0;33m_vfprintf_r[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/vfprintf.c[0m[0m:[1;31m945[0m
+[0m--- 0x403c8700: [0;33m_stext[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+[0m--- 0x403c8924: [0;33mcall_start_cpu0[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m25[0m
+[0m--- 0x40056f5c: [0;33mmemcpy[0m[0m in [0;32mROM[0m
+[0m--- 0x40056f72: [0;33mmemcpy[0m[0m in [0;32mROM[0m
+[0m--- 0x4201c713: [0;33mhttpd_process_session[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m265[0m
+[0m--- 0x4209216f: [0;33mhttpd_sess_enum[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m50[0m
+[0m--- 0x4201ceda: [0;33mhttpd_server[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m317[0m
+[0m--- 0x4201cf47: [0;33mhttpd_thread[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m339[0m
+[0m--- 0x4037cc75: [0;33mvPortTaskWrapper[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m139[0m
+[0m--- 0x4037c114: [0;33mesp_restart_noos[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/port/soc/esp32s3/system_internal.c[0m[0m:[1;31m162[0m
+[0m--- 0x403c8700: [0;33m_stext[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+[0m--- 0x403c8924: [0;33mcall_start_cpu0[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m25[0m
+[0m--- 0x40379c6e: [0;33mesp_cpu_compare_and_set[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/cpu.c[0m[0m:[1;31m239[0m
+[0m--- 0x40056f5c: [0;33mmemcpy[0m[0m in [0;32mROM[0m
+[0m--- 0x40056f72: [0;33mmemcpy[0m[0m in [0;32mROM[0m
+[0m--- 0x40379c6b: [0;33mesp_cpu_compare_and_set[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/cpu.c[0m[0m:[1;31m239[0m
+[0m--- 0x4037ce95: [0;33mspinlock_acquire[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/include/spinlock.h[0m[0m:[1;31m132[0m
+[0m--- (inlined by) [0;33mxPortEnterCriticalTimeout[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m479[0m
+[0m--- 0x4037f300: [0;33mvPortEnterCritical[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/include/freertos/portmacro.h[0m[0m:[1;31m567[0m
+[0m--- (inlined by) [0;33mxTaskPriorityDisinherit[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m5148[0m
+[0m--- 0x4037c23b: [0;33mprvCopyDataToQueue[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/queue.c[0m[0m:[1;31m2469[0m
+[0m--- 0x4037c668: [0;33mxQueueGenericSend[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/queue.c[0m[0m:[1;31m964[0m
+[0m--- 0x4200d1fd: [0;33mspiffs_api_unlock[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/spiffs/spiffs_api.c[0m[0m:[1;31m22[0m
+[0m--- 0x4200d4b3: [0;33mspiffs_hydro_read[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/spiffs/spiffs/src/spiffs_hydrogen.c[0m[0m:[1;31m419[0m
+[0m--- 0x4200d9cf: [0;33mSPIFFS_read[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/spiffs/spiffs/src/spiffs_hydrogen.c[0m[0m:[1;31m426[0m
+[0m--- 0x4200ced5: [0;33mvfs_spiffs_read[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/spiffs/esp_spiffs.c[0m[0m:[1;31m573[0m
+[0m--- 0x4200a2be: [0;33mesp_vfs_read[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/vfs/vfs.c[0m[0m:[1;31m1008[0m
+[0m--- 0x420813f7: [0;33m__sread[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/stdio.c[0m[0m:[1;31m47[0m
+[0m--- 0x420811e6: [0;33m__srefill_r[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/refill.c[0m[0m:[1;31m115[0m
+[0m--- 0x42080c0a: [0;33m_fread_r[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/fread.c[0m[0m:[1;31m228[0m
+[0m--- 0x42080c8d: [0;33mfread[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/fread.c[0m[0m:[1;31m266[0m
+[0m--- 0x4200c038: [0;33mcsv_download_handler[0m[0m at [0;32m/Users/kagamirudo/002/main/server.c[0m[0m:[1;31m174[0m
+[0m--- 0x4201e02b: [0;33mhttpd_uri[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_uri.c[0m[0m:[1;31m337[0m
+[0m--- 0x4201e8fd: [0;33mhttpd_parse_req[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_parse.c[0m[0m:[1;31m685[0m
+[0m--- 0x4201e9a6: [0;33mhttpd_req_new[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_parse.c[0m[0m:[1;31m821[0m
+[0m--- 0x4201d4dc: [0;33mhttpd_sess_process[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m427[0m
+[0m--- 0x4201c71e: [0;33mhttpd_process_session[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m267[0m
+[0m--- 0x4209216f: [0;33mhttpd_sess_enum[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m50[0m
+[0m--- 0x4201ceda: [0;33mhttpd_server[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m317[0m
+[0m--- 0x4201cf47: [0;33mhttpd_thread[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m339[0m
+[0m--- 0x4037cc75: [0;33mvPortTaskWrapper[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m139[0m
+[0m--- 0x4037dc4f: [0;33mprvSelectHighestPriorityTaskSMP[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3639[0m
+[0m--- 0x4037dc4c: [0;33mprvSelectHighestPriorityTaskSMP[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3638[0m
+[0m--- 0x4037e5ba: [0;33mvTaskSwitchContext[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3709[0m
+[0m--- 0x4037d104: [0;33m_frxt_dispatch[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/portasm.S[0m[0m:[1;31m451[0m
+[0m--- 0x4037d0fa: [0;33m_frxt_int_exit[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/portasm.S[0m[0m:[1;31m246[0m
+[0m--- 0x4037c114: [0;33mesp_restart_noos[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/port/soc/esp32s3/system_internal.c[0m[0m:[1;31m162[0m
+[0m--- 0x403c8700: [0;33m_stext[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+[0m--- 0x403c8924: [0;33mcall_start_cpu0[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m25[0m
+[1;31m--- Error: read failed: [Errno 6] Device not configured[0m
+[0;33m--- Waiting for the device to reconnect[0m[0;33m.[0m[0;33m[0m
+[0m--- 0x40379c6e: [0;33mesp_cpu_compare_and_set[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/cpu.c[0m[0m:[1;31m239[0m
+[0m--- 0x40056f5c: [0;33mmemcpy[0m[0m in [0;32mROM[0m
+[0m--- 0x40056f72: [0;33mmemcpy[0m[0m in [0;32mROM[0m
+[0m--- 0x40379c6b: [0;33mesp_cpu_compare_and_set[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/cpu.c[0m[0m:[1;31m239[0m
+[0m--- 0x4037ce62: [0;33mspinlock_acquire[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/include/spinlock.h[0m[0m:[1;31m123[0m
+[0m--- (inlined by) [0;33mxPortEnterCriticalTimeout[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m479[0m
+[0m--- 0x4037f300: [0;33mvPortEnterCritical[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/include/freertos/portmacro.h[0m[0m:[1;31m567[0m
+[0m--- (inlined by) [0;33mxTaskPriorityDisinherit[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m5148[0m
+[0m--- 0x4037c23b: [0;33mprvCopyDataToQueue[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/queue.c[0m[0m:[1;31m2469[0m
+[0m--- 0x4037c668: [0;33mxQueueGenericSend[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/queue.c[0m[0m:[1;31m964[0m
+[0m--- 0x4200d1fd: [0;33mspiffs_api_unlock[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/spiffs/spiffs_api.c[0m[0m:[1;31m22[0m
+[0m--- 0x4200d4b3: [0;33mspiffs_hydro_read[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/spiffs/spiffs/src/spiffs_hydrogen.c[0m[0m:[1;31m419[0m
+[0m--- 0x4200d9cf: [0;33mSPIFFS_read[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/spiffs/spiffs/src/spiffs_hydrogen.c[0m[0m:[1;31m426[0m
+[0m--- 0x4200ced5: [0;33mvfs_spiffs_read[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/spiffs/esp_spiffs.c[0m[0m:[1;31m573[0m
+[0m--- 0x4200a2be: [0;33mesp_vfs_read[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/vfs/vfs.c[0m[0m:[1;31m1008[0m
+[0m--- 0x420813f7: [0;33m__sread[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/stdio.c[0m[0m:[1;31m47[0m
+[0m--- 0x420811e6: [0;33m__srefill_r[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/refill.c[0m[0m:[1;31m115[0m
+[0m--- 0x42080c0a: [0;33m_fread_r[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/fread.c[0m[0m:[1;31m228[0m
+[0m--- 0x42080c8d: [0;33mfread[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/fread.c[0m[0m:[1;31m266[0m
+[0m--- 0x4200c038: [0;33mcsv_download_handler[0m[0m at [0;32m/Users/kagamirudo/002/main/server.c[0m[0m:[1;31m174[0m
+[0m--- 0x4201e02b: [0;33mhttpd_uri[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_uri.c[0m[0m:[1;31m337[0m
+[0m--- 0x4201e8fd: [0;33mhttpd_parse_req[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_parse.c[0m[0m:[1;31m685[0m
+[0m--- 0x4201e9a6: [0;33mhttpd_req_new[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_parse.c[0m[0m:[1;31m821[0m
+[0m--- 0x4201d4dc: [0;33mhttpd_sess_process[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m427[0m
+[0m--- 0x4201c71e: [0;33mhttpd_process_session[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m267[0m
+[0m--- 0x4209216f: [0;33mhttpd_sess_enum[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m50[0m
+[0m--- 0x4201ceda: [0;33mhttpd_server[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m317[0m
+[0m--- 0x4201cf47: [0;33mhttpd_thread[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m339[0m
+[0m--- 0x4037cc75: [0;33mvPortTaskWrapper[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m139[0m
+[0m--- 0x4037dc4f: [0;33mprvSelectHighestPriorityTaskSMP[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3639[0m
+[0m--- 0x4037dc4c: [0;33mprvSelectHighestPriorityTaskSMP[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3638[0m
+[0m--- 0x4037e5ba: [0;33mvTaskSwitchContext[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3709[0m
+[0m--- 0x4037d104: [0;33m_frxt_dispatch[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/portasm.S[0m[0m:[1;31m451[0m
+[0m--- 0x4037d0fa: [0;33m_frxt_int_exit[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/portasm.S[0m[0m:[1;31m246[0m
+[0m--- 0x4037c114: [0;33mesp_restart_noos[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/port/soc/esp32s3/system_internal.c[0m[0m:[1;31m162[0m
+[0m--- 0x403c8700: [0;33m_stext[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+[0m--- 0x403c8924: [0;33mcall_start_cpu0[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m25[0m
+[0m--- 0x4037bfc5: [0;33mpanic_abort[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/panic.c[0m[0m:[1;31m469[0m
+[0m--- 0x4037bf8d: [0;33mesp_system_abort[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/port/esp_system_chip.c[0m[0m:[1;31m87[0m
+[0m--- 0x40384769: [0;33m__assert_func[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/newlib/src/assert.c[0m[0m:[1;31m80[0m
+[0m--- 0x40375fb1: [0;33mheap_caps_free[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/heap/heap_caps_base.c[0m[0m:[1;31m80[0m
+[0m--- 0x40384805: [0;33mfree[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/newlib/src/heap.c[0m[0m:[1;31m34[0m
+[0m--- 0x4201d14b: [0;33mhttpd_sess_free_ctx[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m237[0m
+[0m--- 0x4201e923: [0;33mhttpd_req_cleanup[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_parse.c[0m[0m:[1;31m727[0m
+[0m--- 0x4201e9e6: [0;33mhttpd_req_delete[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_parse.c[0m[0m:[1;31m859[0m
+[0m--- 0x4201d4e3: [0;33mhttpd_sess_process[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m431[0m
+[0m--- 0x4201c71e: [0;33mhttpd_process_session[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m267[0m
+[0m--- 0x4209216f: [0;33mhttpd_sess_enum[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m50[0m
+[0m--- 0x4201ceda: [0;33mhttpd_server[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m317[0m
+[0m--- 0x4201cf47: [0;33mhttpd_thread[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m339[0m
+[0m--- 0x4037cc75: [0;33mvPortTaskWrapper[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m139[0m
+[0m--- 0x40379d52: [0;33mesp_cpu_wait_for_intr[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/cpu.c[0m[0m:[1;31m64[0m
+[0m--- 0x403c8700: [0;33m_stext[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+[0m--- 0x403c8924: [0;33mcall_start_cpu0[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m25[0m
+[0m--- 0x40379c5f: [0;33mxt_utils_compare_and_set[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/xtensa/include/xt_utils.h[0m[0m:[1;31m216[0m
+[0m--- (inlined by) [0;33mesp_cpu_compare_and_set[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/cpu.c[0m[0m:[1;31m232[0m
+[0m--- 0x40056f5c: [0;33mmemcpy[0m[0m in [0;32mROM[0m
+[0m--- 0x40056f72: [0;33mmemcpy[0m[0m in [0;32mROM[0m
+[0m--- 0x40379c5c: [0;33mesp_cpu_compare_and_set[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/cpu.c[0m[0m:[1;31m200[0m
+[0m--- 0x4037ce95: [0;33mspinlock_acquire[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/include/spinlock.h[0m[0m:[1;31m132[0m
+[0m--- (inlined by) [0;33mxPortEnterCriticalTimeout[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m479[0m
+[0m--- 0x4037f300: [0;33mvPortEnterCritical[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/include/freertos/portmacro.h[0m[0m:[1;31m567[0m
+[0m--- (inlined by) [0;33mxTaskPriorityDisinherit[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m5148[0m
+[0m--- 0x4037c23b: [0;33mprvCopyDataToQueue[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/queue.c[0m[0m:[1;31m2469[0m
+[0m--- 0x4037c668: [0;33mxQueueGenericSend[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/queue.c[0m[0m:[1;31m964[0m
+[0m--- 0x4200d1fd: [0;33mspiffs_api_unlock[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/spiffs/spiffs_api.c[0m[0m:[1;31m22[0m
+[0m--- 0x4200d4b3: [0;33mspiffs_hydro_read[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/spiffs/spiffs/src/spiffs_hydrogen.c[0m[0m:[1;31m419[0m
+[0m--- 0x4200d9cf: [0;33mSPIFFS_read[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/spiffs/spiffs/src/spiffs_hydrogen.c[0m[0m:[1;31m426[0m
+[0m--- 0x4200ced5: [0;33mvfs_spiffs_read[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/spiffs/esp_spiffs.c[0m[0m:[1;31m573[0m
+[0m--- 0x4200a2be: [0;33mesp_vfs_read[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/vfs/vfs.c[0m[0m:[1;31m1008[0m
+[0m--- 0x420813f7: [0;33m__sread[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/stdio.c[0m[0m:[1;31m47[0m
+[0m--- 0x420811e6: [0;33m__srefill_r[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/refill.c[0m[0m:[1;31m115[0m
+[0m--- 0x42080c0a: [0;33m_fread_r[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/fread.c[0m[0m:[1;31m228[0m
+[0m--- 0x42080c8d: [0;33mfread[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/src/newlib/newlib/libc/stdio/fread.c[0m[0m:[1;31m266[0m
+[0m--- 0x4200c038: [0;33mcsv_download_handler[0m[0m at [0;32m/Users/kagamirudo/002/main/server.c[0m[0m:[1;31m174[0m
+[0m--- 0x4201e02b: [0;33mhttpd_uri[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_uri.c[0m[0m:[1;31m337[0m
+[0m--- 0x4201e8fd: [0;33mhttpd_parse_req[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_parse.c[0m[0m:[1;31m685[0m
+[0m--- 0x4201e9a6: [0;33mhttpd_req_new[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_parse.c[0m[0m:[1;31m821[0m
+[0m--- 0x4201d4dc: [0;33mhttpd_sess_process[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m427[0m
+[0m--- 0x4201c71e: [0;33mhttpd_process_session[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m267[0m
+[0m--- 0x4209216f: [0;33mhttpd_sess_enum[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m50[0m
+[0m--- 0x4201ceda: [0;33mhttpd_server[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m317[0m
+[0m--- 0x4201cf47: [0;33mhttpd_thread[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m339[0m
+[0m--- 0x4037cc75: [0;33mvPortTaskWrapper[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m139[0m
+[0m--- 0x4037dc4f: [0;33mprvSelectHighestPriorityTaskSMP[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3639[0m
+[0m--- 0x4037dc4c: [0;33mprvSelectHighestPriorityTaskSMP[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3638[0m
+[0m--- 0x4037e5ba: [0;33mvTaskSwitchContext[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3709[0m
+[0m--- 0x4037d104: [0;33m_frxt_dispatch[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/portasm.S[0m[0m:[1;31m451[0m
+[0m--- 0x4037d0fa: [0;33m_frxt_int_exit[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/portasm.S[0m[0m:[1;31m246[0m
+[0m--- 0x4037c114: [0;33mesp_restart_noos[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/port/soc/esp32s3/system_internal.c[0m[0m:[1;31m162[0m
+[0m--- 0x403c8700: [0;33m_stext[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+[0m--- 0x403c8924: [0;33mcall_start_cpu0[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m25[0m
+[0m--- 0x4038272a: [0;33mremove_free_block[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/heap/tlsf/tlsf_control_functions.h[0m[0m:[1;31m374[0m
+[0m--- (inlined by) [0;33mblock_locate_free[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/heap/tlsf/tlsf_control_functions.h[0m[0m:[1;31m619[0m
+[0m--- (inlined by) [0;33mtlsf_malloc[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/heap/tlsf/tlsf.c[0m[0m:[1;31m444[0m
+[0m--- 0x400556d5: [0;33mstrlen[0m[0m in [0;32mROM[0m
+[0m--- 0x400556e5: [0;33mstrlen[0m[0m in [0;32mROM[0m
+[0m--- 0x40382727: [0;33mremove_free_block[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/heap/tlsf/tlsf_control_functions.h[0m[0m:[1;31m373[0m
+[0m--- (inlined by) [0;33mblock_locate_free[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/heap/tlsf/tlsf_control_functions.h[0m[0m:[1;31m619[0m
+[0m--- (inlined by) [0;33mtlsf_malloc[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/heap/tlsf/tlsf.c[0m[0m:[1;31m444[0m
+[0m--- 0x40382101: [0;33mmulti_heap_malloc_impl[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/heap/multi_heap.c[0m[0m:[1;31m216[0m
+[0m--- 0x40375f5d: [0;33maligned_or_unaligned_alloc[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/heap/heap_caps_base.c[0m[0m:[1;31m93[0m
+[0m--- 0x40376065: [0;33mheap_caps_aligned_alloc_base[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/heap/heap_caps_base.c[0m[0m:[1;31m175[0m
+[0m--- 0x40376095: [0;33mheap_caps_malloc_base[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/heap/heap_caps_base.c[0m[0m:[1;31m202[0m
+[0m--- 0x40375c80: [0;33mheap_caps_malloc[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/heap/heap_caps.c[0m[0m:[1;31m84[0m
+[0m--- 0x4037d279: [0;33mpvPortMalloc[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/heap_idf.c[0m[0m:[1;31m55[0m
+[0m--- 0x4037c536: [0;33mxQueueGenericCreate[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/queue.c[0m[0m:[1;31m545[0m
+[0m--- 0x4206583b: [0;33msys_thread_sem_init[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/lwip/port/freertos/sys_arch.c[0m[0m:[1;31m514[0m
+[0m--- 0x42065889: [0;33msys_thread_sem_get[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/lwip/port/freertos/sys_arch.c[0m[0m:[1;31m482[0m
+[0m--- 0x4206668b: [0;33mnetconn_apimsg[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/lwip/lwip/src/api/api_lib.c[0m[0m:[1;31m128[0m
+[0m--- 0x420669a7: [0;33mnetconn_write_vectors_partly[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/lwip/lwip/src/api/api_lib.c[0m[0m:[1;31m1067[0m
+[0m--- 0x42066a0d: [0;33mnetconn_write_partly[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/lwip/lwip/src/api/api_lib.c[0m[0m:[1;31m983[0m
+[0m--- 0x4205597f: [0;33mlwip_send[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/lwip/lwip/src/api/sockets.c[0m[0m:[1;31m1457[0m
+[0m--- 0x4201dd48: [0;33msend[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/lwip/include/lwip/sockets.h[0m[0m:[1;31m64[0m
+[0m--- (inlined by) [0;33mhttpd_default_send[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_txrx.c[0m[0m:[1;31m751[0m
+[0m--- 0x420921c5: [0;33mhttpd_send_all[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_txrx.c[0m[0m:[1;31m73[0m
+[0m--- 0x4201d803: [0;33mhttpd_resp_send[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_txrx.c[0m[0m:[1;31m274[0m
+[0m--- 0x4200bf1a: [0;33mcsv_download_handler[0m[0m at [0;32m/Users/kagamirudo/002/main/server.c[0m[0m:[1;31m118[0m
+[0m--- 0x4201e02b: [0;33mhttpd_uri[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_uri.c[0m[0m:[1;31m337[0m
+[0m--- 0x4201e8fd: [0;33mhttpd_parse_req[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_parse.c[0m[0m:[1;31m685[0m
+[0m--- 0x4201e9a6: [0;33mhttpd_req_new[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_parse.c[0m[0m:[1;31m821[0m
+[0m--- 0x4201d4dc: [0;33mhttpd_sess_process[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m427[0m
+[0m--- 0x4201c71e: [0;33mhttpd_process_session[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m267[0m
+[0m--- 0x4209216f: [0;33mhttpd_sess_enum[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m50[0m
+[0m--- 0x4201ceda: [0;33mhttpd_server[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m317[0m
+[0m--- 0x4201cf47: [0;33mhttpd_thread[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m339[0m
+[0m--- 0x4037cc75: [0;33mvPortTaskWrapper[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m139[0m
+[0m--- 0x4037c114: [0;33mesp_restart_noos[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/port/soc/esp32s3/system_internal.c[0m[0m:[1;31m162[0m
+[0m--- 0x403c8700: [0;33m_stext[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+[0m--- 0x403c8924: [0;33mcall_start_cpu0[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m25[0m
+[0m

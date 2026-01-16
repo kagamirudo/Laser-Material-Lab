@@ -14,6 +14,7 @@ esp-idf/main/CMakeFiles/__idf_main.dir/002.c.obj
  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/alloca.h
  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/assert.h
  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/dirent.h
+ /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/errno.h
  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/inttypes.h
  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/limits.h
  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/machine/_default_types.h
@@ -44,6 +45,7 @@ esp-idf/main/CMakeFiles/__idf_main.dir/002.c.obj
  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/cdefs.h
  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/config.h
  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/dirent.h
+ /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/errno.h
  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/features.h
  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/lock.h
  /Users/kagamirudo/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/xtensa-esp-elf/include/sys/reent.h
@@ -80,6 +82,9 @@ esp-idf/main/CMakeFiles/__idf_main.dir/002.c.obj
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_common/include/esp_types.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_gpio/include/driver/gpio.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_gpio/include/driver/gpio_etm.h
+ /Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_gptimer/include/driver/gptimer.h
+ /Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_gptimer/include/driver/gptimer_etm.h
+ /Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_gptimer/include/driver/gptimer_types.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_ledc/include/driver/ledc.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_event/include/esp_event.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_event/include/esp_event_base.h
@@ -104,6 +109,8 @@ esp-idf/main/CMakeFiles/__idf_main.dir/002.c.obj
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_rom/include/esp_rom_sys.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/include/esp_private/crosscore_int.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/include/esp_system.h
+ /Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/include/esp_task_wdt.h
+ /Users/kagamirudo/esp-idf-v5.5.1/components/esp_timer/include/esp_timer.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_wifi/include/esp_wifi.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_wifi/include/esp_wifi_crypto_types.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/esp_wifi/include/esp_wifi_default.h
@@ -133,6 +140,7 @@ esp-idf/main/CMakeFiles/__idf_main.dir/002.c.obj
  /Users/kagamirudo/esp-idf-v5.5.1/components/hal/include/hal/gpio_types.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/hal/include/hal/ledc_types.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/hal/include/hal/sha_types.h
+ /Users/kagamirudo/esp-idf-v5.5.1/components/hal/include/hal/timer_types.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/heap/include/esp_heap_caps.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/heap/include/multi_heap.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/http_parser/http_parser.h
@@ -225,6 +233,7 @@ esp-idf/main/CMakeFiles/__idf_main.dir/002.c.obj
  /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/esp_newlib.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/stdio.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/sys/dirent.h
+ /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/sys/errno.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/sys/lock.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/sys/poll.h
  /Users/kagamirudo/esp-idf-v5.5.1/components/newlib/platform_include/sys/reent.h

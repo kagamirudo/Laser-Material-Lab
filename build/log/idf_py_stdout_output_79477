@@ -1,0 +1,417 @@
+Command: /Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/python /Users/kagamirudo/esp-idf-v5.5.1/tools/idf_monitor.py -p /dev/cu.usbmodem101 -b 115200 --toolchain-prefix xtensa-esp32s3-elf- --target esp32s3 --revision 0 /Users/kagamirudo/002/build/002.elf /Users/kagamirudo/002/build/bootloader/bootloader.elf -m '/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/python' '/Users/kagamirudo/esp-idf-v5.5.1/tools/idf.py'
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x40379d52
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x158c
+load:0x403c8700,len:0xd24
+load:0x403cb700,len:0x2f34
+entry 0x403c8924
+[0;32mI (24) boot: ESP-IDF v5.5.1 2nd stage bootloader[0m
+[0;32mI (24) boot: compile time Jan  8 2026 13:40:34[0m
+[0;32mI (25) boot: Multicore bootloader[0m
+[0;32mI (25) boot: chip revision: v0.2[0m
+[0;32mI (27) boot: efuse block revision: v1.3[0m
+[0;32mI (31) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (35) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (39) boot.esp32s3: SPI Flash Size : 16MB[0m
+[0;32mI (43) boot: Enabling RNG early entropy source...[0m
+[0;32mI (47) boot: Partition Table:[0m
+[0;32mI (50) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (56) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (62) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (69) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (75) boot:  3 spiffs           Unknown data     01 82 00110000 00100000[0m
+[0;32mI (82) boot: End of partition table[0m
+[0;32mI (85) esp_image: segment 0: paddr=00010020 vaddr=3c0a0020 size=21178h (135544) map[0m
+[0;32mI (117) esp_image: segment 1: paddr=000311a0 vaddr=3fc9ab00 size=04b4ch ( 19276) load[0m
+[0;32mI (121) esp_image: segment 2: paddr=00035cf4 vaddr=40374000 size=0a324h ( 41764) load[0m
+[0;32mI (130) esp_image: segment 3: paddr=00040020 vaddr=42000020 size=9a334h (631604) map[0m
+[0;32mI (242) esp_image: segment 4: paddr=000da35c vaddr=4037e324 size=0c6ech ( 50924) load[0m
+[0;32mI (254) esp_image: segment 5: paddr=000e6a50 vaddr=50000000 size=00020h (    32) load[0m
+[0;32mI (263) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (263) boot: Disabling RNG early entropy source...[0m
+[0;32mI (273) cpu_start: Multicore app[0m
+[0;32mI (282) cpu_start: Pro cpu start user code[0m
+[0;32mI (283) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (283) app_init: Application information:[0m
+[0;32mI (283) app_init: Project name:     002[0m
+[0;32mI (286) app_init: App version:      1[0m
+[0;32mI (290) app_init: Compile time:     Jan  8 2026 13:41:39[0m
+[0;32mI (295) app_init: ELF file SHA256:  536348356...[0m
+[0;32mI (299) app_init: ESP-IDF:          v5.5.1[0m
+[0;32mI (303) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (307) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (311) efuse_init: Chip rev:         v0.2[0m
+[0;32mI (314) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (321) heap_init: At 3FCA3440 len 000462D0 (280 KiB): RAM[0m
+[0;32mI (326) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (331) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (336) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (343) spi_flash: detected chip: generic[0m
+[0;32mI (345) spi_flash: flash io: dio[0m
+[0;32mI (349) sleep_gpio: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (355) sleep_gpio: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (362) main_task: Started on CPU0[0m
+[0;32mI (372) main_task: Calling app_main()[0m
+[0;32mI (372) LASER_ADC: Laser ADC with Web Interface[0m
+[0;32mI (452) LASER_ADC: SPIFFS initialized[0m
+[0;32mI (452) LASER_ADC: Laser PWM set full on @ GPIO5[0m
+[0;32mI (452) LASER_ADC: ADC initialized on GPIO4 (unit 0, channel 3)[0m
+[0;32mI (562) LASER_ADC: CSV logging started: /spiffs/adc_log_19700101_000725.csv[0m
+[0;32mI (562) pp: pp rom version: e7ae62f[0m
+[0;32mI (562) net80211: net80211 rom version: e7ae62f[0m
+[0;32mI (572) wifi:wifi driver task: 3fceec80, prio:23, stack:6656, core=0[0m
+[0;32mI (582) wifi:wifi firmware version: 14da9b7[0m
+[0;32mI (582) wifi:wifi certification version: v7.0[0m
+[0;32mI (582) wifi:config NVS flash: enabled[0m
+[0;32mI (582) wifi:config nano formatting: disabled[0m
+[0;32mI (592) wifi:Init data frame dynamic rx buffer num: 32[0m
+[0;32mI (592) wifi:Init static rx mgmt buffer num: 5[0m
+[0;32mI (602) wifi:Init management short buffer num: 32[0m
+[0;32mI (602) wifi:Init dynamic tx buffer num: 32[0m
+[0;32mI (612) wifi:Init static tx FG buffer num: 2[0m
+[0;32mI (612) wifi:Init static rx buffer size: 1600[0m
+[0;32mI (612) wifi:Init static rx buffer num: 10[0m
+[0;32mI (622) wifi:Init dynamic rx buffer num: 32[0m
+[0;32mI (622) wifi_init: rx ba win: 6[0m
+[0;32mI (622) wifi_init: accept mbox: 6[0m
+[0;32mI (632) wifi_init: tcpip mbox: 32[0m
+[0;32mI (632) wifi_init: udp mbox: 6[0m
+[0;32mI (632) wifi_init: tcp mbox: 6[0m
+[0;32mI (642) wifi_init: tcp tx win: 5760[0m
+[0;32mI (642) wifi_init: tcp rx win: 5760[0m
+[0;32mI (642) wifi_init: tcp mss: 1440[0m
+[0;32mI (652) wifi_init: WiFi IRAM OP enabled[0m
+[0;32mI (652) wifi_init: WiFi RX IRAM OP enabled[0m
+[0;32mI (652) phy_init: phy_version 701,f4f1da3a,Mar  3 2025,15:50:10[0m
+[0;32mI (702) wifi:mode : sta (10:b4:1d:eb:16:ec)[0m
+[0;32mI (702) wifi:enable tsf[0m
+[0;32mI (702) WIFI: WiFi connecting...[0m
+[0;32mI (702) WIFI: WiFi station initialized. Connecting to: Milu[0m
+[0;32mI (712) wifi:new:<10,0>, old:<1,0>, ap:<255,255>, sta:<10,0>, prof:1, snd_ch_cfg:0x0[0m
+[0;32mI (712) wifi:state: init -> auth (0xb0)[0m
+[0;32mI (732) wifi:state: auth -> assoc (0x0)[0m
+[0;32mI (782) wifi:state: assoc -> run (0x10)[0m
+[0;32mI (882) wifi:connected with Milu, aid = 4, channel 10, BW20, bssid = 4c:12:e8:bd:7d:28[0m
+[0;32mI (882) wifi:security: WPA2-PSK, phy: bgn, rssi: -69[0m
+[0;32mI (892) wifi:pm start, type: 1[0m
+
+[0;32mI (892) wifi:dp: 1, bi: 102400, li: 3, scale listen interval from 307200 us to 307200 us[0m
+[0;32mI (902) wifi:set rx beacon pti, rx_bcn_pti: 0, bcn_timeout: 25000, mt_pti: 0, mt_time: 10000[0m
+[0;32mI (902) wifi:AP's beacon interval = 102400 us, DTIM period = 1[0m
+[0;32mI (2212) esp_netif_handlers: sta ip: 192.168.1.18, mask: 255.255.255.0, gw: 192.168.1.1[0m
+[0;32mI (2212) WIFI: Got IP:192.168.1.18[0m
+[0;32mI (2212) WIFI: Connected to WiFi![0m
+[0;32mI (3212) LASER_ADC: Web server started (STA). Connected to: Milu[0m
+[0;32mI (3212) LASER_ADC: IP address: 192.168.1.18[0m
+[0;32mI (3582) wifi:<ba-add>idx:0 (ifx:0, 4c:12:e8:bd:7d:28), tid:0, ssn:5, winSize:64[0m
+[0;33mW (6542) httpd_txrx: httpd_sock_err: error in recv : 104[0m
+[0;33mW (6562) httpd_txrx: httpd_sock_err: error in recv : 104[0m
+[0;33mW (6582) httpd_txrx: httpd_sock_err: error in recv : 104[0m
+[0;33mW (6612) httpd_txrx: httpd_sock_err: error in recv : 104[0m
+[0;33mW (6702) httpd_txrx: httpd_sock_err: error in recv : 104[0m
+[0;33mW (6702) httpd_txrx: httpd_sock_err: error in recv : 104[0m
+[0;33mW (6702) httpd_txrx: httpd_sock_err: error in recv : 104[0m
+[0;33mW (756252) httpd_txrx: httpd_sock_err: error in send : 104[0m
+[0;33mW (756692) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (757102) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (757682) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (758332) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (759022) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (759372) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (759922) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (760592) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (761132) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (761842) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (762432) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (762862) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (763312) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (763842) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (764262) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (764702) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (765172) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (765222) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (765852) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (766302) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (766702) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (767152) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (767712) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (768152) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (768632) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (769062) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (769522) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (770112) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (770542) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (770972) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (771522) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (771972) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (772382) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (772862) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (773282) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (773662) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (774132) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (774712) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (775312) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (775932) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (776442) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (776702) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (777352) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (777812) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (778332) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (778522) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (779172) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (779742) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (780172) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (780582) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (780972) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (781382) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (781812) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (782282) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (782762) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (782932) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (783372) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (783812) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (784362) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (784852) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (785242) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (785682) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (786152) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (786732) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (787172) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (787582) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (788002) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (788472) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (788942) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (789642) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (790132) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (790572) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (790982) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (791552) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (791822) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (792402) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (792812) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (792892) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (793482) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (794042) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (794492) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (794932) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (795242) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (795782) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (796232) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (796692) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (797142) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (797582) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (797982) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (798402) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (798812) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (799252) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (799692) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (800262) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (800822) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (801312) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (801562) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (802102) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (802882) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (803512) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (804022) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (804582) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (805402) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (806132) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (806682) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (807252) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (807672) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (808102) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (808812) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (809472) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (809962) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (810522) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (811212) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (811752) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (812462) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (813032) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (813602) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (813642) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (813872) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (814052) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (814612) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (815042) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (815452) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (816062) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (816492) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (817072) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (817512) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (818042) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (818472) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (818952) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (819522) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (819562) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (820022) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (820712) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (821152) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (821712) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (822152) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (822562) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (822762) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (823182) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (823592) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (824002) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (824562) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (825172) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (825562) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (826262) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (826672) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (827362) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (827782) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (828192) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (828572) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (829152) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (829842) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (830572) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (831012) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (831422) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (831862) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (832482) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (832922) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (833462) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (834142) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (834592) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (834952) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (835232) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (835662) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (836372) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (836922) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (837332) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (837772) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (838052) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (838652) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (839432) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (840112) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (840392) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (840972) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (841372) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (841892) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (842332) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (842772) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (843312) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (843742) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (844322) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (844782) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (845232) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (845602) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (846082) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (846292) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (846692) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (847282) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (847702) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (848112) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (848542) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (849112) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (849282) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (849992) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (850602) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (850872) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (851372) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (852082) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (852832) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (853532) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (854182) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (854972) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (855692) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (856232) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (856652) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (857212) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (857912) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (858572) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (859072) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (859632) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (860302) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (861002) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (861542) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (862282) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (862852) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (863402) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (863612) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (864342) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (865012) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (865442) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (866062) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (866512) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (867062) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (867642) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (868192) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (868592) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (869032) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (869582) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (870102) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (870642) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (871072) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (871472) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (871892) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (872422) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (872982) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (873692) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (874102) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (874872) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (875422) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (876052) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (876432) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (877022) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (877532) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (878022) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (878652) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (879162) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (879682) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (879962) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (880552) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (881112) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (881682) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (882372) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (882792) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (883122) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (883402) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (883792) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (884492) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (885142) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (885502) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (885952) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (886232) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (887042) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (887822) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (888502) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (889112) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (889722) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (890262) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (890522) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (891262) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (891672) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (892292) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (892712) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (893152) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (893682) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (894252) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (894662) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (895212) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (895582) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (895952) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (896492) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (897182) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (897802) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (898052) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (898502) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (899032) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (899692) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (900342) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (900932) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (901452) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (902062) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (902662) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (903212) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (903762) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (904412) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (905052) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (905582) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (906122) httpd_txrx: httpd_sock_err: error in send : 128[0m
+[0;33mW (906802) httpd_txrx: httpd_sock_err: error in send : 128[0m

@@ -1,0 +1,26 @@
+Command: /Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/python /Users/kagamirudo/esp-idf-v5.5.1/tools/idf_monitor.py -p /dev/cu.usbmodem101 -b 115200 --toolchain-prefix xtensa-esp32s3-elf- --target esp32s3 --revision 0 /Users/kagamirudo/002/build/002.elf /Users/kagamirudo/002/build/bootloader/bootloader.elf -m '/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/python' '/Users/kagamirudo/esp-idf-v5.5.1/tools/idf.py'
+[0;33m--- esp-idf-monitor 1.8.0 on /dev/cu.usbmodem101 115200[0m
+[0;33m--- Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H[0m
+[0m--- 0x42007497: [0;33muart_ll_get_txfifo_len[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/hal/esp32s3/include/hal/uart_ll.h[0m[0m:[1;31m422[0m
+[0m--- (inlined by) [0;33muart_tx_char[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_driver_uart/src/uart_vfs.c[0m[0m:[1;31m190[0m
+[0m--- 0x403c8700: [0;33m_stext[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+[0m--- 0x403c8924: [0;33mcall_start_cpu0[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m25[0m
+[0m--- 0x40377be2: [0;33mesp_crosscore_isr[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/crosscore_int.c[0m[0m:[1;31m74[0m
+[0m--- 0x4037706d: [0;33m_xt_lowint1[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/xtensa/xtensa_vectors.S[0m[0m:[1;31m1240[0m
+[0m--- 0x4200b4f7: [0;33madc_task[0m[0m at [0;32m/Users/kagamirudo/002/main/002.c[0m[0m:[1;31m288[0m
+[0m--- 0x4037cc75: [0;33mvPortTaskWrapper[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m139[0m
+[0m--- 0x40377be2: [0;33mesp_crosscore_isr[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/crosscore_int.c[0m[0m:[1;31m74[0m
+[0m--- 0x4037706d: [0;33m_xt_lowint1[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/xtensa/xtensa_vectors.S[0m[0m:[1;31m1240[0m
+[0m--- 0x4200b4f7: [0;33madc_task[0m[0m at [0;32m/Users/kagamirudo/002/main/002.c[0m[0m:[1;31m288[0m
+[0m--- 0x4037cc75: [0;33mvPortTaskWrapper[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m139[0m
+[0m--- 0x40377be2: [0;33mesp_crosscore_isr[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/crosscore_int.c[0m[0m:[1;31m74[0m
+[0m--- 0x4037706d: [0;33m_xt_lowint1[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/xtensa/xtensa_vectors.S[0m[0m:[1;31m1240[0m
+[0m--- 0x400559dd: [0;33m_xtos_set_intlevel[0m[0m in [0;32mROM[0m
+[0m--- 0x4037cff2: [0;33mvPortClearInterruptMaskFromISR[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/include/freertos/portmacro.h[0m[0m:[1;31m560[0m
+[0m--- (inlined by) [0;33mvPortExitCritical[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m514[0m
+[0m--- 0x40377c2a: [0;33mesp_crosscore_int_send[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/crosscore_int.c[0m[0m:[1;31m118[0m
+[0m--- 0x40377c51: [0;33mesp_crosscore_int_send_yield[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_system/crosscore_int.c[0m[0m:[1;31m125[0m
+[0m--- 0x4037eff2: [0;33mvTaskDelay[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m1611[0m
+[0m--- 0x4200b4f7: [0;33madc_task[0m[0m at [0;32m/Users/kagamirudo/002/main/002.c[0m[0m:[1;31m288[0m
+[0m--- 0x4037cc75: [0;33mvPortTaskWrapper[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m139[0m
+[0m

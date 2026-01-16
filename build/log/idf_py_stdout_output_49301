@@ -1,0 +1,189 @@
+Command: /Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/python /Users/kagamirudo/esp-idf-v5.5.1/tools/idf_monitor.py -p /dev/cu.usbmodem101 -b 115200 --toolchain-prefix xtensa-esp32s3-elf- --target esp32s3 --revision 0 /Users/kagamirudo/002/build/002.elf /Users/kagamirudo/002/build/bootloader/bootloader.elf -m '/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/python' '/Users/kagamirudo/esp-idf-v5.5.1/tools/idf.py'
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x0 (DOWNLOAD(USB/UART0))
+Saved PC:0x40041a76
+waiting for download
+[0;32mI (509) LASER_ADC: RTOS architecture initialized: hardware timer + queue-based processing[0m
+[0;32mI (519) pp: pp rom version: e7ae62f[0m
+[0;32mI (519) net80211: net80211 rom version: e7ae62f[0m
+[0;32mI (539) wifi:wifi driver task: 3fceec64, prio:23, stack:6656, core=0[0m
+[0;32mI (559) wifi:wifi firmware version: 14da9b7[0m
+[0;32mI (559) wifi:wifi certification version: v7.0[0m
+[0;32mI (559) wifi:config NVS flash: enabled[0m
+[0;32mI (559) wifi:config nano formatting: disabled[0m
+[0;32mI (559) wifi:Init data frame dynamic rx buffer num: 32[0m
+[0;32mI (569) wifi:Init static rx mgmt buffer num: 5[0m
+[0;32mI (569) wifi:Init management short buffer num: 32[0m
+[0;32mI (579) wifi:Init dynamic tx buffer num: 32[0m
+[0;32mI (579) wifi:Init static tx FG buffer num: 2[0m
+[0;32mI (579) wifi:Init static rx buffer size: 1600[0m
+[0;32mI (589) wifi:Init static rx buffer num: 10[0m
+[0;32mI (589) wifi:Init dynamic rx buffer num: 32[0m
+[0;32mI (599) wifi_init: rx ba win: 6[0m
+[0;32mI (599) wifi_init: accept mbox: 6[0m
+[0;32mI (599) wifi_init: tcpip mbox: 32[0m
+[0;32mI (599) wifi_init: udp mbox: 6[0m
+[0;32mI (609) wifi_init: tcp mbox: 6[0m
+[0;32mI (609) wifi_init: tcp tx win: 5760[0m
+[0;32mI (609) wifi_init: tcp rx win: 5760[0m
+[0;32mI (619) wifi_init: tcp mss: 1440[0m
+[0;32mI (619) wifi_init: WiFi IRAM OP enabled[0m
+[0;32mI (619) wifi_init: WiFi RX IRAM OP enabled[0m
+[0;32mI (629) phy_init: phy_version 701,f4f1da3a,Mar  3 2025,15:50:10[0m
+[0;32mI (689) wifi:mode : softAP (10:b4:1d:eb:16:ed)[0m
+[0;32mI (699) wifi:Total power save buffer number: 16[0m
+[0;32mI (699) wifi:Init max length of beacon: 752/752[0m
+[0;32mI (699) wifi:Init max length of beacon: 752/752[0m
+[0;32mI (699) WIFI: WiFi AP initialized. SSID:LASER-LAB password:12345678 channel:1[0m
+[0;32mI (699) esp_netif_lwip: DHCP server started on interface WIFI_AP_DEF with IP: 192.168.4.1[0m
+[0;32mI (719) WIFI: WiFi AP started[0m
+[0;32mI (1719) LASER_ADC: Web server started (AP). SSID: LASER-LAB Password: 12345678[0m
+[0;32mI (1719) LASER_ADC: IP address: 192.168.4.1[0m
+[0;32mI (130979) wifi:new:<1,0>, old:<1,1>, ap:<1,1>, sta:<255,255>, prof:1, snd_ch_cfg:0x0[0m
+[0;32mI (130979) wifi:station: 2e:13:5d:c3:e4:e8 join, AID=1, bgn, 20[0m
+[0;32mI (131089) WIFI: Station connected to AP[0m
+[0;32mI (131339) wifi:<ba-add>idx:2 (ifx:1, 2e:13:5d:c3:e4:e8), tid:0, ssn:0, winSize:64[0m
+[0;32mI (131409) esp_netif_lwip: DHCP server assigned IP to a client, IP is: 192.168.4.2[0m
+[0;32mI (132909) wifi:<ba-add>idx:3 (ifx:1, 2e:13:5d:c3:e4:e8), tid:6, ssn:2, winSize:64[0m
+[0;32mI (164919) LASER_ADC: CSV logging started: /spiffs/adc_log_19700101_000244.csv[0m
+[0;32mI (178589) LASER_ADC: CSV logging stopped manually. Total samples: 48227[0m
+Guru Meditation Error: Core  / panic'ed (Cache error). 
+MMU entry fault error
+
+Core  0 register dump:
+PC      : 0x4037dc55  PS      : 0x00060034  A0      : 0x8037e6c9  A1      : 0x3fca84b0  
+A2      : 0xa5a5a5a5  A3      : 0xa5a5a5a5  A4      : 0x3fc9fcfc  A5      : 0x00060023  
+A6      : 0x00000001  A7      : 0x00000000  A8      : 0x00000000  A9      : 0x00000005  
+A10     : 0x3fcbee94  A11     : 0x310a3334  A12     : 0x00000000  A13     : 0x3fc9fb5c  
+A14     : 0x310a3334  A15     : 0x00000000  SAR     : 0x00000004  EXCCAUSE: 0x00000007  
+EXCVADDR: 0x00000000  LBEG    : 0x00000000  LEND    : 0x00000000  LCOUNT  : 0x00000000  
+
+
+Backtrace: 0x4037dc52:0x3fca84b0 0x4037e6c6:0x3fca84d0 0x4037d210:0x3fca84f0 0x4037d206:0x00060c23 |<-CORRUPTED
+
+
+Core  1 register dump:
+PC      : 0x4037c32f  PS      : 0x00060d34  A0      : 0x8037c777  A1      : 0x3fcbea00  
+A2      : 0x3fcea2b0  A3      : 0x00000000  A4      : 0x00000000  A5      : 0x00060d23  
+A6      : 0x3533352c  A7      : 0x0000abab  A8      : 0x3fc9fcf8  A9      : 0x00060d20  
+A10     : 0x00000004  A11     : 0x00000000  A12     : 0xb33fffff  A13     : 0x3fcbea04  
+A14     : 0x000000fc  A15     : 0x00000000  SAR     : 0x00000008  EXCCAUSE: 0x00000007  
+EXCVADDR: 0x00000000  LBEG    : 0x40056fc5  LEND    : 0x40056fe7  LCOUNT  : 0x00000000  
+
+
+Backtrace: 0x4037c32c:0x3fcbea00 0x4037c774:0x3fcbea20 0x4200d565:0x3fcbea60 0x4200d81b:0x3fcbea80 0x4200dd37:0x3fcbeab0 0x4200d23d:0x3fc
+bead0 0x4200a36e:0x3fcbeaf0 0x42081abb:0x3fcbeb10 0x420818aa:0x3
+fcbeb30 0x420812ce:0x3fcbeb50 0x42081351:0x3fcbeb80 0x4200c3a0:0
+x3fcbeba0 0x4201e6db:0x3fcbfcc0 0x4201efad:0x3fcbfd00 0x4201f056
+:0x3fcbfd90 0x4201db8c:0x3fcbfdb0 0x4201cdce:0x3fcbfdd0 0x420928
+c3:0x3fcbfdf0 0x4201d58a:0x3fcbfe10 0x4201d5f7:0x3fcbfe60 0x4037
+cd81:0x3fcbfe80
+
+
+
+
+ELF file SHA256: ebe7e4dfc
+
+Rebooting...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037c220
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x158c
+load:0x403c8700,len:0xd24
+load:0x403cb700,len:0x2f34
+entry 0x403c8924
+[0;32mI (24) boot: ESP-IDF v5.5.1 2nd stage bootloader[0m
+[0;32mI (24) boot: compile time Jan  8 2026 13:40:34[0m
+[0;32mI (24) boot: Multicore bootloader[0m
+[0;32mI (24) boot: chip revision: v0.2[0m
+[0;32mI (27) boot: efuse block revision: v1.3[0m
+[0;32mI (31) boot.esp32s3: Boot SPI Speed : 80MHz[0m
+[0;32mI (34) boot.esp32s3: SPI Mode       : DIO[0m
+[0;32mI (38) boot.esp32s3: SPI Flash Size : 16MB[0m
+[0;32mI (42) boot: Enabling RNG early entropy source...[0m
+[0;32mI (47) boot: Partition Table:[0m
+[0;32mI (49) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (55) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (62) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (68) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (75) boot:  3 spiffs           Unknown data     01 82 00110000 00100000[0m
+[0;32mI (82) boot: End of partition table[0m
+[0;32mI (85) esp_image: segment 0: paddr=00010020 vaddr=3c0a0020 size=230cch (143564) map[0m
+[0;32mI (118) esp_image: segment 1: paddr=000330f4 vaddr=3fc9ac00 size=04b5ch ( 19292) load[0m
+[0;32mI (122) esp_image: segment 2: paddr=00037c58 vaddr=40374000 size=083c0h ( 33728) load[0m
+[0;32mI (130) esp_image: segment 3: paddr=00040020 vaddr=42000020 size=9bae4h (637668) map[0m
+[0;32mI (242) esp_image: segment 4: paddr=000dbb0c vaddr=4037c3c0 size=0e7a4h ( 59300) load[0m
+[0;32mI (256) esp_image: segment 5: paddr=000ea2b8 vaddr=50000000 size=00020h (    32) load[0m
+[0;32mI (265) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (265) boot: Disabling RNG early entropy source...[0m
+[0;32mI (275) cpu_start: Multicore app[0m
+[0;32mI (284) cpu_start: Pro cpu start user code[0m
+[0;32mI (284) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (285) app_init: Application information:[0m
+[0;32mI (285) app_init: Project name:     002[0m
+[0;32mI (288) app_init: App version:      1[0m
+[0;32mI (291) app_init: Compile time:     Jan  8 2026 13:41:39[0m
+[0;32mI (297) app_init: ELF file SHA256:  ebe7e4dfc...[0m
+[0;32mI (301) app_init: ESP-IDF:          v5.5.1[0m
+[0;32mI (305) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (309) efuse_init: Max chip rev:     v0.99 [0m
+[0;32mI (312) efuse_init: Chip rev:         v0.2[0m
+[0;32mI (316) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (323) heap_init: At 3FCA7400 len 00042310 (264 KiB): RAM[0m
+[0;32mI (328) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM[0m
+[0;32mI (333) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM[0m
+[0;32mI (338) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM[0m
+[0;32mI (345) spi_flash: detected chip: generic[0m
+[0;32mI (347) spi_flash: flash io: dio[0m
+[0;32mI (351) sleep_gpio: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (357) sleep_gpio: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (363) main_task: Started on CPU0[0m
+[0;32mI (373) main_task: Calling app_main()[0m
+[0;32mI (373) LASER_ADC: Laser ADC with Web Interface[0m
+[0;32mI (453) LASER_ADC: SPIFFS initialized[0m
+[0;32mI (453) LASER_ADC: Laser PWM set full on @ GPIO5[0m
+[0;32mI (453) LASER_ADC: ADC initialized on GPIO4 (unit 0, channel 3)[0m
+[0;32mI (463) LASER_ADC: GPTimer initialized for 4000 Hz sampling[0m
+[0;32mI (463) LASER_ADC: ADC processing task started[0m
+[0;32mI (463) LASER_ADC: Sampling timer started[0m
+[0;32mI (473) LASER_ADC: RTOS architecture initialized: hardware timer + queue-based processing[0m
+[0;32mI (483) pp: pp rom version: e7ae62f[0m
+[0;32mI (483) net80211: net80211 rom version: e7ae62f[0m
+[0;32mI (503) wifi:wifi driver task: 3fceec64, prio:23, stack:6656, core=0[0m
+[0;32mI (523) wifi:wifi firmware version: 14da9b7[0m
+[0;32mI (523) wifi:wifi certification version: v7.0[0m
+[0;32mI (523) wifi:config NVS flash: enabled[0m
+[0;32mI (523) wifi:config nano formatting: disabled[0m
+[0;32mI (523) wifi:Init data frame dynamic rx buffer num: 32[0m
+[0;32mI (533) wifi:Init static rx mgmt buffer num: 5[0m
+[0;32mI (533) wifi:Init management short buffer num: 32[0m
+[0;32mI (543) wifi:Init dynamic tx buffer num: 32[0m
+[0;32mI (543) wifi:Init static tx FG buffer num: 2[0m
+[0;32mI (543) wifi:Init static rx buffer size: 1600[0m
+[0;32mI (553) wifi:Init static rx buffer num: 10[0m
+[0;32mI (553) wifi:Init dynamic rx buffer num: 32[0m
+[0;32mI (563) wifi_init: rx ba win: 6[0m
+[0;32mI (563) wifi_init: accept mbox: 6[0m
+[0;32mI (563) wifi_init: tcpip mbox: 32[0m
+[0;32mI (563) wifi_init: udp mbox: 6[0m
+[0;32mI (573) wifi_init: tcp mbox: 6[0m
+[0;32mI (573) wifi_init: tcp tx win: 5760[0m
+[0;32mI (573) wifi_init: tcp rx win: 5760[0m
+[0;32mI (583) wifi_init: tcp mss: 1440[0m
+[0;32mI (583) wifi_init: WiFi IRAM OP enabled[0m
+[0;32mI (583) wifi_init: WiFi RX IRAM OP enabled[0m
+[0;32mI (593) phy_init: phy_version 701,f4f1da3a,Mar  3 2025,15:50:10[0m
+[0;32mI (653) phy_init: Saving new calibration data due to checksum failure or outdated calibration data, mode(0)[0m
+[0;32mI (673) wifi:mode : softAP (10:b4:1d:eb:16:ed)[0m
+[0;32mI (683) wifi:Total power save buffer number: 16[0m
+[0;32mI (683) wifi:Init max length of beacon: 752/752[0m
+[0;32mI (683) wifi:Init max length of beacon: 752/752[0m
+[0;32mI (683) WIFI: WiFi AP initialized. SSID:LASER-LAB password:12345678 channel:1[0m
+[0;32mI (683) esp_netif_lwip: DHCP server started on interface WIFI_AP_DEF with IP: 192.168.4.1[0m
+[0;32mI (703) WIFI: WiFi AP started[0m
+[0;32mI (1703) LASER_ADC: Web server started (AP). SSID: LASER-LAB Password: 12345678[0m
+[0;32mI (1703) LASER_ADC: IP address: 192.168.4.1[0m
