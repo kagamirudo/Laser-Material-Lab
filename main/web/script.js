@@ -79,11 +79,15 @@ function stopLogging() {
     fetch(`${API_BASE}/api/stop`, { method: 'POST' })
         .then(response => response.json())
         .then(data => {
-            updateStatus(`Recording stopped. Total samples: ${data.samples}. Downloading CSV...`);
+            updateStatus(`Recording stopped. Total samples: ${data.samples}. Preparing download...`);
             updateADC(); // Refresh display
             
-            // Automatically download CSV file after stopping
-            downloadCSV();
+            // Wait a bit to ensure file is fully closed and flushed on server
+            // This prevents connection reset errors (ECONNRESET) during download
+            setTimeout(() => {
+                updateStatus(`Downloading CSV file...`);
+                downloadCSV();
+            }, 500);  // 500ms delay to ensure file operations complete
         })
         .catch(error => {
             console.error('Stop logging error:', error);

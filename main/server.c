@@ -29,6 +29,7 @@ void clear_spiffs_storage(void);
 void stop_sampling_timer(void);
 void start_sampling_timer(void);
 SemaphoreHandle_t get_file_ops_mutex(void);
+QueueHandle_t get_sample_queue(void);
 
 // HTTP handlers
 static esp_err_t index_handler(httpd_req_t *req) {
@@ -124,13 +125,26 @@ static esp_err_t csv_download_handler(httpd_req_t *req) {
         return ESP_OK;
     }
     
-    // CRITICAL: Stop the sampling timer to prevent ISR conflicts during SPIFFS I/O
-    // SPIFFS uses FreeRTOS queues internally, which can conflict with timer ISR queue operations
-    ESP_LOGI(SERVER_TAG, "Pausing sampling timer for CSV download");
+    // Timer should already be stopped from stop_csv_logging(), but ensure it's stopped
+    // and wait for any queued samples to be processed
+    ESP_LOGI(SERVER_TAG, "Ensuring sampling timer is stopped for CSV download");
     stop_sampling_timer();
     
-    // Wait for timer ISR to complete and ADC task to finish any pending file operations
-    vTaskDelay(pdMS_TO_TICKS(50));  // Increased delay to ensure all operations complete
+    // Wait for ADC task to finish processing any remaining queued samples
+    QueueHandle_t sample_queue = get_sample_queue();
+    if (sample_queue != NULL) {
+        int wait_count = 0;
+        while (uxQueueMessagesWaiting(sample_queue) > 0 && wait_count < 50) {
+            vTaskDelay(pdMS_TO_TICKS(10));  // Check every 10ms
+            wait_count++;
+        }
+        if (wait_count > 0) {
+            ESP_LOGI(SERVER_TAG, "Waited %d ms for queue to drain", wait_count * 10);
+        }
+    }
+    
+    // Additional delay to ensure all file operations complete
+    vTaskDelay(pdMS_TO_TICKS(100));
     
     // Get file operations mutex to prevent concurrent access with ADC task
     SemaphoreHandle_t file_mutex = get_file_ops_mutex();
@@ -249,6 +263,10 @@ static esp_err_t start_logging_handler(httpd_req_t *req) {
 
 static esp_err_t stop_logging_handler(httpd_req_t *req) {
     stop_csv_logging();
+    
+    // Small delay to ensure file is fully closed and all buffers flushed
+    // This helps prevent connection issues when client immediately requests CSV download
+    vTaskDelay(pdMS_TO_TICKS(100));
     
     char response[128];
     snprintf(response, sizeof(response), "{\"status\":\"stopped\",\"samples\":%d}",

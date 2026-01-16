@@ -1,0 +1,49 @@
+Command: /Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/python /Users/kagamirudo/esp-idf-v5.5.1/tools/idf_monitor.py -p /dev/cu.usbmodem101 -b 115200 --toolchain-prefix xtensa-esp32s3-elf- --target esp32s3 --revision 0 /Users/kagamirudo/002/build/002.elf /Users/kagamirudo/002/build/bootloader/bootloader.elf -m '/Users/kagamirudo/.espressif/python_env/idf5.5_py3.14_env/bin/python' '/Users/kagamirudo/esp-idf-v5.5.1/tools/idf.py'
+[0;33m--- esp-idf-monitor 1.8.0 on /dev/cu.usbmodem101 115200[0m
+[0;33m--- Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H[0m
+[0m--- 0x400490d5: [0;33musb_uart_device_rx_one_char[0m[0m in [0;32mROM[0m
+[1;31m--- Error: read failed: [Errno 6] Device not configured[0m
+[0;33m--- Waiting for the device to reconnect[0m[0;33m[0m
+[0m--- 0x4037dc52: [0;33mprvSelectHighestPriorityTaskSMP[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3619[0m
+[0m--- 0x4037dc4f: [0;33mprvSelectHighestPriorityTaskSMP[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3605[0m
+[0m--- 0x4037e6c6: [0;33mvTaskSwitchContext[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3709[0m
+[0m--- 0x4037d210: [0;33m_frxt_dispatch[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/portasm.S[0m[0m:[1;31m451[0m
+[0m--- 0x4037d206: [0;33m_frxt_int_exit[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/portasm.S[0m[0m:[1;31m246[0m
+[0m--- 0x40379d40: [0;33mesp_cpu_compare_and_set[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/cpu.c[0m[0m:[1;31m200[0m
+[0m--- 0x403c8700: [0;33m_stext[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+[0m--- 0x403c8924: [0;33mcall_start_cpu0[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m25[0m
+[0m--- 0x4037dc52: [0;33mprvSelectHighestPriorityTaskSMP[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3619[0m
+[0m--- 0x4037dc4f: [0;33mprvSelectHighestPriorityTaskSMP[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3605[0m
+[0m--- 0x4037e6c6: [0;33mvTaskSwitchContext[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3709[0m
+[0m--- 0x4037d210: [0;33m_frxt_dispatch[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/portasm.S[0m[0m:[1;31m451[0m
+[0m--- 0x4037d206: [0;33m_frxt_int_exit[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/portasm.S[0m[0m:[1;31m246[0m
+[0m--- 0x4037cfa4: [0;33mspinlock_acquire[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/include/spinlock.h[0m[0m:[1;31m133[0m
+[0m--- (inlined by) [0;33mxPortEnterCriticalTimeout[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m479[0m
+[0m--- 0x403c8700: [0;33m_stext[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+[0m--- 0x403c8924: [0;33mcall_start_cpu0[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m25[0m
+[0m--- 0x4201dab8: [0;33mhttpd_recv_with_opt[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_txrx.c[0m[0m:[1;31m106[0m
+[0m--- 0x400556d5: [0;33mstrlen[0m[0m in [0;32mROM[0m
+[0m--- 0x400556e5: [0;33mstrlen[0m[0m in [0;32mROM[0m
+[0m--- 0x4201dab5: [0;33mhttpd_recv_with_opt[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_txrx.c[0m[0m:[1;31m106[0m
+[0m--- 0x4201db36: [0;33mhttpd_recv[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_txrx.c[0m[0m:[1;31m149[0m
+[0m--- 0x4201e177: [0;33mhttpd_req_recv[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_txrx.c[0m[0m:[1;31m616[0m
+[0m--- 0x4201ee35: [0;33mhttpd_req_delete[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_parse.c[0m[0m:[1;31m841[0m
+[0m--- 0x4201d94b: [0;33mhttpd_sess_process[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m431[0m
+[0m--- 0x4201cb86: [0;33mhttpd_process_session[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m267[0m
+[0m--- 0x42092667: [0;33mhttpd_sess_enum[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_sess.c[0m[0m:[1;31m50[0m
+[0m--- 0x4201d342: [0;33mhttpd_server[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m317[0m
+[0m--- 0x4201d3af: [0;33mhttpd_thread[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_http_server/src/httpd_main.c[0m[0m:[1;31m339[0m
+[0m--- 0x4037cd81: [0;33mvPortTaskWrapper[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m139[0m
+[0m--- 0x40035534: [0;33mrom_chip_i2c_readReg_org[0m[0m in [0;32mROM[0m
+[0m--- 0x403c8700: [0;33m_stext[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+[0m--- 0x403c8924: [0;33mcall_start_cpu0[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m25[0m
+[0m--- 0x4037dc52: [0;33mprvSelectHighestPriorityTaskSMP[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3619[0m
+[0m--- 0x4037dc4f: [0;33mprvSelectHighestPriorityTaskSMP[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3605[0m
+[0m--- 0x4037e6c6: [0;33mvTaskSwitchContext[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/tasks.c[0m[0m:[1;31m3709[0m
+[0m--- 0x4037d210: [0;33m_frxt_dispatch[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/portasm.S[0m[0m:[1;31m451[0m
+[0m--- 0x4037d206: [0;33m_frxt_int_exit[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/portasm.S[0m[0m:[1;31m246[0m
+[0m--- 0x4037cfa1: [0;33mspinlock_acquire[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/esp_hw_support/include/spinlock.h[0m[0m:[1;31m132[0m
+[0m--- (inlined by) [0;33mxPortEnterCriticalTimeout[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m479[0m
+[0m--- 0x403c8700: [0;33m_stext[0m[0m at [0;32m??[0m[0m:[1;31m?[0m
+[0m--- 0x403c8924: [0;33mcall_start_cpu0[0m[0m at [0;32m/Users/kagamirudo/esp-idf-v5.5.1/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m25[0m
+[0m

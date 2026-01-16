@@ -435,6 +435,11 @@ SemaphoreHandle_t get_file_ops_mutex(void) {
     return s_file_ops_mutex;
 }
 
+// Get sample queue (for server.c to check queue status)
+QueueHandle_t get_sample_queue(void) {
+    return s_sample_queue;
+}
+
 // Get SPIFFS storage info (total, used, free in bytes)
 void get_spiffs_storage_info(size_t *total_bytes, size_t *used_bytes) {
     *total_bytes = 0;
@@ -469,13 +474,41 @@ void start_csv_logging(void) {
 // Stop CSV logging manually
 void stop_csv_logging(void) {
     if (s_csv_logging_active && s_csv_file != NULL) {
+        ESP_LOGI(TAG, "Stopping CSV logging...");
+        
+        // CRITICAL: Stop the timer first to prevent new samples from being queued
+        // This allows the ADC task to finish processing existing samples
+        stop_sampling_timer();
+        ESP_LOGI(TAG, "Sampling timer stopped, waiting for queue to drain...");
+        
+        // Wait for ADC task to finish processing queued samples
+        // The queue can hold up to SAMPLE_QUEUE_SIZE (2000) samples
+        // At 4000 Hz, that's ~500ms of data, so wait up to 1 second to be safe
+        int wait_count = 0;
+        while (s_sample_queue != NULL && uxQueueMessagesWaiting(s_sample_queue) > 0 && wait_count < 100) {
+            vTaskDelay(pdMS_TO_TICKS(10));  // Check every 10ms
+            wait_count++;
+        }
+        
+        if (wait_count >= 100) {
+            ESP_LOGW(TAG, "Timeout waiting for queue to drain, proceeding anyway");
+        } else {
+            ESP_LOGI(TAG, "Queue drained after %d ms", wait_count * 10);
+        }
+        
+        // Additional delay to ensure ADC task finishes any file operations
+        vTaskDelay(pdMS_TO_TICKS(100));
+        
         // Take file operations mutex
         if (s_file_ops_mutex != NULL) {
             xSemaphoreTake(s_file_ops_mutex, portMAX_DELAY);
         }
         
+        // Disable logging flag first to prevent ADC task from trying to write
+        s_csv_logging_active = false;
+        
         // Flush any remaining buffered samples before closing
-        if (s_buffer_idx > 0) {
+        if (s_buffer_idx > 0 && s_csv_file != NULL) {
             // Write directly without mutex (we already have it)
             for (int i = 0; i < s_buffer_idx; i++) {
                 uint32_t timestamp_ms = s_sample_buffer[i].timestamp_us / 1000;
@@ -485,9 +518,12 @@ void stop_csv_logging(void) {
             s_buffer_idx = 0;
         }
         
-        fclose(s_csv_file);
-        s_csv_file = NULL;
-        s_csv_logging_active = false;
+        // Close the file
+        if (s_csv_file != NULL) {
+            fclose(s_csv_file);
+            s_csv_file = NULL;
+        }
+        
         s_logging_start_time_us = 0;
         
         // Release mutex
@@ -495,9 +531,11 @@ void stop_csv_logging(void) {
             xSemaphoreGive(s_file_ops_mutex);
         }
         
+        // DO NOT restart timer here - keep it stopped until CSV download completes
+        // This prevents queue conflicts during file I/O
+        // Timer will be restarted by csv_download_handler after download completes
         ESP_LOGI(TAG, "CSV logging stopped manually. Total samples: %d", s_sample_count);
-        
-        // Timer continues running for web UI (don't stop it)
+        ESP_LOGI(TAG, "Timer remains stopped until CSV download completes");
     }
 }
 
