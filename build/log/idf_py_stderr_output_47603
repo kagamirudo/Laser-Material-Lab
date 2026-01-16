@@ -1,9 +1,0 @@
-Command: make -j 10 all
-/Users/kagamirudo/002/main/002.c: In function 'timer_isr_callback':
-/Users/kagamirudo/002/main/002.c:159:24: warning: unused variable 'result' [-Wunused-variable]
-  159 |             BaseType_t result = xQueueSendFromISR(s_sample_queue, &sample, &must_yield);
-      |                        ^~~~~~
-/Users/kagamirudo/002/main/002.c: At top level:
-/Users/kagamirudo/002/main/002.c:208:13: warning: 'stop_sampling_timer' defined but not used [-Wunused-function]
-  208 | static void stop_sampling_timer(void) {
-      |             ^~~~~~~~~~~~~~~~~~~

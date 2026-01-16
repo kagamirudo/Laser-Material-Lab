@@ -1,4 +1,0 @@
-Command: make -j 10 all
-/Users/kagamirudo/002/main/server.c:266:18: warning: 'clear_storage_handler' defined but not used [-Wunused-function]
-  266 | static esp_err_t clear_storage_handler(httpd_req_t *req) {
-      |                  ^~~~~~~~~~~~~~~~~~~~~

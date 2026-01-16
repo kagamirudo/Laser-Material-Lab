@@ -1,3 +1,0 @@
-esp-idf/espcoredump/CMakeFiles/__idf_espcoredump.dir/src/core_dump_sha.c.obj: \
- /Users/kagamirudo/esp-idf-v5.5.1/components/espcoredump/src/core_dump_sha.c \
- /Users/kagamirudo/002/build/config/sdkconfig.h

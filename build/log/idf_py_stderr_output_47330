@@ -1,5 +1,0 @@
-Command: make -j 10 all
-In file included from /Users/kagamirudo/002/main/002.c:3:
-/Users/kagamirudo/esp-idf-v5.5.1/components/driver/deprecated/driver/adc.h:19:2: warning: #warning "legacy adc driver is deprecated, please migrate to use esp_adc/adc_oneshot.h and esp_adc/adc_continuous.h for oneshot mode and continuous mode drivers respectively" [-Wcpp]
-   19 | #warning "legacy adc driver is deprecated, please migrate to use esp_adc/adc_oneshot.h and esp_adc/adc_continuous.h for oneshot mode and continuous mode drivers respectively"
-      |  ^~~~~~~
