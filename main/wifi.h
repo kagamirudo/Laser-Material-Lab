@@ -17,8 +17,8 @@
 #define WIFI_AP_MAX_STA_CONN 4
 
 // WiFi Station configuration
-#define WIFI_STA_SSID "Milu"
-#define WIFI_STA_PASSWORD "milu15042003"
+#define WIFI_STA_SSID "Kagami Rudo 2.4G"
+#define WIFI_STA_PASSWORD "nxha15042003"
 
 void wifi_init_softap(void);
 

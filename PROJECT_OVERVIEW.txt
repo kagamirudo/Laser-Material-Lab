@@ -1,0 +1,40 @@
+Project: Laser + Light Sensor Logger (ESP32-S3)
+
+Purpose
+- Drive a laser via PWM and read a light sensor/photodiode via ADC.
+- Provide live readings to a web UI and over serial terminal.
+- Previously logged to CSV/SPIFFS; currently streams to terminal only.
+
+Current Requirements / Behavior
+- Hardware: ESP32-S3, laser on GPIO5 (LEDC PWM @ 5 kHz), sensor on GPIO4 (ADC1 channel).
+- Sampling: Continuous ADC at 4000 samples/sec.
+- RTOS tasks:
+  - Core 1: adc_task (priority 5) handles ADC sampling and queueing.
+  - Core 0: csv_writer_task (priority 3) drains the queue and prints samples to the terminal as "timestamp_us,adc_value".
+  - app_main runs on core 1 for init only.
+- Queue: 3000 samples capacity; non-blocking send to maintain ADC rate; drops when full (warnings muted).
+- Auto-stop: Stops logging after 50,000 samples.
+- Storage: SPIFFS init and file logging removed; no files are created/downloaded.
+- Web UI: Start/stop controls remain, but download endpoints disabled; terminal streaming only.
+
+Recent History / Changes
+- Switched from SPIFFS CSV logging to a fast binary buffer, then to terminal-only streaming to avoid flash I/O and contention.
+- Disabled CSV/bin download endpoints; web UI no longer triggers downloads.
+- Added sample limit (50k) for auto-stop.
+- Muted queue-full warnings to reduce log noise.
+- Removed SPIFFS init and file-clearing logic.
+
+Mission / Notes for Refactor (e.g., to Raspberry Pi)
+- Core functionality to keep: 4 kHz sampling, laser PWM control, Wi-Fi/web control, start/stop, auto-stop on sample count, terminal/live viewing.
+- If porting to Raspberry Pi:
+  - Replace ESP-IDF ADC/LEDC/Wi-Fi/server layers with Linux equivalents (ADC source, PWM driver, and web server stack).
+  - Decide on logging format: keep streaming, add file logging (CSV/binary), or websockets.
+  - Preserve the queue/backpressure strategy so sampling stays real-time; avoid blocking the producer.
+  - Reintroduce storage only if the target platform can handle sustained writes without blocking sampling.
+
+Quick Run Description (current)
+1) app_main: init NVS, hardware, mutexes, queue; start adc_task (core 1) and writer (core 0).
+2) Start logging: resets queue/counters, sets start time, enables logging flag, starts ADC.
+3) adc_task: parses ADC frames, updates latest value, increments sample_count, enqueues samples (non-blocking).
+4) writer task: dequeues samples, prints "timestamp_us,adc_value" to terminal.
+5) Stop logging: disables logging, waits for queue to drain, stops counting.
