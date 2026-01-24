@@ -28,8 +28,8 @@ static const char *TAG = "LASER_ADC";
 
 #define WIFI 1
 #define HOST 2
-// #define MODE WIFI
-#define MODE HOST
+#define MODE WIFI
+// #define MODE HOST
 
 // Pin mapping (ESP32-S3)
 #define LASER_GPIO   5    // PWM output to laser
@@ -44,7 +44,7 @@ static const char *TAG = "LASER_ADC";
 #define LASER_DUTY_FULL   ((1 << LASER_LEDC_RES) - 1)  // 255
 
 // ADC sampling config
-#define SAMPLE_RATE_HZ    3200           // Target: 400 samples per second (minimum: ~611 Hz for ESP32-S3)
+#define SAMPLE_RATE_HZ    1000           // Target: 1000 samples per second (minimum: ~611 Hz for ESP32-S3)
 #define ADC_MIN_FREQ_HZ   611            // Minimum sampling frequency for ESP32-S3 continuous ADC
 #define ADC_CONTINUOUS_BUF_SIZE 4096     // Buffer for continuous ADC (must be multiple of SOC_ADC_DIGI_RESULT_BYTES)
 #define ADC_READ_TIMEOUT_MS 100          // Timeout for reading from continuous ADC
