@@ -224,7 +224,7 @@ If you notice missing samples at the end of a recording:
 
 ## License
 
-[Add your license here]
+This project is licensed under the **MIT License**. See `LICENSE`.
 
 ## Acknowledgments
 
