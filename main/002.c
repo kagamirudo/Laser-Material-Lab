@@ -21,6 +21,7 @@
 
 #include "wifi.h"
 #include "server.h"
+#include "sdcard.h"
 
 static const char *TAG = "LASER_ADC";
 
@@ -715,6 +716,16 @@ void app_main(void) {
 
     // Initialize SPIFFS (for CSV file storage)
     ESP_ERROR_CHECK(init_spiffs());
+
+    // Initialize SD card and test
+    esp_err_t sdcard_ret = sdcard_init();
+    if (sdcard_ret == ESP_OK) {
+        ESP_LOGI(TAG, "SD card initialized successfully");
+        // Test SD card: read capacity and verify read/write functionality
+        sdcard_test_read();
+    } else {
+        ESP_LOGW(TAG, "SD card initialization failed: %s (continuing without SD card)", esp_err_to_name(sdcard_ret));
+    }
 
     // Initialize hardware
     laser_init_full_on();
