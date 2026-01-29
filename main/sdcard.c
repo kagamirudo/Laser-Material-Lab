@@ -10,6 +10,7 @@
 #include "freertos/task.h"
 #include <string.h>
 #include <stdio.h>
+#include <errno.h>
 #include <sys/stat.h>
 #include <dirent.h>
 
@@ -25,49 +26,45 @@ esp_err_t sdcard_init(void) {
 
     esp_err_t ret;
 
-    // Configure SPI bus
+    // --- Configure SPI bus (match Espressif SDSPI example behaviour) ---
     spi_bus_config_t bus_cfg = {
         .mosi_io_num = SDCARD_PIN_MOSI,
         .miso_io_num = SDCARD_PIN_MISO,
         .sclk_io_num = SDCARD_PIN_SCK,
         .quadwp_io_num = -1,
         .quadhd_io_num = -1,
-        .max_transfer_sz = 4096,  // Increased for better SD card performance
+        .max_transfer_sz = 4000,
     };
 
     ESP_LOGI(TAG, "Initializing SPI bus for SD card...");
     ESP_LOGI(TAG, "SPI pins: MOSI=GPIO%d, MISO=GPIO%d, SCK=GPIO%d, CS=GPIO%d",
              SDCARD_PIN_MOSI, SDCARD_PIN_MISO, SDCARD_PIN_SCK, SDCARD_PIN_CS);
-    
-    ret = spi_bus_initialize(SDCARD_SPI_HOST, &bus_cfg, SPI_DMA_CH_AUTO);
+
+    // Use SDSPI default host config (same as Espressif example)
+    sdmmc_host_t host = SDSPI_HOST_DEFAULT();
+    // Explicitly request 20 MHz SD clock (max for SDSPI in many examples)
+    host.max_freq_khz = 20000;  // 20.00 MHz
+
+    // Initialize SPI bus on the host slot with default DMA settings
+    ret = spi_bus_initialize(host.slot, &bus_cfg, SDSPI_DEFAULT_DMA);
     if (ret != ESP_OK && ret != ESP_ERR_INVALID_STATE) {
         ESP_LOGE(TAG, "Failed to initialize SPI bus: %s", esp_err_to_name(ret));
         return ret;
     }
-    
-    // Small delay to let SPI bus stabilize
-    vTaskDelay(pdMS_TO_TICKS(100));
 
-    // Configure SD card over SPI with reduced clock speed for better compatibility
-    sdmmc_host_t host = SDSPI_HOST_DEFAULT();
-    host.slot = SDCARD_SPI_HOST;
-    // Use 400 kHz for initialization (standard SD card init speed)
-    // This is the recommended speed for card detection and initialization
-    // Can be increased after successful initialization if needed
-    host.max_freq_khz = 1;  // 400 kHz (standard SD card initialization speed)
-
+    // Device (slot) configuration
     sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
     slot_config.gpio_cs = SDCARD_PIN_CS;
     slot_config.host_id = host.slot;
-    
-    ESP_LOGI(TAG, "Attempting to mount SD card at %s (max freq: %d kHz)...", 
-             SDCARD_MOUNT_POINT, host.max_freq_khz);
 
+    ESP_LOGI(TAG, "Attempting to mount SD card at %s (SDSPI host slot=%d, max_freq=%d kHz)...",
+             SDCARD_MOUNT_POINT, host.slot, host.max_freq_khz);
+
+    // Mount config: mirror Espressif example semantics
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
-        .format_if_mount_failed = false,
+        .format_if_mount_failed = false,   // set true if you want auto-format on first failure
         .max_files = 5,
         .allocation_unit_size = 16 * 1024,
-        .disk_status_check_enable = true,
     };
 
     ret = esp_vfs_fat_sdspi_mount(SDCARD_MOUNT_POINT, &host, &slot_config,
@@ -117,6 +114,30 @@ sdmmc_card_t *sdcard_get_card(void) { return s_mounted ? s_card : NULL; }
 
 bool sdcard_is_mounted(void) { return s_mounted; }
 
+static esp_err_t sdcard_write_file(const char *filename, const char *data) {
+    FILE *f = fopen(filename, "w");
+    if (f == NULL) {
+        ESP_LOGE(TAG, "Failed to open file for writing: %s", filename);
+        return ESP_FAIL;
+    }
+    fprintf(f, "%s", data);
+    fclose(f);
+    return ESP_OK;
+}
+
+static esp_err_t sdcard_read_file(const char *filename) {
+    FILE *f = fopen(filename, "r");
+    if (f == NULL) {
+        ESP_LOGE(TAG, "Failed to open file for reading: %s", filename);
+        return ESP_FAIL;
+    }
+    char line[MAX_CHAR_SIZE];
+    fgets(line, MAX_CHAR_SIZE, f);
+    fclose(f);
+    ESP_LOGI(TAG, "Read data: %s", line);
+    return ESP_OK;
+}
+
 /**
  * @brief Test SD card by reading capacity and performing a simple read/write test
  * 
@@ -163,29 +184,25 @@ esp_err_t sdcard_test_read(void) {
         ESP_LOGI(TAG, "✓ Card size matches expected 32GB range");
     }
 
+    sdcard_list_files();
     // Test file operations: write, read, delete
-    const char *test_file = SDCARD_MOUNT_POINT "/test_read.txt";
-    const char *test_data = "SD Card Test - ESP32-S3 can read and write!";
+    const char *test_file = SDCARD_MOUNT_POINT "/foo.txt";
+
+    // Create a file - buffer
+    char test_data[MAX_CHAR_SIZE];
+    snprintf(test_data, MAX_CHAR_SIZE, "Hello123 %s", s_card->cid.name);
     
     // Write test
-    FILE *f = fopen(test_file, "w");
-    if (f == NULL) {
-        ESP_LOGE(TAG, "✗ Failed to create test file: %s", test_file);
-        return ESP_FAIL;
+    esp_err_t ret = sdcard_write_file(test_file, test_data);
+    if (ret != ESP_OK) {
+        return ret;
     }
-    size_t written = fwrite(test_data, 1, strlen(test_data), f);
-    fclose(f);
-    
-    if (written != strlen(test_data)) {
-        ESP_LOGE(TAG, "✗ Failed to write test data (wrote %d/%d bytes)", written, strlen(test_data));
-        remove(test_file);
-        return ESP_FAIL;
-    }
-    ESP_LOGI(TAG, "✓ Test file written successfully (%d bytes)", written);
+
+    ESP_LOGI(TAG, "✓ Test file written successfully (%d bytes)", strlen(test_data));
     
     // Read test
     char read_buffer[128] = {0};
-    f = fopen(test_file, "r");
+    FILE *f = fopen(test_file, "r");
     if (f == NULL) {
         ESP_LOGE(TAG, "✗ Failed to open test file for reading");
         remove(test_file);
@@ -196,20 +213,46 @@ esp_err_t sdcard_test_read(void) {
     
     if (read != strlen(test_data) || strcmp(read_buffer, test_data) != 0) {
         ESP_LOGE(TAG, "✗ Test data mismatch (read %d bytes)", read);
-        remove(test_file);
+        // remove(test_file);
         return ESP_FAIL;
     }
     ESP_LOGI(TAG, "✓ Test file read successfully: \"%s\"", read_buffer);
     
     // Cleanup
-    if (remove(test_file) != 0) {
-        ESP_LOGW(TAG, "Warning: Failed to delete test file");
-    } else {
-        ESP_LOGI(TAG, "✓ Test file deleted");
-    }
+    // if (remove(test_file) != 0) {
+    //     ESP_LOGW(TAG, "Warning: Failed to delete test file");
+    // } else {
+    //     ESP_LOGI(TAG, "✓ Test file deleted");
+    // }
     
     ESP_LOGI(TAG, "=== SD Card Test PASSED ===");
     ESP_LOGI(TAG, "Card is ready for use. Mount point: %s", SDCARD_MOUNT_POINT);
     
+    return ESP_OK;
+}
+
+esp_err_t sdcard_list_files(void) {
+    if (!s_mounted || s_card == NULL) {
+        ESP_LOGE(TAG, "SD card not mounted. Call sdcard_init() first.");
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    DIR *dir = opendir(SDCARD_MOUNT_POINT);
+    if (dir == NULL) {
+        ESP_LOGE(TAG, "Failed to open SD card directory: %s (errno=%d: %s)",
+                 SDCARD_MOUNT_POINT, errno, strerror(errno));
+        return ESP_FAIL;
+    }
+
+    ESP_LOGI(TAG, "Listing files in %s:", SDCARD_MOUNT_POINT);
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+            continue;
+        }
+        ESP_LOGI(TAG, " - %s", entry->d_name);
+    }
+
+    closedir(dir);
     return ESP_OK;
 }

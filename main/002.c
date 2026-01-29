@@ -22,6 +22,7 @@
 #include "wifi.h"
 #include "server.h"
 #include "sdcard.h"
+#include "display.h"
 
 static const char *TAG = "LASER_ADC";
 
@@ -29,8 +30,8 @@ static const char *TAG = "LASER_ADC";
 
 #define WIFI 1
 #define HOST 2
-#define MODE WIFI
-// #define MODE HOST
+// #define MODE WIFI
+#define MODE HOST
 
 // Pin mapping (ESP32-S3)
 #define LASER_GPIO   5    // PWM output to laser
@@ -714,6 +715,11 @@ void app_main(void) {
     // Initialize NVS (required for WiFi)
     ESP_ERROR_CHECK(nvs_flash_init());
 
+    // Initialize OLED display (if present)
+    if (display_init() == ESP_OK) {
+        display_show_status("Laser Logger", "Initializing...");
+    }
+
     // Initialize SPIFFS (for CSV file storage)
     ESP_ERROR_CHECK(init_spiffs());
 
@@ -722,9 +728,16 @@ void app_main(void) {
     if (sdcard_ret == ESP_OK) {
         ESP_LOGI(TAG, "SD card initialized successfully");
         // Test SD card: read capacity and verify read/write functionality
-        sdcard_test_read();
+        esp_err_t sd_test_ret = sdcard_test_read();
+        if (sd_test_ret == ESP_OK) {
+            display_show_status("SD card", "OK");
+        } else {
+            display_show_status("SD card", "TEST FAILED");
+        }
     } else {
-        ESP_LOGW(TAG, "SD card initialization failed: %s (continuing without SD card)", esp_err_to_name(sdcard_ret));
+        ESP_LOGW(TAG, "SD card initialization failed: %s (continuing without SD card)", 
+                esp_err_to_name(sdcard_ret), sdcard_ret);
+        display_show_status("SD card", "INIT FAILED");
     }
 
     // Initialize hardware
@@ -771,8 +784,10 @@ void app_main(void) {
     // Initialize WiFi AP (self-host)
 #if MODE == WIFI
     wifi_init_sta();
+    display_show_status("WiFi (STA)", "Connecting...");
 #elif MODE == HOST
     wifi_init_softap();
+    display_show_status("WiFi (AP)", "Starting hotspot...");
 #else
 #error "MODE must be WIFI or HOST"
 #endif
@@ -797,9 +812,17 @@ void app_main(void) {
                           &ip_info);
     ESP_LOGI(TAG, "Web server started (AP). SSID: %s Password: %s",
              WIFI_AP_SSID, WIFI_AP_PASSWORD);
+    display_show_status("AP Ready", WIFI_AP_SSID);
 #endif
 
     ESP_LOGI(TAG, "IP address: " IPSTR, IP2STR(&ip_info.ip));
+
+    // Show web UI IP address on OLED (if initialized)
+    char line1[22];
+    char line2[22];
+    snprintf(line1, sizeof(line1), "IP: " IPSTR, IP2STR(&ip_info.ip));
+    snprintf(line2, sizeof(line2), "Ready: web control");
+    display_show_status(line1, line2);
 
     // Keep running
     while (1) {

@@ -9,36 +9,36 @@ extern "C" {
 
 // Mount point used for VFS
 #define SDCARD_MOUNT_POINT "/sdcard"
+#define MAX_CHAR_SIZE 1024
 
 // SPI host and pins for the SD card module
 // Adjust these GPIOs to match your wiring.
 // They must be output-capable pins on your ESP32-S3 board.
 //
-// WIRING DIAGRAM (ESP32-S3 to SD Card Module):
-// ============================================
+// NEW WIRING (ESP32-S3 to SD Card Module):
+// =======================================
 // ESP32-S3 Pin    ->  SD Card Module Pin
 // --------------------------------------------
-// GPIO 41 (MOSI)  ->  DI (Data In / MOSI)
-// GPIO 42 (MISO)  ->  DO (Data Out / MISO)
-// GPIO 40 (SCK)   ->  CLK (Clock / SCK)
-// GPIO 39 (CS)    ->  CS (Chip Select)
-// 3.3V            ->  VCC (Power - check if module needs 5V or 3.3V)
-// GND             ->  GND (Ground)
+// GPIO 11 (MOSI)  ->  DI  (Data In / MOSI)
+// GPIO 13 (MISO)  ->  DO  (Data Out / MISO)
+// GPIO 12 (CLK)   ->  CLK (Clock / SCK)
+// GPIO 14 (CS)    ->  CS  (Chip Select)
+// 3.3V            ->  VCC
+// GND             ->  GND
 //
 // NOTES:
-// - Using HSPI pins (GPIO 40-42, 39) as per Arduino example
-// - Most SD card modules have onboard 3.3V regulator (accept 5V input)
-// - If module has 5V pin, you can use 5V; if only 3.3V, use 3.3V
-// - Ensure common ground connection
-// - Keep SPI wires short (< 10cm recommended)
-// - Module should have pull-up resistors (most do)
-// - Card must be formatted as FAT32 (32GB cards are FAT32 by default)
+// - Matches the pin assignment you requested:
+//     MOSI: GPIO 11
+//     MISO: GPIO 13
+//     CLK : GPIO 12
+//     CS  : GPIO 14
+// - Keep SPI wires short and ensure proper pull‑ups on SD lines.
 //
 #define SDCARD_SPI_HOST SPI2_HOST
-#define SDCARD_PIN_MOSI GPIO_NUM_41
-#define SDCARD_PIN_MISO GPIO_NUM_42
-#define SDCARD_PIN_SCK GPIO_NUM_40
-#define SDCARD_PIN_CS GPIO_NUM_39
+#define SDCARD_PIN_MOSI GPIO_NUM_11
+#define SDCARD_PIN_MISO GPIO_NUM_13
+#define SDCARD_PIN_SCK  GPIO_NUM_12
+#define SDCARD_PIN_CS   GPIO_NUM_14
 
 /**
  * @brief Initialize SPI bus, attach SD card, and mount FAT filesystem.
@@ -66,6 +66,16 @@ sdmmc_card_t *sdcard_get_card(void);
 bool sdcard_is_mounted(void);
 
 /**
+ * @brief Write data to a file on the SD card.
+ */
+static esp_err_t sdcard_write_file(const char *filename, const char *data);
+
+/**
+ * @brief Read data from a file on the SD card.
+ */
+static esp_err_t sdcard_read_file(const char *filename);
+
+/**
  * @brief Test SD card by reading capacity and performing read/write test
  * 
  * Verifies the card can be detected, shows capacity (should show ~32GB),
@@ -74,6 +84,13 @@ bool sdcard_is_mounted(void);
  * @return ESP_OK on success, ESP_FAIL on error
  */
 esp_err_t sdcard_test_read(void);
+
+/**
+ * @brief List files and directories in the SD card mount point.
+ *
+ * @return ESP_OK on success, ESP_FAIL on error
+ */
+esp_err_t sdcard_list_files(void);
 
 #ifdef __cplusplus
 }
