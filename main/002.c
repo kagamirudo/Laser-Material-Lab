@@ -812,7 +812,7 @@ void app_main(void) {
                           &ip_info);
     ESP_LOGI(TAG, "Web server started (AP). SSID: %s Password: %s",
              WIFI_AP_SSID, WIFI_AP_PASSWORD);
-    display_show_status("AP Ready", WIFI_AP_SSID);
+    display_show_status("SSID: " WIFI_AP_SSID, "Password: " WIFI_AP_PASSWORD);
 #endif
 
     ESP_LOGI(TAG, "IP address: " IPSTR, IP2STR(&ip_info.ip));
@@ -823,7 +823,6 @@ void app_main(void) {
     snprintf(line1, sizeof(line1), "IP: " IPSTR, IP2STR(&ip_info.ip));
     snprintf(line2, sizeof(line2), "Ready: web control");
     display_show_status(line1, line2);
-
     // Keep running
     while (1) {
         vTaskDelay(pdMS_TO_TICKS(1000));

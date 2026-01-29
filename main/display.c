@@ -23,8 +23,37 @@ static const char *TAG = "display";
 #define I2C_FREQ_HZ 400000
 #define SSD1306_WIDTH 128
 #define SSD1306_PAGES 8
+#define DISPLAY_MAX_LINES 8
+#define DISPLAY_CHARS_PER_LINE 21
 
 static bool s_display_ready = false;
+
+static char s_status_lines[DISPLAY_MAX_LINES][DISPLAY_CHARS_PER_LINE + 1];
+static int s_status_count = 0;
+
+static void push_status_line(const char *text)
+{
+    if (!text) {
+        return;
+    }
+    size_t len = strlen(text);
+    if (len == 0) {
+        return;
+    }
+    if (len > DISPLAY_CHARS_PER_LINE) {
+        len = DISPLAY_CHARS_PER_LINE;
+    }
+    if (s_status_count < DISPLAY_MAX_LINES) {
+        memcpy(s_status_lines[s_status_count], text, len);
+        s_status_lines[s_status_count][len] = '\0';
+        s_status_count++;
+    } else {
+        memmove(s_status_lines[0], s_status_lines[1],
+                (DISPLAY_MAX_LINES - 1) * (DISPLAY_CHARS_PER_LINE + 1));
+        memcpy(s_status_lines[DISPLAY_MAX_LINES - 1], text, len);
+        s_status_lines[DISPLAY_MAX_LINES - 1][len] = '\0';
+    }
+}
 
 static const uint8_t font5x7[][5] = {
     {0x00, 0x00, 0x00, 0x00, 0x00}, // 32
@@ -245,6 +274,7 @@ void display_clear(void)
     if (!s_display_ready) {
         return;
     }
+    s_status_count = 0;
     ssd1306_clear();
 }
 
@@ -253,7 +283,10 @@ void display_show_status(const char *line1, const char *line2)
     if (!s_display_ready) {
         return;
     }
+    push_status_line(line1);
+    push_status_line(line2);
     ssd1306_clear();
-    ssd1306_draw_text(0, 0, line1 ? line1 : "");
-    ssd1306_draw_text(0, 2, line2 ? line2 : "");
+    for (int i = 0; i < s_status_count; i++) {
+        ssd1306_draw_text(0, (uint8_t)i * 2, s_status_lines[i]);
+    }
 }
