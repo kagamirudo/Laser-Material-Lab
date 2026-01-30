@@ -718,6 +718,8 @@ void app_main(void) {
     // Initialize OLED display (if present)
     if (display_init() == ESP_OK) {
         display_show_status("Laser Logger", "Initializing...");
+    } else {
+        ESP_LOGW(TAG, "Display initialization failed - continuing without display");
     }
 
     // Initialize SPIFFS (for CSV file storage)
