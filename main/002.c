@@ -46,7 +46,7 @@ static const char *TAG = "LASER_ADC";
 #define LASER_DUTY_FULL   ((1 << LASER_LEDC_RES) - 1)  // 255
 
 // ADC sampling config
-#define SAMPLE_RATE_HZ    1000           // Target: 1000 samples per second (minimum: ~611 Hz for ESP32-S3)
+#define SAMPLE_RATE_HZ    4000           // Target: 4000 samples per second (minimum: ~611 Hz for ESP32-S3)
 #define ADC_MIN_FREQ_HZ   611            // Minimum sampling frequency for ESP32-S3 continuous ADC
 #define ADC_CONTINUOUS_BUF_SIZE 4096     // Buffer for continuous ADC (must be multiple of SOC_ADC_DIGI_RESULT_BYTES)
 #define ADC_READ_TIMEOUT_MS 100          // Timeout for reading from continuous ADC
@@ -76,7 +76,29 @@ typedef struct {
     uint64_t timestamp_us;
 } csv_sample_t;
 
+/** Binary bench record (must match tools/bin2csv.py). Packed for fixed 12-byte records. */
+typedef struct {
+    uint64_t timestamp_us;
+    int32_t  adc_value;
+} __attribute__((packed)) bench_record_t;
+
 static QueueHandle_t s_csv_queue = NULL;
+
+// Bench laser: collect N ADC samples and write to SD (CSV + binary)
+// Stream in chunks to avoid allocating 160KB internal RAM (fits in ~16KB).
+#define BENCH_LASER_NUM_SAMPLES  1200000
+#define BENCH_LASER_CHUNK_SIZE   1000
+#define BENCH_LASER_DIR          SDCARD_MOUNT_POINT "/laser"
+#define BENCH_LASER_CSV_PATH     BENCH_LASER_DIR "/data.csv"
+#define BENCH_LASER_BIN_PATH     BENCH_LASER_DIR "/data.bin"
+#define BENCH_LASER_TIMEOUT_MS   30000
+/* Minimum ms per chunk: must allow time to collect CHUNK_SIZE at sample rate (e.g. 1000/4000 = 250 ms). Use 3x. */
+#define BENCH_LASER_CHUNK_TIMEOUT_MIN_MS  1000
+
+static volatile bool s_bench_mode = false;
+static csv_sample_t *s_bench_buffer = NULL;
+static volatile uint32_t s_bench_count = 0;
+static volatile bool s_bench_chunk_ready = false;  // chunk full, ready to write
 
 // Shared state for web API
 static int s_current_adc_value = 0;
@@ -100,6 +122,7 @@ static uint32_t s_csv_sample_index = 0;
 void clear_spiffs_storage(void);
 void stop_csv_logging(void);
 static void generate_csv_filename(void);
+static void bench_laser_run(void);
 
 static void laser_init_full_on(void) {
     ledc_timer_config_t tcfg = {
@@ -269,6 +292,22 @@ static void adc_task(void *pvParameters) {
                 
                 // Increment sample count for rate calculation
                 s_sample_count++;
+
+                // Bench laser: fill chunk; when full set chunk_ready and pause until reset
+                if (s_bench_mode && s_bench_buffer != NULL) {
+                    if (s_bench_chunk_ready) {
+                        continue;  // wait for bench_laser_run() to write and reset
+                    }
+                    if (s_bench_count < BENCH_LASER_CHUNK_SIZE) {
+                        s_bench_buffer[s_bench_count].adc_value = raw_value;
+                        s_bench_buffer[s_bench_count].timestamp_us = esp_timer_get_time();
+                        s_bench_count++;
+                        if (s_bench_count >= BENCH_LASER_CHUNK_SIZE) {
+                            s_bench_chunk_ready = true;
+                        }
+                    }
+                    continue;
+                }
 
                 // Auto-stop when reaching sample limit
                 if (s_csv_logging_enabled && s_sample_count >= SAMPLE_LIMIT) {
@@ -677,6 +716,112 @@ const char* get_csv_file_path(void) {
     return s_csv_file_path;
 }
 
+/**
+ * Bench laser: collect BENCH_LASER_NUM_SAMPLES (10k) ADC samples and write to SD
+ * as CSV and binary. Streams in chunks (BENCH_LASER_CHUNK_SIZE) to avoid large
+ * internal RAM allocation (~16KB instead of ~160KB). Binary format matches
+ * tools/bin2csv.py (12-byte records: uint64 timestamp_us, int32 adc_value).
+ */
+static void bench_laser_run(void)
+{
+    if (!sdcard_is_mounted()) {
+        ESP_LOGW(TAG, "bench_laser: SD card not mounted, skip");
+        return;
+    }
+    if (mkdir(BENCH_LASER_DIR, 0755) != 0 && errno != EEXIST) {
+        ESP_LOGE(TAG, "bench_laser: mkdir %s failed (errno=%d %s)", BENCH_LASER_DIR, errno, strerror(errno));
+        return;
+    }
+
+    size_t buf_size = (size_t)BENCH_LASER_CHUNK_SIZE * sizeof(csv_sample_t);
+    s_bench_buffer = (csv_sample_t *)heap_caps_malloc(buf_size, MALLOC_CAP_INTERNAL);
+    if (s_bench_buffer == NULL) {
+        ESP_LOGE(TAG, "bench_laser: alloc %u bytes failed", (unsigned)buf_size);
+        return;
+    }
+
+    FILE *fc = fopen(BENCH_LASER_CSV_PATH, "w");
+    if (fc == NULL) {
+        ESP_LOGE(TAG, "bench_laser: open CSV failed (errno=%d)", errno);
+        heap_caps_free(s_bench_buffer);
+        s_bench_buffer = NULL;
+        return;
+    }
+    FILE *fb = fopen(BENCH_LASER_BIN_PATH, "wb");
+    if (fb == NULL) {
+        ESP_LOGE(TAG, "bench_laser: open BIN failed (errno=%d)", errno);
+        fclose(fc);
+        heap_caps_free(s_bench_buffer);
+        s_bench_buffer = NULL;
+        return;
+    }
+
+    int nh = fprintf(fc, "timestamp_us,adc_value\n");
+    size_t bytes_csv = (nh > 0) ? (size_t)nh : 0u;
+    size_t bytes_bin = 0;
+    const uint32_t num_chunks = BENCH_LASER_NUM_SAMPLES / BENCH_LASER_CHUNK_SIZE;
+    uint32_t total_written = 0;
+
+    s_bench_count = 0;
+    s_bench_chunk_ready = false;
+    s_bench_mode = true;
+    start_sampling_timer();
+    int64_t t0 = esp_timer_get_time();
+
+    uint32_t timeout_per_chunk_ms = BENCH_LASER_TIMEOUT_MS / num_chunks;
+    if (timeout_per_chunk_ms < BENCH_LASER_CHUNK_TIMEOUT_MIN_MS) {
+        timeout_per_chunk_ms = BENCH_LASER_CHUNK_TIMEOUT_MIN_MS;
+    }
+    for (uint32_t ch = 0; ch < num_chunks; ch++) {
+        int64_t chunk_t0 = esp_timer_get_time();
+        uint32_t elapsed_ms = 0;
+        while (!s_bench_chunk_ready && elapsed_ms < timeout_per_chunk_ms) {
+            vTaskDelay(pdMS_TO_TICKS(20));
+            elapsed_ms = (uint32_t)((esp_timer_get_time() - chunk_t0) / 1000);
+        }
+        if (!s_bench_chunk_ready) {
+            ESP_LOGW(TAG, "bench_laser: chunk %u timeout", (unsigned)ch);
+            break;
+        }
+        /* Write this chunk to both files */
+        uint32_t n = s_bench_count;
+        for (uint32_t i = 0; i < n; i++) {
+            int nr = fprintf(fc, "%llu,%d\n",
+                            (unsigned long long)s_bench_buffer[i].timestamp_us,
+                            s_bench_buffer[i].adc_value);
+            if (nr > 0) {
+                bytes_csv += (size_t)nr;
+            }
+            bench_record_t rec = {
+                .timestamp_us = s_bench_buffer[i].timestamp_us,
+                .adc_value    = (int32_t)s_bench_buffer[i].adc_value,
+            };
+            bytes_bin += fwrite(&rec, 1, sizeof(rec), fb);
+        }
+        total_written += n;
+        /* Reset for next chunk */
+        s_bench_count = 0;
+        s_bench_chunk_ready = false;
+    }
+
+    int64_t t1 = esp_timer_get_time();
+    stop_sampling_timer();
+    s_bench_mode = false;
+    fclose(fc);
+    fclose(fb);
+    heap_caps_free(s_bench_buffer);
+    s_bench_buffer = NULL;
+
+    double time_ms = (t1 - t0) / 1000.0;
+    double samples_per_sec = (time_ms > 0 && total_written > 0) ? (total_written * 1000.0 / time_ms) : 0;
+    ESP_LOGI(TAG, "========================================");
+    ESP_LOGI(TAG, " bench_laser: %u samples in %.2f ms -> %.1f samples/s",
+             (unsigned)total_written, time_ms, samples_per_sec);
+    ESP_LOGI(TAG, " CSV: %u bytes | BIN: %u bytes (use tools/bin2csv.py to convert .bin -> .csv)",
+             (unsigned)bytes_csv, (unsigned)bytes_bin);
+    ESP_LOGI(TAG, "========================================");
+}
+
 // Initialize SPIFFS
 static esp_err_t init_spiffs(void) {
     esp_vfs_spiffs_conf_t conf = {
@@ -782,6 +927,11 @@ void app_main(void) {
     // ADC will be started when start button is pressed
     
     ESP_LOGI(TAG, "RTOS architecture initialized: continuous ADC @ %d Hz, CSV logging enabled", SAMPLE_RATE_HZ);
+
+    // Bench laser: 10k ADC samples -> SD (CSV + binary) when SD card is mounted
+    if (sdcard_is_mounted()) {
+        bench_laser_run();
+    }
 
     // Initialize WiFi AP (self-host)
 #if MODE == WIFI
