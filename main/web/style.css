@@ -87,6 +87,13 @@ button:active {
     color: rgba(255,255,255,0.8);
 }
 
+.elapsed-time {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: rgba(255, 255, 200, 0.95);
+    min-height: 1.2em;
+}
+
 .button-group {
     display: flex;
     flex-direction: column;

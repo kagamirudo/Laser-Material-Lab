@@ -100,11 +100,23 @@ static esp_err_t adc_api_handler(httpd_req_t *req) {
     int adc_value = get_current_adc_value();
     int sample_count = get_sample_count();
     bool logging = is_csv_logging_active();
+    uint64_t elapsed_ms = 0;
+    float rate_hz = 0.0f;
+    if (logging) {
+        get_logging_stats(&sample_count, &elapsed_ms, &rate_hz);
+    }
     
-    char response[128];
-    snprintf(response, sizeof(response),
-             "{\"adc\":%d,\"samples\":%d,\"logging\":%s}",
-             adc_value, sample_count, logging ? "true" : "false");
+    char response[160];
+    if (logging) {
+        snprintf(response, sizeof(response),
+                 "{\"adc\":%d,\"samples\":%d,\"logging\":%s,\"elapsed_ms\":%llu}",
+                 adc_value, sample_count, logging ? "true" : "false",
+                 (unsigned long long)elapsed_ms);
+    } else {
+        snprintf(response, sizeof(response),
+                 "{\"adc\":%d,\"samples\":%d,\"logging\":%s}",
+                 adc_value, sample_count, logging ? "true" : "false");
+    }
     
     httpd_resp_set_type(req, "application/json");
     httpd_resp_send(req, response, HTTPD_RESP_USE_STRLEN);

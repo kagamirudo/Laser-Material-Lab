@@ -39,6 +39,20 @@ function updateADC() {
                 document.getElementById('adcValue').textContent = data.adc;
                 const status = `Samples: ${data.samples}`;
                 document.getElementById('adcInfo').textContent = status;
+                // Show recording time in minutes (update every 30s is fine; we get it each poll)
+                const elapsedEl = document.getElementById('elapsedTime');
+                if (data.elapsed_ms != null) {
+                    const totalMs = data.elapsed_ms;
+                    const totalMin = Math.floor(totalMs / 60000);
+                    const hours = Math.floor(totalMin / 60);
+                    const mins = totalMin % 60;
+                    elapsedEl.textContent = hours > 0
+                        ? `Recording: ${hours}h ${mins} min`
+                        : `Recording: ${totalMin} min`;
+                    elapsedEl.style.display = '';
+                } else {
+                    elapsedEl.style.display = 'none';
+                }
             } else {
                 // When logging stops, stop updating display immediately
                 isLoggingActive = false;
@@ -48,6 +62,8 @@ function updateADC() {
                 }
                 document.getElementById('adcValue').textContent = '--';
                 document.getElementById('adcInfo').textContent = 'Stopped';
+                document.getElementById('elapsedTime').textContent = '';
+                document.getElementById('elapsedTime').style.display = 'none';
             }
         })
         .catch(error => {
@@ -69,6 +85,8 @@ function startLogging() {
             isLoggingActive = true;
             let statusMsg = `Recording started. Target rate: ${data.rate_target || 4000} Hz`;
             updateStatus(statusMsg);
+            document.getElementById('elapsedTime').textContent = 'Recording: 0 min';
+            document.getElementById('elapsedTime').style.display = '';
             
             // Start updating ADC display
             if (!adcUpdateInterval) {

@@ -2,6 +2,8 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <sys/time.h>
+#include <utime.h>
 #include <dirent.h>
 #include "esp_err.h"
 #include "esp_log.h"
@@ -19,6 +21,8 @@
 #include "esp_task_wdt.h"
 #include "esp_spiffs.h"
 
+#include "esp_sntp.h"
+
 #include "wifi.h"
 #include "server.h"
 #include "sdcard.h"
@@ -30,8 +34,8 @@ static const char *TAG = "LASER_ADC";
 
 #define WIFI 1
 #define HOST 2
-// #define MODE WIFI
-#define MODE HOST
+#define MODE WIFI
+// #define MODE HOST
 
 // Pin mapping (ESP32-S3)
 #define LASER_GPIO   5    // PWM output to laser
@@ -51,11 +55,13 @@ static const char *TAG = "LASER_ADC";
 #define ADC_CONTINUOUS_BUF_SIZE 4096     // Buffer for continuous ADC (must be multiple of SOC_ADC_DIGI_RESULT_BYTES)
 #define ADC_READ_TIMEOUT_MS 100          // Timeout for reading from continuous ADC
 
-// SPIFFS config
+// SPIFFS config (fallback when SD card not mounted)
 #define SPIFFS_MOUNT_POINT "/spiffs"
+// CSV directory on SD (same base as bench; used when sdcard_is_mounted())
+#define CSV_SD_DIR          SDCARD_MOUNT_POINT "/laser"
 #define CSV_FILE_PATH_MAX_LEN 64         // Maximum length for CSV filename
 #define CSV_QUEUE_SIZE 3000              // Queue size for ADC samples
-#define SAMPLE_LIMIT 10000               // Auto-stop after this many samples
+#define SAMPLE_LIMIT 10000000            // Auto-stop after this many samples
 
 // CSV write buffer config
 #define CSV_WRITE_BATCH_SIZE 500         // Write CSV in batches to reduce flash wear
@@ -84,16 +90,42 @@ typedef struct {
 
 static QueueHandle_t s_csv_queue = NULL;
 
-// Bench laser: collect N ADC samples and write to SD (CSV + binary)
+// Bench laser: run for T seconds, write ADC samples to SD. Test CSV and binary separately (one file per run).
 // Stream in chunks to avoid allocating 160KB internal RAM (fits in ~16KB).
-#define BENCH_LASER_NUM_SAMPLES  1200000
+#define BENCH_LASER_DURATION_SEC 30
 #define BENCH_LASER_CHUNK_SIZE   1000
 #define BENCH_LASER_DIR          SDCARD_MOUNT_POINT "/laser"
 #define BENCH_LASER_CSV_PATH     BENCH_LASER_DIR "/data.csv"
 #define BENCH_LASER_BIN_PATH     BENCH_LASER_DIR "/data.bin"
-#define BENCH_LASER_TIMEOUT_MS   30000
-/* Minimum ms per chunk: must allow time to collect CHUNK_SIZE at sample rate (e.g. 1000/4000 = 250 ms). Use 3x. */
-#define BENCH_LASER_CHUNK_TIMEOUT_MIN_MS  1000
+/* Max ms to wait for one chunk before giving up (e.g. 1000/4000 = 250 ms at 4 kHz; use ~1 s). */
+#define BENCH_LASER_CHUNK_TIMEOUT_MS  1000
+
+typedef enum { BENCH_FMT_CSV, BENCH_FMT_BIN } bench_fmt_t;
+
+/* Unix time for 2020-01-01 00:00:00 UTC; reject file mtime if system time is before this (not set or epoch). */
+#define SANE_TIME_MIN_SEC  ((time_t)1577836800)
+
+/** Set file access and modification time to current time (so PC shows correct "date modified" when SD is plugged in).
+ *  Only sets time if system clock has been set (e.g. via SNTP when WiFi STA is connected); otherwise skips to avoid 1970. */
+static void set_file_mtime_now(const char *path) {
+    struct timeval tv;
+    if (gettimeofday(&tv, NULL) != 0) {
+        ESP_LOGW(TAG, "set_file_mtime: gettimeofday failed, skipping utime for %s", path);
+        return;
+    }
+    if (tv.tv_sec < SANE_TIME_MIN_SEC) {
+        ESP_LOGW(TAG, "set_file_mtime: system time not set (sec=%ld), skipping utime for %s (init SNTP in STA mode for correct time)",
+                 (long)tv.tv_sec, path);
+        return;
+    }
+    struct utimbuf ut = {
+        .actime  = (time_t)tv.tv_sec,
+        .modtime = (time_t)tv.tv_sec,
+    };
+    if (utime(path, &ut) != 0) {
+        ESP_LOGW(TAG, "utime %s failed (errno=%d)", path, errno);
+    }
+}
 
 static volatile bool s_bench_mode = false;
 static csv_sample_t *s_bench_buffer = NULL;
@@ -122,7 +154,7 @@ static uint32_t s_csv_sample_index = 0;
 void clear_spiffs_storage(void);
 void stop_csv_logging(void);
 static void generate_csv_filename(void);
-static void bench_laser_run(void);
+static void bench_laser_run_one(bench_fmt_t fmt);
 
 static void laser_init_full_on(void) {
     ledc_timer_config_t tcfg = {
@@ -229,8 +261,6 @@ void stop_sampling_timer(void) {
     ESP_LOGI(TAG, "ADC stop requested");
 }
 
-
-
 // ADC processing task: reads samples from continuous ADC buffer
 static void adc_task(void *pvParameters) {
     adc_continuous_data_t *parsed_samples = heap_caps_malloc(sizeof(adc_continuous_data_t) * 256, MALLOC_CAP_DEFAULT);
@@ -296,7 +326,7 @@ static void adc_task(void *pvParameters) {
                 // Bench laser: fill chunk; when full set chunk_ready and pause until reset
                 if (s_bench_mode && s_bench_buffer != NULL) {
                     if (s_bench_chunk_ready) {
-                        continue;  // wait for bench_laser_run() to write and reset
+                        continue;  // wait for bench_laser_run_one() to write and reset
                     }
                     if (s_bench_count < BENCH_LASER_CHUNK_SIZE) {
                         s_bench_buffer[s_bench_count].adc_value = raw_value;
@@ -538,12 +568,17 @@ void get_spiffs_storage_info(size_t *total_bytes, size_t *used_bytes) {
     }
 }
 
-// Generate CSV filename based on actual and attempted sample rates
+// Generate CSV path: SD card when mounted, else SPIFFS (avoids crash when SD absent)
 static void generate_csv_filename(void) {
-    snprintf(s_csv_file_path, sizeof(s_csv_file_path), 
-             "/spiffs/data_%uHz_attempt_%d.csv",
-             (unsigned int)s_actual_sample_rate_hz, SAMPLE_RATE_HZ);
-    ESP_LOGI(TAG, "CSV filename: %s", s_csv_file_path);
+    const char *base_dir;
+    if (sdcard_is_mounted()) {
+        base_dir = CSV_SD_DIR;
+    } else {
+        base_dir = SPIFFS_MOUNT_POINT;
+    }
+    snprintf(s_csv_file_path, sizeof(s_csv_file_path), "%s/data.csv",
+             base_dir);
+    ESP_LOGI(TAG, "CSV path: %s", s_csv_file_path);
 }
 
 // Start ADC sampling and CSV logging
@@ -560,48 +595,49 @@ void start_csv_logging(void) {
             s_csv_file = NULL;
         }
         
-        // Clean up any previous files (check if they exist first)
+        // Clean up any previous file at this path
         struct stat st;
         if (stat(s_csv_file_path, &st) == 0) {
-            ESP_LOGI(TAG, "Found existing CSV file, deleting...");
             if (remove(s_csv_file_path) == 0) {
                 ESP_LOGI(TAG, "CSV file deleted: %s", s_csv_file_path);
             } else {
                 ESP_LOGW(TAG, "Failed to delete CSV file (errno: %d)", errno);
             }
         }
-        
-        // Check SPIFFS space before opening file
-        size_t total = 0, used = 0;
-        esp_err_t ret = esp_spiffs_info(NULL, &total, &used);
-        if (ret == ESP_OK) {
-            ESP_LOGI(TAG, "SPIFFS: %d KB used of %d KB total", used / 1024, total / 1024);
-            // If SPIFFS is nearly full (>90%), format it
-            if (used > (total * 9 / 10)) {
-                ESP_LOGW(TAG, "SPIFFS nearly full (%d%%), formatting...", (used * 100) / total);
-                esp_vfs_spiffs_unregister(NULL);
-                esp_vfs_spiffs_conf_t conf = {
-                    .base_path = SPIFFS_MOUNT_POINT,
-                    .partition_label = NULL,
-                    .max_files = 5,
-                    .format_if_mount_failed = true
-                };
-                ret = esp_vfs_spiffs_register(&conf);
-                if (ret == ESP_OK) {
-                    ESP_LOGI(TAG, "SPIFFS reformatted successfully");
-                } else {
-                    ESP_LOGE(TAG, "Failed to reformat SPIFFS: %s", esp_err_to_name(ret));
+
+        bool use_sd = sdcard_is_mounted();
+        if (use_sd) {
+            // Ensure CSV directory exists on SD. Use mode 0 for FAT (0755 can cause EINVAL on FatFS).
+            if (mkdir(CSV_SD_DIR, 0) != 0 && errno != EEXIST) {
+                ESP_LOGE(TAG, "mkdir %s failed (errno=%d)", CSV_SD_DIR, errno);
+            }
+        } else {
+            // SPIFFS: check space and optionally reformat if nearly full
+            size_t total = 0, used = 0;
+            esp_err_t ret = esp_spiffs_info(NULL, &total, &used);
+            if (ret == ESP_OK) {
+                ESP_LOGI(TAG, "SPIFFS: %d KB used of %d KB total", used / 1024, total / 1024);
+                if (used > (total * 9 / 10)) {
+                    ESP_LOGW(TAG, "SPIFFS nearly full (%d%%), formatting...", (used * 100) / total);
+                    esp_vfs_spiffs_unregister(NULL);
+                    esp_vfs_spiffs_conf_t conf = {
+                        .base_path = SPIFFS_MOUNT_POINT,
+                        .partition_label = NULL,
+                        .max_files = 5,
+                        .format_if_mount_failed = true
+                    };
+                    if (esp_vfs_spiffs_register(&conf) != ESP_OK) {
+                        ESP_LOGE(TAG, "Failed to reformat SPIFFS");
+                    }
                 }
             }
         }
-        
+
         // Open CSV file for writing
         s_csv_file = fopen(s_csv_file_path, "w");
         if (s_csv_file == NULL) {
             ESP_LOGE(TAG, "Failed to open CSV file: %s (errno: %d)", s_csv_file_path, errno);
-            if (errno == 28) {  // ENOSPC - No space left
-                ESP_LOGE(TAG, "SPIFFS is full! Attempting to format...");
-                // Unregister and reformat SPIFFS
+            if (!use_sd && errno == 28) {  // ENOSPC on SPIFFS: reformat and retry once
                 esp_vfs_spiffs_unregister(NULL);
                 esp_vfs_spiffs_conf_t conf = {
                     .base_path = SPIFFS_MOUNT_POINT,
@@ -609,47 +645,39 @@ void start_csv_logging(void) {
                     .max_files = 5,
                     .format_if_mount_failed = true
                 };
-                ret = esp_vfs_spiffs_register(&conf);
-                if (ret == ESP_OK) {
-                    ESP_LOGI(TAG, "SPIFFS reformatted, retrying file open...");
+                if (esp_vfs_spiffs_register(&conf) == ESP_OK) {
                     s_csv_file = fopen(s_csv_file_path, "w");
                     if (s_csv_file != NULL) {
                         fprintf(s_csv_file, "timestamp_us,adc_value\n");
                         fflush(s_csv_file);
-                        ESP_LOGI(TAG, "CSV file opened after reformat: %s", s_csv_file_path);
-                    } else {
-                        ESP_LOGE(TAG, "Still failed to open CSV after reformat (errno: %d)", errno);
+                        ESP_LOGI(TAG, "CSV file opened after SPIFFS reformat: %s", s_csv_file_path);
                     }
-                } else {
-                    ESP_LOGE(TAG, "Failed to reformat SPIFFS: %s", esp_err_to_name(ret));
                 }
             }
         } else {
-            // Write CSV header
             fprintf(s_csv_file, "timestamp_us,adc_value\n");
             fflush(s_csv_file);
             ESP_LOGI(TAG, "CSV file opened: %s", s_csv_file_path);
         }
         xSemaphoreGive(s_csv_file_mutex);
     }
-    
-    // Clear queue
+
+    // Only enable logging and start ADC if file opened (avoid silent drop when SD/SPIFFS open fails)
+    if (s_csv_file == NULL) {
+        ESP_LOGE(TAG, "CSV file not opened; start logging aborted");
+        return;
+    }
     if (s_csv_queue != NULL) {
         xQueueReset(s_csv_queue);
     }
-    
-    // Set start time BEFORE enabling logging (fixes timestamp race condition)
     s_logging_start_time_us = esp_timer_get_time();
-    s_sample_count = 0;  // Reset sample count
-    s_logging_stop_time_us = 0;  // Reset stop time
-    s_csv_sample_index = 0;  // Reset CSV sample index for consistent timestamps
-    
-    // Enable CSV logging AFTER start time is set
+    s_sample_count = 0;
+    s_logging_stop_time_us = 0;
+    s_csv_sample_index = 0;
     s_csv_logging_enabled = true;
-    
-    // Start ADC sampling
     start_sampling_timer();
-    ESP_LOGI(TAG, "ADC sampling started @ %d Hz (CSV file logging)", SAMPLE_RATE_HZ);
+    ESP_LOGI(TAG, "ADC sampling started @ %d Hz (CSV logging to %s)", SAMPLE_RATE_HZ,
+             sdcard_is_mounted() ? "SD" : "SPIFFS");
 }
 
 // Stop ADC sampling and CSV logging
@@ -693,6 +721,7 @@ void stop_csv_logging(void) {
             fflush(s_csv_file);
             fclose(s_csv_file);
             s_csv_file = NULL;
+            set_file_mtime_now(s_csv_file_path);
             ESP_LOGI(TAG, "CSV file closed");
         }
         xSemaphoreGive(s_csv_file_mutex);
@@ -703,9 +732,8 @@ void stop_csv_logging(void) {
     ESP_LOGI(TAG, "ADC sampling and CSV logging stopped. Total samples read: %d", s_sample_count);
 }
 
-// Clear storage (for server.c compatibility)
+// Clear CSV file (works for path on SD or SPIFFS; server.c compatibility)
 void clear_spiffs_storage(void) {
-    // Delete CSV file (use current filename)
     if (remove(s_csv_file_path) == 0) {
         ESP_LOGI(TAG, "CSV file deleted: %s", s_csv_file_path);
     }
@@ -717,13 +745,15 @@ const char* get_csv_file_path(void) {
 }
 
 /**
- * Bench laser: collect BENCH_LASER_NUM_SAMPLES (10k) ADC samples and write to SD
- * as CSV and binary. Streams in chunks (BENCH_LASER_CHUNK_SIZE) to avoid large
- * internal RAM allocation (~16KB instead of ~160KB). Binary format matches
- * tools/bin2csv.py (12-byte records: uint64 timestamp_us, int32 adc_value).
+ * Bench laser: run for BENCH_LASER_DURATION_SEC seconds, write ADC samples to SD
+ * to a single file (CSV or binary). Streams in chunks (BENCH_LASER_CHUNK_SIZE).
+ * Binary format matches tools/bin2csv.py (12-byte records: uint64 timestamp_us, int32 adc_value).
  */
-static void bench_laser_run(void)
+static void bench_laser_run_one(bench_fmt_t fmt)
 {
+    const char *path = (fmt == BENCH_FMT_CSV) ? BENCH_LASER_CSV_PATH : BENCH_LASER_BIN_PATH;
+    const char *label = (fmt == BENCH_FMT_CSV) ? "CSV" : "BIN";
+
     if (!sdcard_is_mounted()) {
         ESP_LOGW(TAG, "bench_laser: SD card not mounted, skip");
         return;
@@ -740,27 +770,23 @@ static void bench_laser_run(void)
         return;
     }
 
-    FILE *fc = fopen(BENCH_LASER_CSV_PATH, "w");
-    if (fc == NULL) {
-        ESP_LOGE(TAG, "bench_laser: open CSV failed (errno=%d)", errno);
-        heap_caps_free(s_bench_buffer);
-        s_bench_buffer = NULL;
-        return;
-    }
-    FILE *fb = fopen(BENCH_LASER_BIN_PATH, "wb");
-    if (fb == NULL) {
-        ESP_LOGE(TAG, "bench_laser: open BIN failed (errno=%d)", errno);
-        fclose(fc);
+    FILE *f = (fmt == BENCH_FMT_CSV)
+              ? fopen(BENCH_LASER_CSV_PATH, "w")
+              : fopen(BENCH_LASER_BIN_PATH, "wb");
+    if (f == NULL) {
+        ESP_LOGE(TAG, "bench_laser: open %s failed (errno=%d)", label, errno);
         heap_caps_free(s_bench_buffer);
         s_bench_buffer = NULL;
         return;
     }
 
-    int nh = fprintf(fc, "timestamp_us,adc_value\n");
-    size_t bytes_csv = (nh > 0) ? (size_t)nh : 0u;
-    size_t bytes_bin = 0;
-    const uint32_t num_chunks = BENCH_LASER_NUM_SAMPLES / BENCH_LASER_CHUNK_SIZE;
+    size_t bytes_written = 0;
+    if (fmt == BENCH_FMT_CSV) {
+        int nh = fprintf(f, "timestamp_us,adc_value\n");
+        bytes_written = (nh > 0) ? (size_t)nh : 0u;
+    }
     uint32_t total_written = 0;
+    const int64_t duration_us = (int64_t)BENCH_LASER_DURATION_SEC * 1000000;
 
     s_bench_count = 0;
     s_bench_chunk_ready = false;
@@ -768,38 +794,44 @@ static void bench_laser_run(void)
     start_sampling_timer();
     int64_t t0 = esp_timer_get_time();
 
-    uint32_t timeout_per_chunk_ms = BENCH_LASER_TIMEOUT_MS / num_chunks;
-    if (timeout_per_chunk_ms < BENCH_LASER_CHUNK_TIMEOUT_MIN_MS) {
-        timeout_per_chunk_ms = BENCH_LASER_CHUNK_TIMEOUT_MIN_MS;
-    }
-    for (uint32_t ch = 0; ch < num_chunks; ch++) {
-        int64_t chunk_t0 = esp_timer_get_time();
-        uint32_t elapsed_ms = 0;
-        while (!s_bench_chunk_ready && elapsed_ms < timeout_per_chunk_ms) {
-            vTaskDelay(pdMS_TO_TICKS(20));
-            elapsed_ms = (uint32_t)((esp_timer_get_time() - chunk_t0) / 1000);
-        }
-        if (!s_bench_chunk_ready) {
-            ESP_LOGW(TAG, "bench_laser: chunk %u timeout", (unsigned)ch);
+    ESP_LOGI(TAG, "bench_laser: %s test running for %d seconds...", label, BENCH_LASER_DURATION_SEC);
+
+    while (1) {
+        int64_t elapsed_us = esp_timer_get_time() - t0;
+        if (elapsed_us >= duration_us) {
             break;
         }
-        /* Write this chunk to both files */
+        int64_t chunk_t0 = esp_timer_get_time();
+        uint32_t elapsed_ms = 0;
+        while (!s_bench_chunk_ready && elapsed_ms < BENCH_LASER_CHUNK_TIMEOUT_MS) {
+            vTaskDelay(pdMS_TO_TICKS(20));
+            elapsed_ms = (uint32_t)((esp_timer_get_time() - chunk_t0) / 1000);
+            if ((esp_timer_get_time() - t0) >= duration_us) {
+                break;
+            }
+        }
+        if (!s_bench_chunk_ready) {
+            ESP_LOGW(TAG, "bench_laser: chunk timeout");
+            break;
+        }
         uint32_t n = s_bench_count;
         for (uint32_t i = 0; i < n; i++) {
-            int nr = fprintf(fc, "%llu,%d\n",
-                            (unsigned long long)s_bench_buffer[i].timestamp_us,
-                            s_bench_buffer[i].adc_value);
-            if (nr > 0) {
-                bytes_csv += (size_t)nr;
+            if (fmt == BENCH_FMT_CSV) {
+                int nr = fprintf(f, "%llu,%d\n",
+                                 (unsigned long long)s_bench_buffer[i].timestamp_us,
+                                 s_bench_buffer[i].adc_value);
+                if (nr > 0) {
+                    bytes_written += (size_t)nr;
+                }
+            } else {
+                bench_record_t rec = {
+                    .timestamp_us = s_bench_buffer[i].timestamp_us,
+                    .adc_value    = (int32_t)s_bench_buffer[i].adc_value,
+                };
+                bytes_written += fwrite(&rec, 1, sizeof(rec), f);
             }
-            bench_record_t rec = {
-                .timestamp_us = s_bench_buffer[i].timestamp_us,
-                .adc_value    = (int32_t)s_bench_buffer[i].adc_value,
-            };
-            bytes_bin += fwrite(&rec, 1, sizeof(rec), fb);
         }
         total_written += n;
-        /* Reset for next chunk */
         s_bench_count = 0;
         s_bench_chunk_ready = false;
     }
@@ -807,18 +839,16 @@ static void bench_laser_run(void)
     int64_t t1 = esp_timer_get_time();
     stop_sampling_timer();
     s_bench_mode = false;
-    fclose(fc);
-    fclose(fb);
+    fclose(f);
+    set_file_mtime_now(path);
     heap_caps_free(s_bench_buffer);
     s_bench_buffer = NULL;
 
-    double time_ms = (t1 - t0) / 1000.0;
-    double samples_per_sec = (time_ms > 0 && total_written > 0) ? (total_written * 1000.0 / time_ms) : 0;
+    double time_sec = (t1 - t0) / 1000000.0;
+    double samples_per_sec = (time_sec > 0 && total_written > 0) ? (total_written / time_sec) : 0;
     ESP_LOGI(TAG, "========================================");
-    ESP_LOGI(TAG, " bench_laser: %u samples in %.2f ms -> %.1f samples/s",
-             (unsigned)total_written, time_ms, samples_per_sec);
-    ESP_LOGI(TAG, " CSV: %u bytes | BIN: %u bytes (use tools/bin2csv.py to convert .bin -> .csv)",
-             (unsigned)bytes_csv, (unsigned)bytes_bin);
+    ESP_LOGI(TAG, " bench_laser %s: ran %.2f s, %u samples -> %.1f samples/s, %u bytes",
+             label, time_sec, (unsigned)total_written, samples_per_sec, (unsigned)bytes_written);
     ESP_LOGI(TAG, "========================================");
 }
 
@@ -867,23 +897,16 @@ void app_main(void) {
         ESP_LOGW(TAG, "Display initialization failed - continuing without display");
     }
 
-    // Initialize SPIFFS (for CSV file storage)
+    // Initialize SPIFFS (fallback for CSV when SD card not mounted)
     ESP_ERROR_CHECK(init_spiffs());
 
-    // Initialize SD card and test
+    // Initialize SD card (used for CSV logging when mounted; no read/write test on startup)
     esp_err_t sdcard_ret = sdcard_init();
     if (sdcard_ret == ESP_OK) {
         ESP_LOGI(TAG, "SD card initialized successfully");
-        // Test SD card: read capacity and verify read/write functionality
-        esp_err_t sd_test_ret = sdcard_test_read();
-        if (sd_test_ret == ESP_OK) {
-            display_show_status("SD card", "OK");
-        } else {
-            display_show_status("SD card", "TEST FAILED");
-        }
+        display_show_status("SD card", "OK");
     } else {
-        ESP_LOGW(TAG, "SD card initialization failed: %s (continuing without SD card)", 
-                esp_err_to_name(sdcard_ret), sdcard_ret);
+        ESP_LOGW(TAG, "SD card initialization failed: %s (CSV will use SPIFFS)", esp_err_to_name(sdcard_ret));
         display_show_status("SD card", "INIT FAILED");
     }
 
@@ -928,15 +951,27 @@ void app_main(void) {
     
     ESP_LOGI(TAG, "RTOS architecture initialized: continuous ADC @ %d Hz, CSV logging enabled", SAMPLE_RATE_HZ);
 
-    // Bench laser: 10k ADC samples -> SD (CSV + binary) when SD card is mounted
-    if (sdcard_is_mounted()) {
-        bench_laser_run();
-    }
 
-    // Initialize WiFi AP (self-host)
+    // Initialize WiFi
 #if MODE == WIFI
     wifi_init_sta();
     display_show_status("WiFi (STA)", "Connecting...");
+    // Set system time via SNTP so file mtime on SD card is correct
+    esp_sntp_setoperatingmode(ESP_SNTP_OPMODE_POLL);
+    esp_sntp_setservername(0, "pool.ntp.org");
+    esp_sntp_init();
+    for (int i = 0; i < 50; i++) {
+        vTaskDelay(pdMS_TO_TICKS(200));
+        if (sntp_get_sync_status() == SNTP_SYNC_STATUS_COMPLETED) {
+            time_t now;
+            time(&now);
+            ESP_LOGI(TAG, "SNTP synced, system time set (sec=%ld)", (long)now);
+            break;
+        }
+    }
+    if (sntp_get_sync_status() != SNTP_SYNC_STATUS_COMPLETED) {
+        ESP_LOGW(TAG, "SNTP not synced yet; file dates may be wrong until sync completes");
+    }
 #elif MODE == HOST
     wifi_init_softap();
     display_show_status("WiFi (AP)", "Starting hotspot...");
@@ -975,7 +1010,8 @@ void app_main(void) {
     snprintf(line1, sizeof(line1), "IP: " IPSTR, IP2STR(&ip_info.ip));
     snprintf(line2, sizeof(line2), "Ready: web control");
     display_show_status(line1, line2);
-    // Keep running
+
+    // Keep running (CSV logging writes to SD when mounted, else SPIFFS; start via web UI)
     while (1) {
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
