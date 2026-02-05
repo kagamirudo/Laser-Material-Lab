@@ -27,6 +27,25 @@ The code in `002.c` configures the ESP32’s **ADC** (analog‑to‑digital conv
 
 You can think of this as the board taking **4,000 “brightness photos” every second**, but in numbers instead of images.
 
+**Code snippet** - ADC configuration:
+
+```c
+// ADC sampling config
+#define SAMPLE_RATE_HZ    4000           // Target: 4000 samples per second
+#define ADC_GPIO          4              // ADC input from photodiode/sensor
+
+// Configure continuous ADC
+adc_continuous_config_t cont_cfg = {
+    .pattern_num = 1,
+    .adc_pattern = &adc_pattern,
+    .sample_freq_hz = s_actual_sample_rate_hz,  // 4000 Hz
+    .conv_mode = ADC_CONV_SINGLE_UNIT_1,
+    .format = ADC_DIGI_OUTPUT_FORMAT_TYPE1,
+};
+ESP_ERROR_CHECK(adc_continuous_config(adc_handle, &cont_cfg));
+```
+
+
 ### 3. What happens to each measurement?
 
 For each raw measurement coming from the sensor:
@@ -37,6 +56,44 @@ For each raw measurement coming from the sensor:
   - placed into a **queue** (a first‑in/first‑out buffer) so writing to storage does not slow down the measurements.
 
 If the queue ever fills up, a few samples may be dropped. The firmware prefers to **keep sampling fast** rather than pause and risk timing gaps.
+
+**Code snippet** - ADC reading and queue processing:
+
+```c
+// Structure for queued samples
+typedef struct {
+    int adc_value;
+    uint64_t timestamp_us;
+} csv_sample_t;
+
+// In ADC task: read samples and enqueue them
+esp_err_t parse_ret = adc_continuous_read_parse(adc_handle, parsed_samples, 256, 
+                                                 &num_samples, ADC_READ_TIMEOUT_MS);
+
+if (parse_ret == ESP_OK && num_samples > 0) {
+    for (uint32_t i = 0; i < num_samples; i++) {
+        if (!parsed_samples[i].valid) {
+            dropped_samples++;  // Skip invalid samples
+            continue;
+        }
+        
+        int raw_value = (int)parsed_samples[i].raw_data;
+        s_sample_count++;  // Track total samples
+        
+        // Send to CSV queue if logging enabled (non-blocking)
+        if (s_csv_logging_enabled && s_csv_queue != NULL) {
+            csv_sample_t sample = {
+                .adc_value = raw_value,
+                .timestamp_us = esp_timer_get_time()
+            };
+            // Non-blocking send - drops sample if queue is full
+            if (xQueueSend(s_csv_queue, &sample, 0) != pdTRUE) {
+                // Queue full - sample dropped to maintain ADC rate
+            }
+        }
+    }
+}
+```
 
 ### 4. How does the data get written to a CSV file?
 
@@ -62,6 +119,47 @@ The writer:
 - writes regularly to avoid losing data,
 - but **flushes** (forces data to storage) only every few batches, to reduce wear on the SD card / flash.
 
+**Code snippet** - CSV writer task (batch writing):
+
+```c
+#define CSV_WRITE_BATCH_SIZE 500    // Write CSV in batches
+#define CSV_FLUSH_INTERVAL 5        // Flush every N batches
+
+static void csv_writer_task(void *pvParameters) {
+    csv_sample_t batch[CSV_WRITE_BATCH_SIZE];
+    uint32_t batch_count = 0;
+    const uint64_t sample_interval_us = 1000000ULL / s_actual_sample_rate_hz;
+    
+    while (1) {
+        // Wait for samples from queue
+        csv_sample_t sample;
+        if (xQueueReceive(s_csv_queue, &sample, pdMS_TO_TICKS(100)) == pdTRUE) {
+            batch[batch_count] = sample;
+            batch_count++;
+            
+            // Write batch when full
+            if (batch_count >= CSV_WRITE_BATCH_SIZE) {
+                // Write batch to CSV file
+                for (uint32_t i = 0; i < batch_count; i++) {
+                    uint64_t timestamp_us = s_csv_sample_index * sample_interval_us;
+                    fprintf(s_csv_file, "%llu,%d\n",
+                           (unsigned long long)timestamp_us,
+                           batch[i].adc_value);
+                    s_csv_sample_index++;
+                }
+                // Flush periodically to reduce flash wear
+                static uint32_t flush_counter = 0;
+                if (++flush_counter >= CSV_FLUSH_INTERVAL) {
+                    fflush(s_csv_file);
+                    flush_counter = 0;
+                }
+                batch_count = 0;
+            }
+        }
+    }
+}
+```
+
 ### 5. Where is the CSV stored?
 
 The firmware chooses the storage location automatically:
@@ -76,6 +174,24 @@ You do **not** need to worry about paths when using the device:
 - the firmware checks whether the SD card is available,
 - picks the correct folder,
 - deletes any older `data.csv` file before starting a new logging session.
+
+**Code snippet** - Storage location selection:
+
+```c
+#define CSV_SD_DIR          SDCARD_MOUNT_POINT "/laser"
+#define SPIFFS_MOUNT_POINT  "/spiffs"
+
+static void generate_csv_filename(void) {
+    const char *base_dir;
+    if (sdcard_is_mounted()) {
+        base_dir = CSV_SD_DIR;  // Use SD card: /sdcard/laser/data.csv
+    } else {
+        base_dir = SPIFFS_MOUNT_POINT;  // Use SPIFFS: /spiffs/data.csv
+    }
+    snprintf(s_csv_file_path, sizeof(s_csv_file_path), "%s/data.csv", base_dir);
+    ESP_LOGI(TAG, "CSV path: %s", s_csv_file_path);
+}
+```
 
 ### 6. How do you start and stop logging?
 
@@ -97,6 +213,51 @@ When you press **Stop**:
   - waits a short time so any remaining samples in the queue are written,  
   - closes the file cleanly and updates its “last modified” time,  
   - records how long the logging lasted and how many samples were collected.
+
+**Code snippet** - Start logging:
+
+```c
+void start_csv_logging(void) {
+    generate_csv_filename();  // Choose SD card or SPIFFS
+    
+    // Open CSV file and write header
+    s_csv_file = fopen(s_csv_file_path, "w");
+    if (s_csv_file != NULL) {
+        fprintf(s_csv_file, "timestamp_us,adc_value\n");
+        fflush(s_csv_file);
+    }
+    
+    // Reset counters and enable logging
+    s_logging_start_time_us = esp_timer_get_time();
+    s_sample_count = 0;
+    s_csv_sample_index = 0;
+    s_csv_logging_enabled = true;
+    start_sampling_timer();  // Start ADC sampling
+}
+```
+
+**Code snippet** - Stop logging:
+
+```c
+void stop_csv_logging(void) {
+    s_csv_logging_enabled = false;  // Stop sending samples to queue
+    
+    // Wait for queue to drain
+    while (uxQueueMessagesWaiting(s_csv_queue) > 0) {
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+    
+    // Close file and update modification time
+    if (s_csv_file != NULL) {
+        fflush(s_csv_file);
+        fclose(s_csv_file);
+        set_file_mtime_now(s_csv_file_path);
+    }
+    
+    s_logging_stop_time_us = esp_timer_get_time();
+    ESP_LOGI(TAG, "Logging stopped. Total samples: %d", s_sample_count);
+}
+```
 
 ### 7. What is the logging rate and duration?
 
@@ -137,6 +298,28 @@ The binary file is smaller and quicker to write.
 Later, a helper script (`tools/bin2csv.py`) on your computer can:
 - read the binary file,
 - convert it into a normal CSV with the same columns (`timestamp_us,adc_value`).
+
+**Code snippet** - Bench mode binary record format:
+
+```c
+// Binary bench record (12 bytes: uint64 timestamp + int32 adc_value)
+typedef struct {
+    uint64_t timestamp_us;
+    int32_t  adc_value;
+} __attribute__((packed)) bench_record_t;
+
+// Write binary record
+bench_record_t rec = {
+    .timestamp_us = s_bench_buffer[i].timestamp_us,
+    .adc_value    = (int32_t)s_bench_buffer[i].adc_value,
+};
+fwrite(&rec, 1, sizeof(rec), f);  // Write 12-byte record
+
+// Or write CSV format
+fprintf(f, "%llu,%d\n",
+        (unsigned long long)s_bench_buffer[i].timestamp_us,
+        s_bench_buffer[i].adc_value);
+```
 
 ### 9. How do I use the CSV in a spreadsheet?
 
