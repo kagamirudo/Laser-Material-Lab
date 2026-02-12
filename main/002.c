@@ -34,8 +34,8 @@ static const char *TAG = "LASER_ADC";
 
 #define WIFI 1
 #define HOST 2
-#define MODE WIFI
-// #define MODE HOST
+// #define MODE WIFI
+#define MODE HOST
 
 // Pin mapping (ESP32-S3)
 #define LASER_GPIO   5    // PWM output to laser
@@ -513,40 +513,25 @@ bool is_csv_logging_active(void) {
 }
 
 int get_sample_count(void) {
-    return s_sample_count;
+    // Return the number of samples actually written to the CSV file,
+    // not the total number of ADC samples seen. This aligns the count
+    // with what the client downloads.
+    return (int)s_csv_sample_index;
 }
 
 // Get logging statistics (sample count, elapsed time, and rate)
 void get_logging_stats(int *sample_count, uint64_t *elapsed_time_ms, float *rate_hz) {
-    *sample_count = s_sample_count;
-    
-    // Calculate elapsed time and rate from start to stop
-    if (s_logging_start_time_us > 0) {
-        uint64_t stop_time = s_logging_stop_time_us;
-        
-        // If not stopped yet, use current time
-        if (stop_time == 0) {
-            stop_time = esp_timer_get_time();
-        }
-        
-        // Calculate elapsed time in microseconds
-        if (stop_time > s_logging_start_time_us) {
-            uint64_t elapsed_us = stop_time - s_logging_start_time_us;
-            *elapsed_time_ms = elapsed_us / 1000;
-            
-            // Calculate actual rate: samples / elapsed_time_in_seconds
-            // elapsed_time_in_seconds = elapsed_us / 1000000
-            // rate = samples / (elapsed_us / 1000000) = samples * 1000000 / elapsed_us
-            if (elapsed_us > 0 && s_sample_count > 0) {
-                *rate_hz = ((float)s_sample_count * 1000000.0f) / (float)elapsed_us;
-            } else {
-                *rate_hz = 0.0f;
-            }
-        } else {
-            // Time calculation error
-            *elapsed_time_ms = 0;
-            *rate_hz = 0.0f;
-        }
+    // Use the number of CSV-written samples for stats so that rate and
+    // sample count match what is in the file.
+    *sample_count = (int)s_csv_sample_index;
+
+    // Derive elapsed time directly from the CSV sample count and the actual
+    // sample rate so that the duration shown in the web UI matches the CSV
+    // (e.g. 16.67 s instead of the slightly longer wall-clock interval).
+    if (s_csv_sample_index > 0 && s_actual_sample_rate_hz > 0) {
+        uint64_t elapsed_us = ((uint64_t)s_csv_sample_index * 1000000ULL) / s_actual_sample_rate_hz;
+        *elapsed_time_ms = elapsed_us / 1000;
+        *rate_hz = (float)s_actual_sample_rate_hz;
     } else {
         *elapsed_time_ms = 0;
         *rate_hz = 0.0f;
@@ -729,7 +714,9 @@ void stop_csv_logging(void) {
 
     // Record stop time for rate calculation
     s_logging_stop_time_us = esp_timer_get_time();
-    ESP_LOGI(TAG, "ADC sampling and CSV logging stopped. Total samples read: %d", s_sample_count);
+    // Log the number of samples actually written into the CSV file so the
+    // log matches what the client downloads.
+    ESP_LOGI(TAG, "ADC sampling and CSV logging stopped. Total CSV samples written: %u", (unsigned)s_csv_sample_index);
 }
 
 // Clear CSV file (works for path on SD or SPIFFS; server.c compatibility)

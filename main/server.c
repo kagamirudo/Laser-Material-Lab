@@ -20,8 +20,8 @@ extern const unsigned char
     server_key_pem_end[] asm("_binary_server_key_pem_end");
 
 // ADC functions from 002.c
-int get_current_adc_value(void);
 bool is_csv_logging_active(void);
+int get_current_adc_value(void);
 int get_sample_count(void);
 void get_logging_stats(int *sample_count, uint64_t *elapsed_time_ms, float *rate_hz);
 void get_spiffs_storage_info(size_t *total_bytes, size_t *used_bytes);
@@ -188,7 +188,7 @@ static esp_err_t csv_download_handler(httpd_req_t *req) {
     fseek(file, 0, SEEK_SET);
     
     // Read and send file in chunks
-    char buffer[512];
+    char buffer[1024];
     size_t bytes_read;
     long total_sent = 0;
     

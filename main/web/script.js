@@ -79,6 +79,18 @@ function updateADC() {
 // Removed: clearStorage() function - feature disabled
 
 function startLogging() {
+    // If logging is already active, confirm with the user before restarting
+    if (isLoggingActive) {
+        const shouldReset = window.confirm('It already started, do you want to reset?');
+        if (!shouldReset) {
+            // User chose not to reset; just inform that recording is already running
+            updateStatus('Recording is already running.');
+            return;
+        }
+        // If user confirms reset, we simply call /api/start again.
+        // The backend should handle resetting any previous recording state.
+    }
+
     fetch(`${API_BASE}/api/start`, { method: 'POST' })
         .then(response => response.json())
         .then(data => {
@@ -158,4 +170,123 @@ window.addEventListener('load', function() {
     document.getElementById('adcValue').textContent = '--';
     document.getElementById('adcInfo').textContent = 'Press Start to begin';
 });
+
+
+// ===== Client-side CSV chunk collection (no server changes required here) =====
+// Assumes firmware can expose per-chunk CSV in the future (e.g. /api/csv_chunk?i=N).
+// These helpers just manage polling and combining chunks on the browser side.
+
+let chunkModeActive = false;
+let chunkPollTimer = null;
+let csvChunks = [];
+let nextChunkIndex = 0;
+
+function fetchCsvChunk() {
+    if (!chunkModeActive) {
+        return;
+    }
+
+    const url = `${API_BASE}/api/csv_chunk?i=${nextChunkIndex}`;
+
+    fetch(url)
+        .then(resp => {
+            if (!resp.ok) {
+                throw new Error(`HTTP ${resp.status}`);
+            }
+            return resp.text();
+        })
+        .then(text => {
+            if (!text || !text.trim()) {
+                return;
+            }
+
+            // First chunk keeps header as-is; later chunks drop header line if present.
+            if (nextChunkIndex === 0) {
+                csvChunks.push(text.trimEnd());
+            } else {
+                const lines = text.split('\n');
+                if (lines.length > 0 &&
+                    lines[0].toLowerCase().includes('timestamp_us') &&
+                    lines[0].toLowerCase().includes('adc_value')) {
+                    lines.shift();
+                }
+                csvChunks.push(lines.join('\n').trimEnd());
+            }
+
+            nextChunkIndex += 1;
+        })
+        .catch(err => {
+            console.error('CSV chunk fetch error:', err);
+        });
+}
+
+// Start normal logging plus client-side chunk collection.
+function startChunkMode() {
+    if (chunkModeActive) {
+        updateStatus('Chunk mode already running.');
+        return;
+    }
+
+    csvChunks = [];
+    nextChunkIndex = 0;
+    chunkModeActive = true;
+
+    // Reuse existing startLogging to tell ESP32 to begin acquisition.
+    startLogging();
+
+    if (!chunkPollTimer) {
+        fetchCsvChunk();
+        chunkPollTimer = setInterval(fetchCsvChunk, 1000);
+    }
+
+    updateStatus('Chunk mode: collecting CSV chunks...');
+}
+
+// Stop logging, stop chunk polling, assemble all chunks and trigger a combined CSV download.
+function stopChunkModeAndDownload() {
+    if (!chunkModeActive) {
+        updateStatus('Chunk mode is not active.');
+        return;
+    }
+
+    chunkModeActive = false;
+    if (chunkPollTimer) {
+        clearInterval(chunkPollTimer);
+        chunkPollTimer = null;
+    }
+
+    fetch(`${API_BASE}/api/stop`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            let statusMsg = `Chunk mode stopped. Total samples: ${data.samples}`;
+            if (data.rate_hz && data.rate_hz > 0) {
+                statusMsg += ` | Rate: ${data.rate_hz.toFixed(2)} Hz`;
+            }
+            if (data.elapsed_ms) {
+                const seconds = (data.elapsed_ms / 1000).toFixed(2);
+                statusMsg += ` | Duration: ${seconds}s`;
+            }
+            updateStatus(statusMsg);
+
+            if (csvChunks.length === 0) {
+                console.warn('No CSV chunks collected.');
+                return;
+            }
+
+            const fullCsv = csvChunks.join('\n');
+            const blob = new Blob([fullCsv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'data_chunks_combined.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        })
+        .catch(error => {
+            console.error('Chunk mode stop error:', error);
+            updateStatus('Error stopping chunk mode');
+        });
+}
 

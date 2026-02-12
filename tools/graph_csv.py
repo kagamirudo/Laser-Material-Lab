@@ -103,8 +103,9 @@ def load_csv(path: str, max_rows: int | None = None):
                         break
                 return times_ms, values
 
-        # Case 2: raw timestamp_us,adc_value CSV
+        # Case 2: raw timestamp_us,adc_value CSV OR single-column value CSV
         times_us: list[int] = []
+        values_only: list[float] = []
         # If header looks like timestamp header, skip it; else treat as data
         if header and (
             header[0].strip().lower() == "timestamp_us"
@@ -113,31 +114,51 @@ def load_csv(path: str, max_rows: int | None = None):
             pass
         elif header:
             try:
-                t = int(header[0])
-                v = int(header[1])
-                times_us.append(t)
-                values.append(float(v))
+                if len(header) >= 2:
+                    t = int(header[0])
+                    v = float(header[1])
+                    times_us.append(t)
+                    values.append(float(v))
+                elif len(header) == 1:
+                    v0 = float(header[0])
+                    values_only.append(v0)
             except (ValueError, IndexError):
                 pass
 
         for row in reader:
-            if len(row) < 2:
+            if not row:
                 continue
-            try:
-                t = int(row[0])
-                v = int(row[1])
-            except ValueError:
-                continue
-            times_us.append(t)
-            values.append(float(v))
-            if max_rows is not None and len(values) >= max_rows:
-                break
+            if len(row) >= 2:
+                try:
+                    t = int(row[0])
+                    v = float(row[1])
+                except ValueError:
+                    continue
+                times_us.append(t)
+                values.append(float(v))
+                if max_rows is not None and len(values) >= max_rows:
+                    break
+            elif len(row) == 1:
+                try:
+                    v0 = float(row[0])
+                except ValueError:
+                    continue
+                values_only.append(v0)
+                if max_rows is not None and len(values_only) >= max_rows:
+                    break
 
-    if not times_us:
-        return [], []
-    t0 = times_us[0]
-    times_ms = [(t - t0) / 1000.0 for t in times_us]
-    return times_ms, values
+    if times_us:
+        t0 = times_us[0]
+        times_ms = [(t - t0) / 1000.0 for t in times_us]
+        return times_ms, values
+
+    if values_only:
+        # Treat single-column CSV as sequence of values with implicit
+        # sample index used as the x-axis (in "ms" units for plotting).
+        times_ms = list(range(len(values_only)))
+        return times_ms, values_only
+
+    return [], []
 
 
 def bin_by_interval_ms(times_ms, values, interval_ms: int = 1, agg: str = "mean"):
@@ -492,16 +513,17 @@ def main():
     ax.grid(True, alpha=0.3)
     ax.legend(loc="upper right")
 
-    # Side plot: distribution (histogram) for quick quality check
-    ax2 = fig.add_axes([0.72, 0.16, 0.25, 0.25])
+    # Separate figure: distribution (histogram) for quick quality check
+    fig_hist, ax_hist = plt.subplots(figsize=(6, 4))
     try:
         if np is not None:
-            ax2.hist(np.asarray(proc_values, dtype=np.float64), bins=80, color="orange", alpha=0.85)
+            ax_hist.hist(np.asarray(proc_values, dtype=np.float64), bins=80, color="orange", alpha=0.85)
         else:
-            ax2.hist([float(v) for v in proc_values], bins=80, color="orange", alpha=0.85)
-        ax2.set_title("Value histogram", fontsize=9)
-        ax2.tick_params(axis="both", labelsize=8)
-        ax2.grid(True, alpha=0.2)
+            ax_hist.hist([float(v) for v in proc_values], bins=80, color="orange", alpha=0.85)
+        ax_hist.set_title("Value histogram")
+        ax_hist.set_xlabel("Value")
+        ax_hist.set_ylabel("Count")
+        ax_hist.grid(True, alpha=0.2)
     except Exception:
         pass
 
@@ -531,14 +553,23 @@ def main():
     # fig.tight_layout()
 
     if args.output:
+        # Save main plot
         fig.savefig(args.output, dpi=args.dpi)
+        # Save histogram next to it with a suffix
+        base, ext = (args.output.rsplit(".", 1) + ["png"])[0:2]
+        hist_path = f"{base}_hist.{ext}"
+        fig_hist.savefig(hist_path, dpi=args.dpi)
         print(f"Saved: {args.output}")
+        print(f"Saved: {hist_path}")
     if args.show:
         plt.show()
     if not args.output and not args.show:
         out = args.csv_file.rsplit(".", 1)[0] + "_plot.png"
         fig.savefig(out, dpi=args.dpi)
+        hist_out = args.csv_file.rsplit(".", 1)[0] + "_hist.png"
+        fig_hist.savefig(hist_out, dpi=args.dpi)
         print(f"Saved: {out}")
+        print(f"Saved: {hist_out}")
 
 
 if __name__ == "__main__":
