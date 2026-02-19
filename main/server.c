@@ -2,8 +2,10 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
+#include "freertos/queue.h"
 #include "esp_log.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 
@@ -32,6 +34,18 @@ void stop_sampling_timer(void);
 void start_sampling_timer(void);
 QueueHandle_t get_sample_queue(void);
 const char* get_csv_file_path(void);
+
+// Chunked logging (must match 002.c)
+#define CHUNK_PATH_MAX 80
+typedef struct {
+    int index;
+    char path[CHUNK_PATH_MAX];
+    size_t size_bytes;
+} chunk_ready_item_t;
+QueueHandle_t get_chunk_ready_queue(void);
+void start_chunked_logging(void);
+void stop_chunked_logging(void);
+bool is_chunked_logging_active(void);
 
 // HTTP handlers
 static esp_err_t index_handler(httpd_req_t *req) {
@@ -99,7 +113,7 @@ static esp_err_t favicon_handler(httpd_req_t *req) {
 static esp_err_t adc_api_handler(httpd_req_t *req) {
     int adc_value = get_current_adc_value();
     int sample_count = get_sample_count();
-    bool logging = is_csv_logging_active();
+    bool logging = is_csv_logging_active() || is_chunked_logging_active();
     uint64_t elapsed_ms = 0;
     float rate_hz = 0.0f;
     if (logging) {
@@ -210,6 +224,168 @@ static esp_err_t csv_download_handler(httpd_req_t *req) {
     return ESP_OK;
 }
 
+// SSE: stream CSV file to client in small buffers (avoids malloc of ~270KB on ESP32)
+// Use heap buffer: httpd task has limited stack (~4KB); 4.4KB on stack caused Guru panic
+#define SSE_READ_BUF  4096
+#define SSE_LINE_MAX  320
+#define SSE_CARRY_MAX 320
+static esp_err_t send_sse_csv_from_file(httpd_req_t *req, FILE *f) {
+    char *buf = malloc(SSE_READ_BUF + SSE_CARRY_MAX);
+    if (buf == NULL) {
+        ESP_LOGE(SERVER_TAG, "SSE: malloc(%d) failed for stream buffer", SSE_READ_BUF + SSE_CARRY_MAX);
+        return ESP_ERR_NO_MEM;
+    }
+    size_t data_len = 0;
+    char sse_line[SSE_LINE_MAX + 16];
+    esp_err_t ret = ESP_OK;
+
+    while (1) {
+        size_t nread = fread(buf + data_len, 1, SSE_READ_BUF, f);
+        data_len += nread;
+        if (data_len == 0) break;
+
+        const char *end = buf + data_len;
+        const char *last_nl = NULL;
+        const char *start = buf;
+
+        while (start < end) {
+            const char *nl = start;
+            while (nl < end && *nl != '\n' && *nl != '\r') nl++;
+            if (nl < end) last_nl = nl;
+            size_t line_len = (size_t)(nl - start);
+            if (line_len > 0 && line_len < SSE_LINE_MAX) {
+                int n = snprintf(sse_line, sizeof(sse_line), "data: %.*s\n", (int)line_len, start);
+                if (n > 0) {
+                    esp_err_t r = httpd_resp_send_chunk(req, sse_line, (size_t)n);
+                    if (r != ESP_OK) { ret = r; goto cleanup; }
+                }
+            }
+            start = nl;
+            if (start < end && (*start == '\n' || *start == '\r')) start++;
+        }
+
+        if (last_nl != NULL) {
+            const char *tail = last_nl + 1;
+            if (tail < end && *last_nl == '\n' && *tail == '\r') tail++;
+            data_len = (size_t)(end - tail);
+            if (data_len > 0 && data_len <= SSE_CARRY_MAX) {
+                memmove(buf, tail, data_len);
+            } else {
+                data_len = 0;
+            }
+        } else {
+            if (data_len <= SSE_CARRY_MAX) {
+                /* entire buffer is partial line, keep for next read */
+            } else {
+                data_len = 0; /* overflow, drop */
+            }
+        }
+
+        if (nread < SSE_READ_BUF) break;
+    }
+
+    if (data_len > 0 && data_len < SSE_LINE_MAX) {
+        int n = snprintf(sse_line, sizeof(sse_line), "data: %.*s\n", (int)data_len, buf);
+        if (n > 0 && ret == ESP_OK) ret = httpd_resp_send_chunk(req, sse_line, (size_t)n);
+    }
+    if (ret == ESP_OK) ret = httpd_resp_send_chunk(req, "\n", 1);
+cleanup:
+    free(buf);
+    return ret;
+}
+
+static esp_err_t csv_stream_handler(httpd_req_t *req) {
+    ESP_LOGI(SERVER_TAG, "SSE: client connected to /api/csv_stream");
+
+    httpd_resp_set_type(req, "text/event-stream");
+    httpd_resp_set_hdr(req, "Cache-Control", "no-cache");
+    httpd_resp_set_hdr(req, "Connection", "keep-alive");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+
+    QueueHandle_t q = get_chunk_ready_queue();
+    if (q == NULL) {
+        ESP_LOGE(SERVER_TAG, "SSE: chunk queue is NULL, rejecting client");
+        httpd_resp_send_chunk(req, "data: error\n\n", 12);
+        httpd_resp_send_chunk(req, NULL, 0);
+        return ESP_OK;
+    }
+
+    int keepalive_count = 0;
+    while (1) {
+        chunk_ready_item_t item;
+        if (xQueueReceive(q, &item, pdMS_TO_TICKS(5000)) == pdTRUE) {
+            if (item.index < 0) {
+                ESP_LOGI(SERVER_TAG, "SSE: received done sentinel, sending data:done to client");
+                esp_err_t ret = httpd_resp_send_chunk(req, "data: done\n\n", 12);
+                if (ret != ESP_OK) {
+                    ESP_LOGW(SERVER_TAG, "SSE: send done failed ret=%d (client may have disconnected)", ret);
+                    return ret;
+                }
+                ESP_LOGI(SERVER_TAG, "SSE: stream complete, closing connection");
+                break;
+            }
+
+            ESP_LOGI(SERVER_TAG, "SSE: received chunk %d from queue (%zu bytes), opening %s", item.index, item.size_bytes, item.path);
+
+            FILE *f = fopen(item.path, "r");
+            if (f == NULL) {
+                ESP_LOGW(SERVER_TAG, "SSE: cannot open chunk %s", item.path);
+                continue;
+            }
+            fseek(f, 0, SEEK_END);
+            long fsize = ftell(f);
+            fseek(f, 0, SEEK_SET);
+            if (fsize <= 0 || fsize > 1024 * 1024) {
+                ESP_LOGW(SERVER_TAG, "SSE: chunk %d invalid size %ld, skipping", item.index, fsize);
+                fclose(f);
+                continue;
+            }
+
+            ESP_LOGI(SERVER_TAG, "SSE: streaming chunk %d (%ld bytes) to client...", item.index, fsize);
+            esp_err_t ret = send_sse_csv_from_file(req, f);
+            fclose(f);
+            if (ret != ESP_OK) {
+                ESP_LOGW(SERVER_TAG, "SSE: send_sse_csv_event failed ret=%d for chunk %d (client disconnected?)", ret, item.index);
+                return ret;
+            }
+            ESP_LOGI(SERVER_TAG, "SSE: chunk %d sent successfully (%zu bytes)", item.index, item.size_bytes);
+        } else {
+            keepalive_count++;
+            esp_err_t ret = httpd_resp_send_chunk(req, ": keepalive\n\n", 13);
+            if (ret != ESP_OK) {
+                ESP_LOGW(SERVER_TAG, "SSE: keepalive send failed ret=%d (client disconnected?)", ret);
+                return ret;
+            }
+            if (keepalive_count % 6 == 1) {
+                ESP_LOGI(SERVER_TAG, "SSE: keepalive #%d (waiting for chunks, ~%d s idle)", keepalive_count, keepalive_count * 5);
+            }
+        }
+    }
+
+    httpd_resp_send_chunk(req, NULL, 0);
+    ESP_LOGI(SERVER_TAG, "SSE: handler finished, connection closed");
+    return ESP_OK;
+}
+
+static esp_err_t start_chunk_handler(httpd_req_t *req) {
+    start_chunked_logging();
+    char response[128];
+    snprintf(response, sizeof(response), "{\"status\":\"chunk_started\",\"threshold\":%d,\"peak\":%d}",
+             1200, 10);  // THRESHOLD and PEAK
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_send(req, response, HTTPD_RESP_USE_STRLEN);
+    return ESP_OK;
+}
+
+static esp_err_t stop_chunk_handler(httpd_req_t *req) {
+    stop_chunked_logging();
+    char response[128];
+    snprintf(response, sizeof(response), "{\"status\":\"chunk_stopped\"}");
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_send(req, response, HTTPD_RESP_USE_STRLEN);
+    return ESP_OK;
+}
+
 static void register_routes(httpd_handle_t server) {
     httpd_uri_t index_uri = {
         .uri = "/", .method = HTTP_GET, .handler = index_handler};
@@ -227,6 +403,12 @@ static void register_routes(httpd_handle_t server) {
         .uri = "/api/stop", .method = HTTP_POST, .handler = stop_logging_handler};
     httpd_uri_t csv_uri = {
         .uri = "/api/csv", .method = HTTP_GET, .handler = csv_download_handler};
+    httpd_uri_t csv_stream_uri = {
+        .uri = "/api/csv_stream", .method = HTTP_GET, .handler = csv_stream_handler};
+    httpd_uri_t start_chunk_uri = {
+        .uri = "/api/start_chunk", .method = HTTP_POST, .handler = start_chunk_handler};
+    httpd_uri_t stop_chunk_uri = {
+        .uri = "/api/stop_chunk", .method = HTTP_POST, .handler = stop_chunk_handler};
 
     httpd_register_uri_handler(server, &index_uri);
     httpd_register_uri_handler(server, &css_uri);
@@ -236,12 +418,15 @@ static void register_routes(httpd_handle_t server) {
     httpd_register_uri_handler(server, &start_uri);
     httpd_register_uri_handler(server, &stop_uri);
     httpd_register_uri_handler(server, &csv_uri);
+    httpd_register_uri_handler(server, &csv_stream_uri);
+    httpd_register_uri_handler(server, &start_chunk_uri);
+    httpd_register_uri_handler(server, &stop_chunk_uri);
 }
 
 httpd_handle_t start_webserver_http(void) {
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
     // Increase max URI handlers if needed
-    config.max_uri_handlers = 10;
+    config.max_uri_handlers = 14;
     config.max_resp_headers = 8;
     httpd_handle_t server = NULL;
 

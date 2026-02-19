@@ -34,8 +34,8 @@ static const char *TAG = "LASER_ADC";
 
 #define WIFI 1
 #define HOST 2
-// #define MODE WIFI
-#define MODE HOST
+#define MODE WIFI
+// #define MODE HOST
 
 // Pin mapping (ESP32-S3)
 #define LASER_GPIO   5    // PWM output to laser
@@ -60,12 +60,21 @@ static const char *TAG = "LASER_ADC";
 // CSV directory on SD (same base as bench; used when sdcard_is_mounted())
 #define CSV_SD_DIR          SDCARD_MOUNT_POINT "/laser"
 #define CSV_FILE_PATH_MAX_LEN 64         // Maximum length for CSV filename
-#define CSV_QUEUE_SIZE 3000              // Queue size for ADC samples
+#define CSV_QUEUE_SIZE 6000              // Queue size for ADC samples (~72KB; 1.5s at 4kHz; reduces drops during SSE/SD contention)
 #define SAMPLE_LIMIT 10000000            // Auto-stop after this many samples
 
 // CSV write buffer config
 #define CSV_WRITE_BATCH_SIZE 500         // Write CSV in batches to reduce flash wear
 #define CSV_FLUSH_INTERVAL 5             // Flush every N batches (reduces flash wear)
+
+// Chunked logging: threshold-triggered, write 1s / skip 1s for PEAK cycles per chunk
+#define PEAK 10                          // Number of write/skip cycles per chunk (change as needed)
+#define THRESHOLD 200                   // ADC value to trigger writing
+#define CHUNK_WRITE_SEC 1                // Seconds to write per cycle
+#define CHUNK_SKIP_SEC 1                 // Seconds to skip per cycle
+#define CSV_CHUNK_QUEUE_SIZE 16          // Max pending chunks for SSE
+#define CSV_CHUNK_DIR_SD    CSV_SD_DIR "/chunks"
+#define CSV_CHUNK_DIR_SPIFFS SPIFFS_MOUNT_POINT "/chunks"
 
 static adc_continuous_handle_t adc_handle = NULL;
 static adc_channel_t adc_chan;
@@ -104,6 +113,12 @@ typedef enum { BENCH_FMT_CSV, BENCH_FMT_BIN } bench_fmt_t;
 
 /* Unix time for 2020-01-01 00:00:00 UTC; reject file mtime if system time is before this (not set or epoch). */
 #define SANE_TIME_MIN_SEC  ((time_t)1577836800)
+
+/** SNTP sync callback - logs when time sync completes (including background retries). */
+static void sntp_sync_time_cb(struct timeval *tv) {
+    time_t sec = tv ? (time_t)tv->tv_sec : 0;
+    ESP_LOGI(TAG, "SNTP: sync completed (callback) - system time set, sec=%ld", (long)sec);
+}
 
 /** Set file access and modification time to current time (so PC shows correct "date modified" when SD is plugged in).
  *  Only sets time if system clock has been set (e.g. via SNTP when WiFi STA is connected); otherwise skips to avoid 1970. */
@@ -150,11 +165,37 @@ static char s_csv_file_path[CSV_FILE_PATH_MAX_LEN] = "/spiffs/data.csv";  // Dyn
 // Sample index for consistent timestamps (reset on each logging session)
 static uint32_t s_csv_sample_index = 0;
 
+// Chunked logging state
+#define CHUNK_PATH_MAX 80
+typedef struct {
+    int index;  // -1 = stream complete (no more chunks)
+    char path[CHUNK_PATH_MAX];
+    size_t size_bytes;
+} chunk_ready_item_t;
+
+static QueueHandle_t s_chunk_ready_queue = NULL;  // Server reads from this for SSE
+static volatile bool s_chunked_logging_enabled = false;
+static volatile bool s_chunk_triggered = false;   // Set when ADC >= THRESHOLD
+static volatile bool s_chunk_stop_requested = false;
+
+// Chunked writer state (only valid when s_chunked_logging_enabled)
+static FILE *s_chunk_file = NULL;
+static char s_chunk_file_path[CHUNK_PATH_MAX] = {0};
+static int s_chunk_index = 0;
+static int s_chunk_phase = 0;       // 0=WRITE, 1=SKIP
+static int s_chunk_cycle = 0;
+static uint64_t s_chunk_phase_start_us = 0;
+static uint32_t s_chunk_sample_index = 0;   // Per-chunk index (for local use)
+static uint32_t s_chunk_global_sample_index = 0;  // Never reset; timestamps continue across chunks
+static bool s_chunk_finish_write_then_stop = false;  // Finish current WRITE cycle then stop
+
 // Forward declarations (used before definitions)
 void clear_spiffs_storage(void);
 void stop_csv_logging(void);
 static void generate_csv_filename(void);
 static void bench_laser_run_one(bench_fmt_t fmt);
+void start_chunked_logging(void);
+void stop_chunked_logging(void);
 
 static void laser_init_full_on(void) {
     ledc_timer_config_t tcfg = {
@@ -319,6 +360,13 @@ static void adc_task(void *pvParameters) {
                 } else {
                     s_current_adc_value = raw_value;
                 }
+
+                // Chunked mode: trigger when ADC crosses threshold
+                if (s_chunked_logging_enabled && !s_chunk_triggered && raw_value >= THRESHOLD) {
+                    s_chunk_triggered = true;
+                    s_chunk_phase_start_us = esp_timer_get_time();
+                    ESP_LOGI(TAG, "Chunked: threshold (%d) crossed, ADC=%d - starting write cycles", THRESHOLD, raw_value);
+                }
                 
                 // Increment sample count for rate calculation
                 s_sample_count++;
@@ -348,8 +396,8 @@ static void adc_task(void *pvParameters) {
                     continue;
                 }
                 
-                // Send to CSV queue if logging is enabled (non-blocking to maintain ADC rate)
-                if (s_csv_logging_enabled && s_csv_queue != NULL) {
+                // Send to CSV queue if logging is enabled (continuous or chunked mode)
+                if ((s_csv_logging_enabled || s_chunked_logging_enabled) && s_csv_queue != NULL) {
                     csv_sample_t sample = {
                         .adc_value = raw_value,
                         .timestamp_us = esp_timer_get_time()
@@ -360,9 +408,9 @@ static void adc_task(void *pvParameters) {
                         // Queue full - log warning periodically
                         static uint32_t queue_full_count = 0;
                         queue_full_count++;
-                        if (queue_full_count % 1000 == 0) {
-                            ESP_LOGW(TAG, "CSV queue full (%d/%d), samples dropped to maintain ADC rate", 
-                                    uxQueueMessagesWaiting(s_csv_queue), CSV_QUEUE_SIZE);
+                        if (queue_full_count % 5000 == 0) {
+                            ESP_LOGW(TAG, "CSV queue full (%d/%d), samples dropped (total ~%lu)", 
+                                    uxQueueMessagesWaiting(s_csv_queue), CSV_QUEUE_SIZE, (unsigned long)queue_full_count);
                         }
                     }
                 }
@@ -399,6 +447,104 @@ static void csv_writer_task(void *pvParameters) {
     ESP_LOGI(TAG, "CSV writer task started");
     
     while (1) {
+        /* ========== Chunked mode ========== */
+        if (s_chunked_logging_enabled && s_csv_queue != NULL) {
+            csv_sample_t sample;
+            if (xQueueReceive(s_csv_queue, &sample, pdMS_TO_TICKS(50)) != pdTRUE) {
+                // Timeout - check for phase transition or stop
+                if (!s_chunked_logging_enabled) continue;
+                uint64_t now_us = esp_timer_get_time();
+                uint64_t elapsed_us = now_us - s_chunk_phase_start_us;
+                uint64_t phase_duration_us = (s_chunk_phase == 0) ? (CHUNK_WRITE_SEC * 1000000ULL) : (CHUNK_SKIP_SEC * 1000000ULL);
+
+                if (elapsed_us >= phase_duration_us && s_chunk_triggered && s_chunk_file != NULL) {
+                    if (s_chunk_phase == 0) {  // WRITE -> SKIP
+                        s_chunk_phase = 1;
+                        s_chunk_phase_start_us = now_us;
+                        s_chunk_cycle++;
+                        if (s_chunk_finish_write_then_stop) {
+                            // Stop was requested during write - we finished the cycle, now close
+                            goto chunk_close_and_push;
+                        }
+                    } else {  // SKIP -> next cycle or close
+                        s_chunk_phase_start_us = now_us;
+                        if (s_chunk_cycle >= PEAK || s_chunk_stop_requested) {
+chunk_close_and_push:;
+                            fflush(s_chunk_file);
+                            fclose(s_chunk_file);
+                            s_chunk_file = NULL;
+                            struct stat st;
+                            size_t sz = 0;
+                            if (stat(s_chunk_file_path, &st) == 0) sz = (size_t)st.st_size;
+                            set_file_mtime_now(s_chunk_file_path);
+                            chunk_ready_item_t item = { .index = s_chunk_index, .size_bytes = sz };
+                            strncpy(item.path, s_chunk_file_path, CHUNK_PATH_MAX - 1);
+                            item.path[CHUNK_PATH_MAX - 1] = '\0';
+                            if (s_chunk_ready_queue != NULL) {
+                                xQueueSend(s_chunk_ready_queue, &item, portMAX_DELAY);
+                            }
+                            ESP_LOGI(TAG, "Chunk %d ready: %zu bytes | Packaging and sending to client", s_chunk_index, sz);
+
+                            if (s_chunk_stop_requested || s_chunk_finish_write_then_stop) {
+                                chunk_ready_item_t done = { .index = -1, .path = {0}, .size_bytes = 0 };
+                                if (s_chunk_ready_queue != NULL) xQueueSend(s_chunk_ready_queue, &done, portMAX_DELAY);
+                                s_chunked_logging_enabled = false;
+                                s_chunk_stop_requested = false;
+                                s_chunk_finish_write_then_stop = false;
+                                s_chunk_triggered = false;
+                                continue;
+                            }
+                            s_chunk_index++;
+                            s_chunk_cycle = 0;
+                            s_chunk_phase = 0;
+                            s_chunk_sample_index = 0;
+                            /* s_chunk_global_sample_index NOT reset - timestamps continue across chunks */
+                            snprintf(s_chunk_file_path, CHUNK_PATH_MAX, "%s/chunk_%d.csv", (sdcard_is_mounted() ? CSV_CHUNK_DIR_SD : CSV_CHUNK_DIR_SPIFFS), s_chunk_index);
+                            s_chunk_file = fopen(s_chunk_file_path, "w");
+                            if (s_chunk_file) {
+                                fprintf(s_chunk_file, "timestamp_us,adc_value\n");
+                                fflush(s_chunk_file);
+                            }
+                        } else {
+                            s_chunk_phase = 0;
+                            s_chunk_cycle++;
+                        }
+                    }
+                }
+                continue;
+            }
+
+            if (!s_chunk_triggered) continue;  // Drop until threshold
+
+            if (s_chunk_phase == 1) {
+                /* SKIP phase: drain queue aggressively (0 timeout) to avoid backup and ADC drops */
+                while (xQueueReceive(s_csv_queue, &sample, 0) == pdTRUE) { (void)sample; }
+                continue;
+            }
+
+            batch[batch_count++] = sample;
+            if (batch_count >= CSV_WRITE_BATCH_SIZE && s_chunk_file != NULL) {
+                const uint64_t interval_us = 1000000ULL / s_actual_sample_rate_hz;
+                for (uint32_t i = 0; i < batch_count; i++) {
+                    uint64_t ts = (uint64_t)s_chunk_global_sample_index * interval_us;
+                    fprintf(s_chunk_file, "%llu,%d\n", (unsigned long long)ts, batch[i].adc_value);
+                    s_chunk_global_sample_index++;
+                    s_chunk_sample_index++;
+                }
+                batch_count = 0;  // Reset for next batch
+                uint64_t now_us = esp_timer_get_time();
+                uint64_t elapsed_us = now_us - s_chunk_phase_start_us;
+                if (elapsed_us >= CHUNK_WRITE_SEC * 1000000ULL) {
+                    s_chunk_phase = 1;
+                    s_chunk_phase_start_us = now_us;
+                    s_chunk_cycle++;
+                    if (s_chunk_finish_write_then_stop) goto chunk_close_and_push;
+                }
+            }
+            continue;
+        }
+
+        /* ========== Continuous mode ========== */
         // Wait for samples from queue (blocking with timeout)
         csv_sample_t sample;
         if (xQueueReceive(s_csv_queue, &sample, pdMS_TO_TICKS(100)) == pdTRUE) {
@@ -731,6 +877,61 @@ const char* get_csv_file_path(void) {
     return s_csv_file_path;
 }
 
+// Get chunk ready queue (for server SSE)
+QueueHandle_t get_chunk_ready_queue(void) {
+    return s_chunk_ready_queue;
+}
+
+bool is_chunked_logging_active(void) {
+    return s_chunked_logging_enabled;
+}
+
+// Start chunked logging: wait for threshold, then write 1s/skip 1s for PEAK cycles per chunk
+void start_chunked_logging(void) {
+    if (s_chunked_logging_enabled) {
+        ESP_LOGW(TAG, "Chunked logging already active");
+        return;
+    }
+    s_chunk_stop_requested = false;
+    s_chunk_finish_write_then_stop = false;
+    s_chunk_triggered = false;
+    s_chunk_index = 0;
+    s_chunk_cycle = 0;
+    s_chunk_phase = 0;
+    s_chunk_sample_index = 0;
+    s_chunk_global_sample_index = 0;  /* Timestamps start at 0 for new session */
+
+    const char *chunk_dir = sdcard_is_mounted() ? CSV_CHUNK_DIR_SD : CSV_CHUNK_DIR_SPIFFS;
+    if (mkdir(chunk_dir, 0) != 0 && errno != EEXIST) {
+        ESP_LOGE(TAG, "mkdir %s failed (errno=%d)", chunk_dir, errno);
+        return;
+    }
+
+    snprintf(s_chunk_file_path, CHUNK_PATH_MAX, "%s/chunk_0.csv", chunk_dir);
+    s_chunk_file = fopen(s_chunk_file_path, "w");
+    if (s_chunk_file == NULL) {
+        ESP_LOGE(TAG, "Failed to open chunk file: %s", s_chunk_file_path);
+        return;
+    }
+    fprintf(s_chunk_file, "timestamp_us,adc_value\n");
+    fflush(s_chunk_file);
+
+    if (s_csv_queue) xQueueReset(s_csv_queue);
+    s_chunk_phase_start_us = esp_timer_get_time();
+    s_chunked_logging_enabled = true;
+    start_sampling_timer();
+    ESP_LOGI(TAG, "Chunked logging started: waiting for ADC >= %d, then %d cycles (write %ds/skip %ds)", THRESHOLD, PEAK, CHUNK_WRITE_SEC, CHUNK_SKIP_SEC);
+}
+
+void stop_chunked_logging(void) {
+    if (!s_chunked_logging_enabled) return;
+    s_chunk_stop_requested = true;
+    if (s_chunk_phase == 0) {
+        s_chunk_finish_write_then_stop = true;  // Finish current WRITE cycle then stop
+    }
+    ESP_LOGI(TAG, "Chunked logging stop requested");
+}
+
 /**
  * Bench laser: run for BENCH_LASER_DURATION_SEC seconds, write ADC samples to SD
  * to a single file (CSV or binary). Streams in chunks (BENCH_LASER_CHUNK_SIZE).
@@ -922,6 +1123,12 @@ void app_main(void) {
         ESP_LOGE(TAG, "Failed to create CSV queue");
         return;
     }
+
+    // Create queue for chunked SSE (chunk path when ready)
+    s_chunk_ready_queue = xQueueCreate(CSV_CHUNK_QUEUE_SIZE, sizeof(chunk_ready_item_t));
+    if (s_chunk_ready_queue == NULL) {
+        ESP_LOGE(TAG, "Failed to create chunk ready queue");
+    }
     
     // Start ADC processing task (reads from continuous ADC buffer)
     // Pinned to CPU 1, priority 5 (high priority for real-time processing)
@@ -946,18 +1153,34 @@ void app_main(void) {
     // Set system time via SNTP so file mtime on SD card is correct
     esp_sntp_setoperatingmode(ESP_SNTP_OPMODE_POLL);
     esp_sntp_setservername(0, "pool.ntp.org");
+    esp_sntp_setservername(1, "time.google.com");
+    esp_sntp_setservername(2, "time.cloudflare.com");
+    esp_sntp_set_time_sync_notification_cb(sntp_sync_time_cb);
     esp_sntp_init();
+    ESP_LOGI(TAG, "SNTP: starting sync (pool.ntp.org, time.google.com, time.cloudflare.com)...");
+
     for (int i = 0; i < 50; i++) {
         vTaskDelay(pdMS_TO_TICKS(200));
-        if (sntp_get_sync_status() == SNTP_SYNC_STATUS_COMPLETED) {
+        sntp_sync_status_t st = sntp_get_sync_status();
+        if (st == SNTP_SYNC_STATUS_COMPLETED) {
             time_t now;
             time(&now);
-            ESP_LOGI(TAG, "SNTP synced, system time set (sec=%ld)", (long)now);
+            ESP_LOGI(TAG, "SNTP: sync completed (sec=%ld) after %.1f s", (long)now, (i + 1) * 0.2f);
             break;
         }
+        if (i > 0 && i % 10 == 0) {
+            const char *st_str = (st == SNTP_SYNC_STATUS_RESET) ? "RESET" :
+                                (st == SNTP_SYNC_STATUS_IN_PROGRESS) ? "IN_PROGRESS" : "UNKNOWN";
+            ESP_LOGI(TAG, "SNTP: waiting... status=%s (%.1f s elapsed)", st_str, (i + 1) * 0.2f);
+        }
     }
-    if (sntp_get_sync_status() != SNTP_SYNC_STATUS_COMPLETED) {
-        ESP_LOGW(TAG, "SNTP not synced yet; file dates may be wrong until sync completes");
+    sntp_sync_status_t final = sntp_get_sync_status();
+    if (final == SNTP_SYNC_STATUS_COMPLETED) {
+        ESP_LOGI(TAG, "SNTP: sync OK - file timestamps will be correct");
+    } else {
+        const char *st_str = (final == SNTP_SYNC_STATUS_RESET) ? "RESET" :
+                            (final == SNTP_SYNC_STATUS_IN_PROGRESS) ? "IN_PROGRESS" : "UNKNOWN";
+        ESP_LOGW(TAG, "SNTP: not synced after 10 s (status=%s); file dates may be wrong until sync completes in background", st_str);
     }
 #elif MODE == HOST
     wifi_init_softap();

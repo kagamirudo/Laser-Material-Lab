@@ -172,55 +172,12 @@ window.addEventListener('load', function() {
 });
 
 
-// ===== Client-side CSV chunk collection (no server changes required here) =====
-// Assumes firmware can expose per-chunk CSV in the future (e.g. /api/csv_chunk?i=N).
-// These helpers just manage polling and combining chunks on the browser side.
+// ===== Chunk mode: SSE (Server-Sent Events) for low-latency chunk delivery =====
 
 let chunkModeActive = false;
-let chunkPollTimer = null;
 let csvChunks = [];
-let nextChunkIndex = 0;
-
-function fetchCsvChunk() {
-    if (!chunkModeActive) {
-        return;
-    }
-
-    const url = `${API_BASE}/api/csv_chunk?i=${nextChunkIndex}`;
-
-    fetch(url)
-        .then(resp => {
-            if (!resp.ok) {
-                throw new Error(`HTTP ${resp.status}`);
-            }
-            return resp.text();
-        })
-        .then(text => {
-            if (!text || !text.trim()) {
-                return;
-            }
-
-            // First chunk keeps header as-is; later chunks drop header line if present.
-            if (nextChunkIndex === 0) {
-                csvChunks.push(text.trimEnd());
-            } else {
-                const lines = text.split('\n');
-                if (lines.length > 0 &&
-                    lines[0].toLowerCase().includes('timestamp_us') &&
-                    lines[0].toLowerCase().includes('adc_value')) {
-                    lines.shift();
-                }
-                csvChunks.push(lines.join('\n').trimEnd());
-            }
-
-            nextChunkIndex += 1;
-        })
-        .catch(err => {
-            console.error('CSV chunk fetch error:', err);
-        });
-}
-
-// Start normal logging plus client-side chunk collection.
+let chunkEventSource = null;
+// Start chunk mode: connect to SSE stream first, then start chunked logging.
 function startChunkMode() {
     if (chunkModeActive) {
         updateStatus('Chunk mode already running.');
@@ -228,65 +185,103 @@ function startChunkMode() {
     }
 
     csvChunks = [];
-    nextChunkIndex = 0;
     chunkModeActive = true;
 
-    // Reuse existing startLogging to tell ESP32 to begin acquisition.
-    startLogging();
+    // 1. Connect to SSE stream (must be before start)
+    const streamUrl = `${API_BASE}/api/csv_stream`.replace(/^\/+/, '/');
+    chunkEventSource = new EventSource(streamUrl);
 
-    if (!chunkPollTimer) {
-        fetchCsvChunk();
-        chunkPollTimer = setInterval(fetchCsvChunk, 1000);
-    }
+    chunkEventSource.onmessage = function(e) {
+        if (e.data === 'done') {
+            chunkEventSource.close();
+            chunkEventSource = null;
+            chunkModeActive = false;
+            if (csvChunks.length > 0) {
+                const fullCsv = csvChunks.join('\n');
+                const blob = new Blob([fullCsv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'data_chunks_combined.csv';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                updateStatus(`Downloaded ${csvChunks.length} chunk(s) as data_chunks_combined.csv`);
+            } else {
+                updateStatus('Chunk mode stopped. No chunks received (threshold may not have been crossed).');
+            }
+            return;
+        }
+        let text = e.data;
+        if (!text || !text.trim()) return;
+        if (csvChunks.length > 0) {
+            const lines = text.split('\n');
+            if (lines.length > 0 &&
+                lines[0].toLowerCase().includes('timestamp_us') &&
+                lines[0].toLowerCase().includes('adc_value')) {
+                lines.shift();
+            }
+            text = lines.join('\n').trimEnd();
+        }
+        if (text) csvChunks.push(text.trimEnd());
+        updateStatus(`Chunk mode: received ${csvChunks.length} chunk(s)...`);
+    };
 
-    updateStatus('Chunk mode: collecting CSV chunks...');
+    chunkEventSource.onerror = function() {
+        if (chunkModeActive && chunkEventSource) {
+            console.warn('SSE connection error - may reconnect');
+        }
+    };
+
+    // 2. Start chunked logging on ESP32
+    fetch(`${API_BASE}/api/start_chunk`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            isLoggingActive = true;
+            updateStatus(`Chunk mode: waiting for ADC threshold, then ${data.peak || 10} cycles...`);
+            document.getElementById('elapsedTime').textContent = 'Chunk mode: streaming...';
+            document.getElementById('elapsedTime').style.display = '';
+            if (!adcUpdateInterval) {
+                updateADC();
+                adcUpdateInterval = setInterval(updateADC, 100);
+            }
+        })
+        .catch(err => {
+            console.error('Start chunk error:', err);
+            updateStatus('Error starting chunk mode');
+            chunkModeActive = false;
+            if (chunkEventSource) {
+                chunkEventSource.close();
+                chunkEventSource = null;
+            }
+        });
 }
 
-// Stop logging, stop chunk polling, assemble all chunks and trigger a combined CSV download.
+// Stop chunk mode, wait for final chunks, assemble and download.
 function stopChunkModeAndDownload() {
     if (!chunkModeActive) {
         updateStatus('Chunk mode is not active.');
         return;
     }
 
-    chunkModeActive = false;
-    if (chunkPollTimer) {
-        clearInterval(chunkPollTimer);
-        chunkPollTimer = null;
+    isLoggingActive = false;
+    if (adcUpdateInterval) {
+        clearInterval(adcUpdateInterval);
+        adcUpdateInterval = null;
     }
+    document.getElementById('adcValue').textContent = '--';
+    document.getElementById('adcInfo').textContent = 'Stopped';
 
-    fetch(`${API_BASE}/api/stop`, { method: 'POST' })
+    fetch(`${API_BASE}/api/stop_chunk`, { method: 'POST' })
         .then(response => response.json())
         .then(data => {
-            let statusMsg = `Chunk mode stopped. Total samples: ${data.samples}`;
-            if (data.rate_hz && data.rate_hz > 0) {
-                statusMsg += ` | Rate: ${data.rate_hz.toFixed(2)} Hz`;
-            }
-            if (data.elapsed_ms) {
-                const seconds = (data.elapsed_ms / 1000).toFixed(2);
-                statusMsg += ` | Duration: ${seconds}s`;
-            }
-            updateStatus(statusMsg);
-
-            if (csvChunks.length === 0) {
-                console.warn('No CSV chunks collected.');
-                return;
-            }
-
-            const fullCsv = csvChunks.join('\n');
-            const blob = new Blob([fullCsv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'data_chunks_combined.csv';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            updateStatus('Chunk mode: stopping... (finishing current cycle, then assembling)');
         })
-        .catch(error => {
-            console.error('Chunk mode stop error:', error);
-            updateStatus('Error stopping chunk mode');
+        .catch(err => {
+            console.error('Stop chunk error:', err);
         });
+
+    // Download is triggered in onmessage when SSE sends "done"
 }
 
