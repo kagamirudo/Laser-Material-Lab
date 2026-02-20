@@ -20,10 +20,11 @@
                     <div class="adc-value" id="adcValue">--</div>
                     <div class="adc-info" id="adcInfo">Samples: 0</div>
                     <div class="elapsed-time" id="elapsedTime" aria-live="polite"></div>
+                    <div class="elapsed-time" id="chunkModeLine" aria-live="polite" style="display: none;"></div>
                     <div class="button-group">
                         <button class="start-btn" onclick="startLogging()">Start Recording</button>
                         <button class="stop-btn" onclick="stopLogging()">Stop Recording</button>
-                        <button class="download-btn" onclick="startChunkMode()">Start Chunk Mode (SSE)</button>
+                        <button class="download-btn" onclick="startChunkMode()">Start Chunk Mode</button>
                         <button class="stop-btn" onclick="stopChunkModeAndDownload()">Stop Chunk &amp; Download</button>
                     </div>
                 </div>

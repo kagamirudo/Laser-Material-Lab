@@ -91,7 +91,23 @@ function startLogging() {
         // The backend should handle resetting any previous recording state.
     }
 
-    fetch(`${API_BASE}/api/start`, { method: 'POST' })
+    // Get client's current time and date
+    const clientTime = new Date();
+    const clientTimeISO = clientTime.toISOString();
+    const clientTimestamp = clientTime.getTime(); // milliseconds since epoch
+    const timezoneOffset = -clientTime.getTimezoneOffset(); // minutes offset from UTC
+
+    fetch(`${API_BASE}/api/start`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            client_time: clientTimeISO,
+            client_timestamp: clientTimestamp,
+            timezone_offset: timezoneOffset
+        })
+    })
         .then(response => response.json())
         .then(data => {
             isLoggingActive = true;
@@ -164,98 +180,250 @@ function stopLogging() {
         });
 }
 
+// Auto-sync time with server when page loads
+function syncTimeWithServer() {
+    // Get client's current time and timezone
+    const clientTime = new Date();
+    const clientTimeISO = clientTime.toISOString();
+    const clientTimestamp = clientTime.getTime(); // milliseconds since epoch
+    const timezoneOffset = -clientTime.getTimezoneOffset(); // minutes offset from UTC (negative because getTimezoneOffset returns opposite)
+    
+    fetch(`${API_BASE}/api/sync_time`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            client_time: clientTimeISO,
+            client_timestamp: clientTimestamp,
+            timezone_offset: timezoneOffset
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'time_synced') {
+                console.log('Time synced successfully:', data.client_time, 'Timezone offset:', data.timezone_offset, 'min');
+            } else {
+                console.warn('Time sync failed:', data.error || 'unknown error');
+            }
+        })
+        .catch(error => {
+            console.error('Time sync error:', error);
+        });
+}
+
 // Start ADC updates on page load (but don't update until logging starts)
 window.addEventListener('load', function() {
     // Don't start ADC updates automatically - wait for user to press start
     document.getElementById('adcValue').textContent = '--';
     document.getElementById('adcInfo').textContent = 'Press Start to begin';
+    
+    // Auto-sync time with server when page loads
+    syncTimeWithServer();
 });
 
 
-// ===== Chunk mode: SSE (Server-Sent Events) for low-latency chunk delivery =====
+// ===== Chunk mode: Polling API (replaces SSE for better stop responsiveness) =====
 
 let chunkModeActive = false;
-let csvChunks = [];
-let chunkEventSource = null;
-// Start chunk mode: connect to SSE stream first, then start chunked logging.
+let chunkPollInterval = null;
+let lastChunkIndex = -1;
+let downloadedChunks = new Map(); // Map of chunk index -> CSV content
+
+// Start chunk mode: use polling API to fetch chunks
 function startChunkMode() {
     if (chunkModeActive) {
         updateStatus('Chunk mode already running.');
         return;
     }
 
-    csvChunks = [];
+    downloadedChunks.clear();
+    lastChunkIndex = -1;
     chunkModeActive = true;
 
-    // 1. Connect to SSE stream (must be before start)
-    const streamUrl = `${API_BASE}/api/csv_stream`.replace(/^\/+/, '/');
-    chunkEventSource = new EventSource(streamUrl);
+    // Get client's current time and date
+    const clientTime = new Date();
+    const clientTimeISO = clientTime.toISOString();
+    const clientTimestamp = clientTime.getTime(); // milliseconds since epoch
+    const timezoneOffset = -clientTime.getTimezoneOffset(); // minutes offset from UTC
 
-    chunkEventSource.onmessage = function(e) {
-        if (e.data === 'done') {
-            chunkEventSource.close();
-            chunkEventSource = null;
-            chunkModeActive = false;
-            if (csvChunks.length > 0) {
-                const fullCsv = csvChunks.join('\n');
-                const blob = new Blob([fullCsv], { type: 'text/csv' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = 'data_chunks_combined.csv';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-                updateStatus(`Downloaded ${csvChunks.length} chunk(s) as data_chunks_combined.csv`);
-            } else {
-                updateStatus('Chunk mode stopped. No chunks received (threshold may not have been crossed).');
-            }
-            return;
-        }
-        let text = e.data;
-        if (!text || !text.trim()) return;
-        if (csvChunks.length > 0) {
-            const lines = text.split('\n');
-            if (lines.length > 0 &&
-                lines[0].toLowerCase().includes('timestamp_us') &&
-                lines[0].toLowerCase().includes('adc_value')) {
-                lines.shift();
-            }
-            text = lines.join('\n').trimEnd();
-        }
-        if (text) csvChunks.push(text.trimEnd());
-        updateStatus(`Chunk mode: received ${csvChunks.length} chunk(s)...`);
-    };
-
-    chunkEventSource.onerror = function() {
-        if (chunkModeActive && chunkEventSource) {
-            console.warn('SSE connection error - may reconnect');
-        }
-    };
-
-    // 2. Start chunked logging on ESP32
-    fetch(`${API_BASE}/api/start_chunk`, { method: 'POST' })
+    // Start chunked logging on ESP32
+    fetch(`${API_BASE}/api/start_chunk`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            client_time: clientTimeISO,
+            client_timestamp: clientTimestamp,
+            timezone_offset: timezoneOffset
+        })
+    })
         .then(response => response.json())
         .then(data => {
             isLoggingActive = true;
             updateStatus(`Chunk mode: waiting for ADC threshold, then ${data.peak || 10} cycles...`);
-            document.getElementById('elapsedTime').textContent = 'Chunk mode: streaming...';
+            // Chunk mode on its own line; recording time stays on elapsedTime (from updateADC)
+            const chunkLine = document.getElementById('chunkModeLine');
+            chunkLine.textContent = 'Chunk mode: polling for chunks...';
+            chunkLine.style.display = '';
             document.getElementById('elapsedTime').style.display = '';
             if (!adcUpdateInterval) {
                 updateADC();
                 adcUpdateInterval = setInterval(updateADC, 100);
             }
+            
+            // Start polling for chunks (every 500ms)
+            chunkPollInterval = setInterval(pollForChunks, 500);
         })
         .catch(err => {
             console.error('Start chunk error:', err);
             updateStatus('Error starting chunk mode');
             chunkModeActive = false;
-            if (chunkEventSource) {
-                chunkEventSource.close();
-                chunkEventSource = null;
-            }
         });
+}
+
+// Poll for new chunks and download them
+async function pollForChunks() {
+    if (!chunkModeActive) {
+        return;
+    }
+
+    try {
+        // Check chunk status
+        const statusResponse = await fetch(`${API_BASE}/api/chunks`);
+        if (!statusResponse.ok) {
+            if (statusResponse.status === 404) {
+                // Chunked logging not active - stop polling
+                stopChunkPolling();
+                return;
+            }
+            throw new Error(`HTTP ${statusResponse.status}`);
+        }
+        
+        const status = await statusResponse.json();
+        
+        if (!status.active) {
+            // Logging stopped - download all chunks
+            stopChunkPolling();
+            downloadAllChunks();
+            return;
+        }
+
+        // Check for new chunks
+        const currentChunkCount = status.chunks || 0;
+        if (currentChunkCount > lastChunkIndex + 1) {
+            // Download new chunks
+            for (let i = lastChunkIndex + 1; i < currentChunkCount; i++) {
+                await downloadChunk(i);
+            }
+            lastChunkIndex = currentChunkCount - 1;
+            updateStatus(`Chunk mode: downloaded ${downloadedChunks.size} chunk(s)...`);
+        }
+        
+        // Update chunk mode line only (recording time stays on elapsedTime from updateADC)
+        const chunkLine = document.getElementById('chunkModeLine');
+        if (status.triggered) {
+            // current_cycle is 0-based (0..PEAK-1); show 1-based (1..PEAK)
+            const cycleDisplay = (status.current_cycle != null) ? (status.current_cycle + 1) : '?';
+            chunkLine.textContent = 
+                `Chunk mode: active (chunk ${currentChunkCount}, cycle ${cycleDisplay})`;
+        } else {
+            chunkLine.textContent = 'Chunk mode: waiting for threshold...';
+        }
+    } catch (error) {
+        // Silently handle errors - they're expected with frequent polling
+        if (error.name !== 'TypeError' && !error.message.includes('Failed to fetch')) {
+            console.error('Chunk poll error:', error);
+        }
+    }
+}
+
+// Download a specific chunk (retries once if truncated)
+async function downloadChunk(chunkIndex, retryCount = 0) {
+    const maxRetries = 1;
+    try {
+        const response = await fetch(`${API_BASE}/api/chunk?index=${chunkIndex}`);
+        if (!response.ok) {
+            if (response.status === 404) {
+                return;
+            }
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const csvText = await response.text();
+        const contentLength = response.headers.get('Content-Length');
+        if (contentLength) {
+            const expected = parseInt(contentLength, 10);
+            if (!isNaN(expected) && csvText.length !== expected) {
+                if (retryCount < maxRetries) {
+                    console.warn(`Chunk ${chunkIndex}: truncated (got ${csvText.length}, expected ${expected}), retrying...`);
+                    return downloadChunk(chunkIndex, retryCount + 1);
+                }
+                console.warn(`Chunk ${chunkIndex}: truncated (got ${csvText.length}, expected ${expected}), keeping partial`);
+            }
+        }
+        
+        if (csvText && csvText.trim()) {
+            // Always strip header so stored content is data-only (avoids duplicate header in combined)
+            const lines = csvText.trim().split('\n');
+            if (lines.length > 0 &&
+                lines[0].toLowerCase().includes('timestamp_us') &&
+                lines[0].toLowerCase().includes('adc_value')) {
+                lines.shift();
+            }
+            const processedText = lines.join('\n').trimEnd();
+            if (processedText) {
+                downloadedChunks.set(chunkIndex, processedText);
+            }
+        }
+    } catch (error) {
+        console.error(`Error downloading chunk ${chunkIndex}:`, error);
+    }
+}
+
+// Stop chunk polling
+function stopChunkPolling() {
+    if (chunkPollInterval) {
+        clearInterval(chunkPollInterval);
+        chunkPollInterval = null;
+    }
+}
+
+// Download all chunks as combined CSV
+function downloadAllChunks() {
+    if (downloadedChunks.size === 0) {
+        updateStatus('Chunk mode stopped. No chunks received (threshold may not have been crossed).');
+        return;
+    }
+    
+    // Chunks are stored data-only (no header). Combine with single header.
+    const sortedEntries = Array.from(downloadedChunks.entries()).sort((a, b) => a[0] - b[0]);
+    const sortedChunks = sortedEntries.map(e => e[1]);
+    const headerLine = 'timestamp_us,adc_value';
+    const fullCsv = headerLine + '\n' + sortedChunks.join('\n');
+    
+    // Log per-chunk line counts to spot truncation (e.g. last chunk short)
+    const lineCounts = sortedEntries.map(([idx, csv]) => {
+        const n = csv.trim().split('\n').filter(l => l.length > 0).length;
+        return `chunk ${idx}: ${n} lines`;
+    });
+    if (lineCounts.length) {
+        console.info('Chunk line counts: ' + lineCounts.join(', '));
+    }
+    const totalRows = sortedChunks.join('\n').split('\n').filter(l => l.length > 0).length;
+    updateStatus(`Downloaded ${downloadedChunks.size} chunk(s), ${totalRows.toLocaleString()} rows → data_chunks_combined.csv`);
+    
+    const blob = new Blob([fullCsv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'data_chunks_combined.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    downloadedChunks.clear();
 }
 
 // Stop chunk mode, wait for final chunks, assemble and download.
@@ -272,16 +440,28 @@ function stopChunkModeAndDownload() {
     }
     document.getElementById('adcValue').textContent = '--';
     document.getElementById('adcInfo').textContent = 'Stopped';
+    document.getElementById('chunkModeLine').style.display = 'none';
+    document.getElementById('chunkModeLine').textContent = '';
 
+    // Stop polling immediately
+    stopChunkPolling();
+    chunkModeActive = false;
+
+    // Stop chunked logging on ESP32
     fetch(`${API_BASE}/api/stop_chunk`, { method: 'POST' })
         .then(response => response.json())
         .then(data => {
-            updateStatus('Chunk mode: stopping... (finishing current cycle, then assembling)');
+            updateStatus('Chunk mode: stopped. Downloading final chunks...');
+            // Poll one more time to get any final chunks, then download
+            setTimeout(async () => {
+                await pollForChunks();
+                downloadAllChunks();
+            }, 1000);
         })
         .catch(err => {
             console.error('Stop chunk error:', err);
+            // Still try to download what we have
+            downloadAllChunks();
         });
-
-    // Download is triggered in onmessage when SSE sends "done"
 }
 

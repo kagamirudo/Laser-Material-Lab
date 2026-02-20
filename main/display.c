@@ -218,6 +218,20 @@ static void ssd1306_clear(void)
     }
 }
 
+/* Clear only a range of pages (e.g. 2 pages per line) to avoid full-screen blink */
+static void ssd1306_clear_pages(uint8_t start_page, uint8_t end_page)
+{
+    if (start_page > end_page || end_page >= SSD1306_PAGES) {
+        return;
+    }
+    uint8_t zeros[SSD1306_WIDTH];
+    memset(zeros, 0x00, sizeof(zeros));
+    for (uint8_t page = start_page; page <= end_page; page++) {
+        ssd1306_set_cursor(0, page);
+        ssd1306_data(zeros, sizeof(zeros));
+    }
+}
+
 static void ssd1306_draw_text(uint8_t col, uint8_t page, const char *text)
 {
     if (!text) {
@@ -332,5 +346,36 @@ void display_show_status(const char *line1, const char *line2)
     ssd1306_clear();
     for (int i = 0; i < s_status_count; i++) {
         ssd1306_draw_text(0, (uint8_t)i * 2, s_status_lines[i]);
+    }
+}
+
+void display_show_3lines(const char *line1, const char *line2, const char *line3)
+{
+    if (!s_display_ready) {
+        return;
+    }
+    /* Clear and draw each line in turn to avoid full-screen blink */
+    ssd1306_clear_pages(0, 1);
+    if (line1) {
+        ssd1306_draw_text(0, 0, line1);
+    }
+    ssd1306_clear_pages(2, 3);
+    if (line2) {
+        ssd1306_draw_text(0, 2, line2);
+    }
+    ssd1306_clear_pages(4, 5);
+    if (line3) {
+        ssd1306_draw_text(0, 4, line3);
+    }
+}
+
+void display_update_3rd_line(const char *line3)
+{
+    if (!s_display_ready) {
+        return;
+    }
+    ssd1306_clear_pages(4, 5);
+    if (line3) {
+        ssd1306_draw_text(0, 4, line3);
     }
 }
