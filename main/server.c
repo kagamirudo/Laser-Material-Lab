@@ -6,6 +6,7 @@
 #include "esp_log.h"
 #include "esp_timer.h"
 #include "esp_netif.h"
+#include "esp_http_client.h"
 #include "display.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,10 +17,93 @@
 
 #define SERVER_TAG "SERVER"
 
+/** Set TZ env from offset minutes so localtime_r() shows local time.
+ *  offset_min: e.g. -300 for EST (UTC-5). POSIX format: "XXX5" = 5h behind UTC. */
+static void set_tz_from_offset_min(int offset_min) {
+    int offset_hours = -offset_min / 60;  /* -(-300)/60 = 5 for EST (UTC-5) */
+    char tz_buf[24];
+    snprintf(tz_buf, sizeof(tz_buf), "XXX%d", offset_hours);  /* XXX5=UTC-5, XXX-1=UTC+1 */
+    setenv("TZ", tz_buf, 1);
+    tzset();
+}
+
 // Time sync status
 static bool s_time_synced = false;
 static SemaphoreHandle_t s_time_sync_mutex = NULL;
 static bool s_display_time_task_started = false;
+// Timezone offset in minutes (from client); used for TZ so display shows local time
+static int s_timezone_offset_min = 0;
+static bool s_tz_fetch_started = false;
+
+#define TZ_FETCH_BUF_SIZE 128
+static char s_tz_fetch_buf[TZ_FETCH_BUF_SIZE];
+static size_t s_tz_fetch_len;
+
+static esp_err_t tz_http_event_handler(esp_http_client_event_t *evt) {
+    switch (evt->event_id) {
+        case HTTP_EVENT_ON_DATA:
+            if (evt->data_len > 0 && s_tz_fetch_len + evt->data_len < TZ_FETCH_BUF_SIZE) {
+                memcpy(s_tz_fetch_buf + s_tz_fetch_len, evt->data, evt->data_len);
+                s_tz_fetch_len += evt->data_len;
+                s_tz_fetch_buf[s_tz_fetch_len] = '\0';
+            }
+            break;
+        default:
+            break;
+    }
+    return ESP_OK;
+}
+
+/** Fetch timezone offset from IP geolocation (ip-api.com). Runs once on boot. */
+static void fetch_timezone_task(void *pvParameters) {
+    vTaskDelay(pdMS_TO_TICKS(3000));  /* Wait for SNTP to likely sync */
+    s_tz_fetch_len = 0;
+    memset(s_tz_fetch_buf, 0, sizeof(s_tz_fetch_buf));
+
+    esp_http_client_config_t config = {
+        .url = "http://ip-api.com/json/?fields=offset",
+        .event_handler = tz_http_event_handler,
+        .timeout_ms = 8000,
+    };
+    esp_http_client_handle_t client = esp_http_client_init(&config);
+    if (!client) {
+        ESP_LOGW(SERVER_TAG, "TZ fetch: http client init failed");
+        vTaskDelete(NULL);
+        return;
+    }
+
+    esp_err_t err = esp_http_client_perform(client);
+    esp_http_client_cleanup(client);
+
+    if (err != ESP_OK) {
+        ESP_LOGW(SERVER_TAG, "TZ fetch: request failed (%s)", esp_err_to_name(err));
+        vTaskDelete(NULL);
+        return;
+    }
+
+    /* Parse {"offset":-18000} - offset in seconds */
+    char *p = strstr(s_tz_fetch_buf, "\"offset\"");
+    if (p) {
+        p = strchr(p, ':');
+        if (p) {
+            long offset_sec = strtol(p + 1, NULL, 10);
+            int offset_min = (int)(offset_sec / 60);  /* -18000 -> -300 for EST */
+            set_tz_from_offset_min(offset_min);
+            s_timezone_offset_min = offset_min;
+            if (s_time_sync_mutex) {
+                xSemaphoreTake(s_time_sync_mutex, portMAX_DELAY);
+                s_time_synced = true;
+                xSemaphoreGive(s_time_sync_mutex);
+            } else {
+                s_time_synced = true;
+            }
+            ESP_LOGI(SERVER_TAG, "TZ auto-detected from IP: offset %d min (UTC%+d)", offset_min, offset_min / 60);
+        }
+    } else {
+        ESP_LOGW(SERVER_TAG, "TZ fetch: could not parse offset from response");
+    }
+    vTaskDelete(NULL);
+}
 
 // TLS certificate/key (replace with your real cert + key).
 extern const unsigned char
@@ -68,6 +152,7 @@ bool get_chunk_triggered(void);
 int get_chunk_phase(void);
 int get_chunk_cycle(void);
 int get_chunk_index(void);
+int get_chunks_ready_count(void);
 uint64_t get_chunk_phase_start_us(void);
 uint32_t get_chunk_global_sample_index(void);
 SemaphoreHandle_t get_chunk_stop_semaphore(void);
@@ -235,20 +320,20 @@ static bool parse_client_time(httpd_req_t *req, char *client_time_str, size_t cl
         if (colon != NULL) {
             long long timestamp_ms = strtoll(colon + 1, NULL, 10);
             if (timestamp_ms > 0) {
-                // Apply timezone offset: client sends UTC time, we add timezone offset to get local time
-                // e.g., UTC+5 (300 min) means local time is 5 hours ahead of UTC
                 int tz_offset_min = timezone_offset_min ? *timezone_offset_min : 0;
-                long long adjusted_ms = timestamp_ms + (tz_offset_min * 60LL * 1000LL);
-                
-                // Convert milliseconds to seconds and microseconds
-                time_t timestamp_sec = adjusted_ms / 1000;
+                s_timezone_offset_min = tz_offset_min;
+                set_tz_from_offset_min(tz_offset_min);
+
+                // Set system clock to UTC (client_timestamp is UTC). SNTP also sets UTC, so they stay in sync.
+                // localtime_r() will convert to local using TZ set above.
+                time_t timestamp_sec = timestamp_ms / 1000;
                 struct timeval tv = {
                     .tv_sec = timestamp_sec,
-                    .tv_usec = (adjusted_ms % 1000) * 1000
+                    .tv_usec = (timestamp_ms % 1000) * 1000
                 };
                 settimeofday(&tv, NULL);
-                ESP_LOGI(SERVER_TAG, "System time set from client: %lld ms (UTC), timezone offset: %d min, local time: %lld ms (%s)", 
-                         timestamp_ms, tz_offset_min, adjusted_ms, client_time_str);
+                ESP_LOGI(SERVER_TAG, "System time set from client: %lld ms (UTC), timezone offset: %d min (%s)", 
+                         timestamp_ms, tz_offset_min, client_time_str);
                 time_set = true;
                 
                 // Update time sync status and show on display
@@ -512,21 +597,27 @@ cleanup:
 }
 
 // Get list of available chunks (for polling API)
+// When active: returns chunks ready so far. When inactive: returns last chunks count so client can fetch after stop.
 static esp_err_t chunks_list_handler(httpd_req_t *req) {
-    if (!is_chunked_logging_active()) {
-        httpd_resp_set_status(req, "404 Not Found");
-        httpd_resp_send(req, "{\"error\":\"chunked logging not active\"}", HTTPD_RESP_USE_STRLEN);
+    int chunks_ready = get_chunks_ready_count();
+    bool active = is_chunked_logging_active();
+    
+    if (!active) {
+        // Still return 200 with chunks count so client can download after stop
+        char response[128];
+        snprintf(response, sizeof(response), "{\"chunks\":%d,\"active\":false}", chunks_ready);
+        httpd_resp_set_type(req, "application/json");
+        httpd_resp_send(req, response, HTTPD_RESP_USE_STRLEN);
         return ESP_OK;
     }
     
-    int current_chunk = get_chunk_index();
     int current_cycle = get_chunk_cycle();
     bool triggered = get_chunk_triggered();
     
     char response[256];
     snprintf(response, sizeof(response), 
              "{\"chunks\":%d,\"current_cycle\":%d,\"triggered\":%s,\"active\":true}",
-             current_chunk, current_cycle, triggered ? "true" : "false");
+             chunks_ready, current_cycle, triggered ? "true" : "false");
     
     httpd_resp_set_type(req, "application/json");
     httpd_resp_send(req, response, HTTPD_RESP_USE_STRLEN);
@@ -998,7 +1089,13 @@ httpd_handle_t start_webserver_http(void) {
             ESP_LOGE(SERVER_TAG, "Failed to create display time task");
         }
     }
-    
+
+    /* Auto-fetch timezone from IP geolocation (ip-api.com) - runs once, no client needed */
+    if (!s_tz_fetch_started) {
+        s_tz_fetch_started = true;
+        xTaskCreate(fetch_timezone_task, "tz_fetch", 4096, NULL, 4, NULL);
+    }
+
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
     // Increase max URI handlers if needed
     config.max_uri_handlers = 16;
@@ -1031,6 +1128,11 @@ httpd_handle_t start_webserver_https(void) {
         } else {
             ESP_LOGE(SERVER_TAG, "Failed to create display time task");
         }
+    }
+
+    if (!s_tz_fetch_started) {
+        s_tz_fetch_started = true;
+        xTaskCreate(fetch_timezone_task, "tz_fetch", 4096, NULL, 4, NULL);
     }
     
     httpd_ssl_config_t config = HTTPD_SSL_CONFIG_DEFAULT();

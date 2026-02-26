@@ -450,17 +450,26 @@ function stopChunkModeAndDownload() {
     // Stop chunked logging on ESP32
     fetch(`${API_BASE}/api/stop_chunk`, { method: 'POST' })
         .then(response => response.json())
-        .then(data => {
+        .then(async () => {
             updateStatus('Chunk mode: stopped. Downloading final chunks...');
-            // Poll one more time to get any final chunks, then download
-            setTimeout(async () => {
-                await pollForChunks();
-                downloadAllChunks();
-            }, 1000);
+            // After stop, server returns 200 with { chunks: N, active: false }; fetch and download any missing chunks
+            await new Promise(r => setTimeout(r, 800));
+            try {
+                const r = await fetch(`${API_BASE}/api/chunks`);
+                if (r.ok) {
+                    const status = await r.json();
+                    const count = status.chunks || 0;
+                    for (let i = 0; i < count; i++) {
+                        if (!downloadedChunks.has(i)) await downloadChunk(i);
+                    }
+                }
+            } catch (e) {
+                console.warn('Final chunks fetch failed:', e);
+            }
+            downloadAllChunks();
         })
         .catch(err => {
             console.error('Stop chunk error:', err);
-            // Still try to download what we have
             downloadAllChunks();
         });
 }

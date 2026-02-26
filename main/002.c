@@ -35,8 +35,8 @@ static const char *TAG = "LASER_ADC";
 
 #define WIFI 1
 #define HOST 2
-// #define MODE WIFI
-#define MODE HOST
+#define MODE WIFI
+// #define MODE HOST
 
 // Pin mapping (ESP32-S3)
 #define LASER_GPIO   5    // PWM output to laser
@@ -61,7 +61,7 @@ static const char *TAG = "LASER_ADC";
 // CSV directory on SD (same base as bench; used when sdcard_is_mounted())
 #define CSV_SD_DIR          SDCARD_MOUNT_POINT "/laser"
 #define CSV_FILE_PATH_MAX_LEN 64         // Maximum length for CSV filename
-#define CSV_QUEUE_SIZE 6000              // Queue size for ADC samples (~72KB; 1.5s at 4kHz; reduces drops during SSE/SD contention)
+#define CSV_QUEUE_SIZE 48000             // ADC sample queue size (~288KB in SPIRAM, holds ~6 seconds at 4kHz; helps prevent data loss during SD/SSE delays)
 #define SAMPLE_LIMIT 10000000            // Auto-stop after this many samples
 
 // CSV write buffer config
@@ -70,9 +70,9 @@ static const char *TAG = "LASER_ADC";
 
 // Chunked logging: threshold-triggered, write 1s / skip 1s for PEAK cycles per chunk
 #define PEAK 10                          // Number of write/skip cycles per chunk (change as needed)
-#define THRESHOLD 200                   // ADC value to trigger writing
-#define CHUNK_WRITE_SEC 1                // Seconds to write per cycle
-#define CHUNK_SKIP_SEC 1                 // Seconds to skip per cycle
+#define THRESHOLD 200                    // ADC value to trigger writing
+#define CHUNK_TIME_ON  1                 // Seconds to record per cycle (easy to change)
+#define CHUNK_TIME_OFF 1                 // Seconds to skip per cycle (easy to change)
 #define CSV_CHUNK_QUEUE_SIZE 16          // Max pending chunks for SSE
 #define CSV_CHUNK_DIR_SD    CSV_SD_DIR "/chunks"
 #define CSV_CHUNK_DIR_SPIFFS SPIFFS_MOUNT_POINT "/chunks"
@@ -101,6 +101,9 @@ typedef struct {
 } __attribute__((packed)) bench_record_t;
 
 static QueueHandle_t s_csv_queue = NULL;
+/** CSV queue storage in SPIRAM (~72KB) to free internal RAM; never freed. */
+static uint8_t *s_csv_queue_storage = NULL;
+static StaticQueue_t s_csv_queue_struct;
 
 // Bench laser: run for T seconds, write ADC samples to SD. Test CSV and binary separately (one file per run).
 // Stream in chunks to avoid allocating 160KB internal RAM (fits in ~16KB).
@@ -186,6 +189,7 @@ static volatile bool s_chunk_stop_requested = false;
 static FILE *s_chunk_file = NULL;
 static char s_chunk_file_path[CHUNK_PATH_MAX] = {0};
 static int s_chunk_index = 0;
+static int s_chunks_ready_count = 0;  // Number of chunks completed and available for download (for /api/chunks)
 static int s_chunk_phase = 0;       // 0=WRITE, 1=SKIP, 2=POST_CHUNK_PAUSE
 static int s_chunk_cycle = 0;
 static uint64_t s_chunk_phase_start_us = 0;
@@ -405,8 +409,10 @@ static void adc_task(void *pvParameters) {
                     continue;
                 }
                 
-                // Send to CSV queue if logging is enabled (continuous or chunked mode)
+                // Send to CSV queue if logging is enabled (continuous or chunked mode).
+                // In chunk mode, skip-phase (1 sec off) data is not wanted: do not enqueue, so queue does not fill and nothing gets written.
                 if ((s_csv_logging_enabled || s_chunked_logging_enabled) && s_csv_queue != NULL) {
+                    if (s_chunked_logging_enabled && s_chunk_phase == 1) continue;  // SKIP phase: don't enqueue
                     csv_sample_t sample = {
                         .adc_value = raw_value,
                         .timestamp_us = esp_timer_get_time()
@@ -462,6 +468,11 @@ static void csv_writer_task(void *pvParameters) {
             // Phases:
             //   0 = WRITE, 1 = SKIP, 2 = POST_CHUNK_PAUSE (no SD writes; give 1s window for client to fetch chunk)
             uint64_t now_us = esp_timer_get_time();
+
+            // Stop requested: flush current chunk immediately (even mid-cycle) so client can download partial data
+            if ((s_chunk_stop_requested || s_chunk_finish_write_then_stop) && s_chunk_file != NULL) {
+                goto chunk_close_and_push;
+            }
 
             // Handle post-chunk pause window (no SD writes; drain queue only)
             if (s_chunk_triggered && s_chunk_phase == 2) {
@@ -538,8 +549,9 @@ static void csv_writer_task(void *pvParameters) {
                 }
             }
 
-            uint64_t elapsed_us = now_us - s_chunk_phase_start_us;
-            uint64_t phase_duration_us = (s_chunk_phase == 0) ? (CHUNK_WRITE_SEC * 1000000ULL) : (CHUNK_SKIP_SEC * 1000000ULL);
+            uint64_t elapsed_us = 0;
+            elapsed_us = now_us - s_chunk_phase_start_us;
+            uint64_t phase_duration_us = (s_chunk_phase == 0) ? (CHUNK_TIME_ON * 1000000ULL) : (CHUNK_TIME_OFF * 1000000ULL);
 
             if (elapsed_us >= phase_duration_us && s_chunk_triggered && s_chunk_file != NULL) {
                 if (s_chunk_phase == 0) {  // WRITE -> SKIP
@@ -629,6 +641,7 @@ chunk_close_and_push:;
                         } else {
                             ESP_LOGW(TAG, "[CHUNK_DEBUG] chunk_ready_queue is NULL, skipping");
                         }
+                        s_chunks_ready_count = s_chunk_index + 1;  // So /api/chunks returns count client can download
                         ESP_LOGI(TAG, "Chunk %d ready: %zu bytes | Packaging and sending to client", s_chunk_index, sz);
 
                         if (s_chunk_stop_requested || s_chunk_finish_write_then_stop) {
@@ -649,7 +662,7 @@ chunk_close_and_push:;
                         }
                         // Start a 1s post-chunk pause window before opening the next chunk
                         uint64_t pause_start = esp_timer_get_time();
-                        uint64_t close_ops_us = pause_start - (now_us - elapsed_us);  // Approximate time spent in close operations
+                        uint64_t close_ops_us = pause_start - s_chunk_phase_start_us;  // Time from phase start to end of close
                         ESP_LOGI(TAG, "[CHUNK_DEBUG] Starting 1s post-chunk pause window...");
                         ESP_LOGI(TAG, "[CHUNK_DEBUG] Close operations took ~%llu us (%.2f ms) before pause", 
                                  (unsigned long long)close_ops_us, (double)close_ops_us / 1000.0);
@@ -697,7 +710,7 @@ chunk_close_and_push:;
                 // Check if WRITE phase duration exceeded (transition to SKIP)
                 uint64_t now_us = esp_timer_get_time();
                 uint64_t elapsed_us = now_us - s_chunk_phase_start_us;
-                if (elapsed_us >= CHUNK_WRITE_SEC * 1000000ULL) {
+                if (elapsed_us >= CHUNK_TIME_ON * 1000000ULL) {
                     ESP_LOGI(TAG, "[CHUNK_CYCLE] chunk=%d cycle=%d samples_written=%lu last_timestamp_us=%llu",
                             s_chunk_index, s_chunk_cycle, (unsigned long)s_chunk_cycle_write_count,
                             (unsigned long long)s_chunk_cycle_last_ts_us);
@@ -1088,6 +1101,10 @@ int get_chunk_index(void) {
     return s_chunk_index;
 }
 
+int get_chunks_ready_count(void) {
+    return s_chunks_ready_count;
+}
+
 uint64_t get_chunk_phase_start_us(void) {
     return s_chunk_phase_start_us;
 }
@@ -1121,6 +1138,7 @@ void start_chunked_logging(void) {
     s_chunk_finish_write_then_stop = false;
     s_chunk_triggered = false;
     s_chunk_index = 0;
+    s_chunks_ready_count = 0;
     s_chunk_cycle = 0;
     s_chunk_phase = 0;
     s_chunk_sample_index = 0;
@@ -1160,7 +1178,7 @@ void start_chunked_logging(void) {
     s_chunk_phase_start_us = esp_timer_get_time();
     s_chunked_logging_enabled = true;
     start_sampling_timer();
-    ESP_LOGI(TAG, "Chunked logging started: waiting for ADC >= %d, then %d cycles (write %ds/skip %ds)", THRESHOLD, PEAK, CHUNK_WRITE_SEC, CHUNK_SKIP_SEC);
+    ESP_LOGI(TAG, "Chunked logging started: waiting for ADC >= %d, then %d cycles (on %ds / off %ds)", THRESHOLD, PEAK, CHUNK_TIME_ON, CHUNK_TIME_OFF);
 }
 
 void stop_chunked_logging(void) {
@@ -1375,12 +1393,26 @@ void app_main(void) {
         return;
     }
     
-    // Create queue for CSV samples
-    s_csv_queue = xQueueCreate(CSV_QUEUE_SIZE, sizeof(csv_sample_t));
-    if (s_csv_queue == NULL) {
-        ESP_LOGE(TAG, "Failed to create CSV queue");
+    // Create queue for CSV samples; storage in SPIRAM to free internal RAM
+    size_t queue_storage_bytes = (size_t)CSV_QUEUE_SIZE * sizeof(csv_sample_t);
+    s_csv_queue_storage = heap_caps_malloc(queue_storage_bytes, MALLOC_CAP_SPIRAM);
+    if (s_csv_queue_storage == NULL) {
+        ESP_LOGW(TAG, "CSV queue SPIRAM alloc failed, using internal RAM");
+        s_csv_queue_storage = heap_caps_malloc(queue_storage_bytes, MALLOC_CAP_INTERNAL);
+    }
+    if (s_csv_queue_storage == NULL) {
+        ESP_LOGE(TAG, "Failed to allocate CSV queue storage (%zu bytes)", queue_storage_bytes);
         return;
     }
+    s_csv_queue = xQueueCreateStatic(CSV_QUEUE_SIZE, sizeof(csv_sample_t),
+                                     s_csv_queue_storage, &s_csv_queue_struct);
+    if (s_csv_queue == NULL) {
+        ESP_LOGE(TAG, "Failed to create CSV queue");
+        heap_caps_free(s_csv_queue_storage);
+        s_csv_queue_storage = NULL;
+        return;
+    }
+    ESP_LOGI(TAG, "CSV queue created (%u slots)", (unsigned)CSV_QUEUE_SIZE);
 
     // Create queue for chunked SSE (chunk path when ready)
     s_chunk_ready_queue = xQueueCreate(CSV_CHUNK_QUEUE_SIZE, sizeof(chunk_ready_item_t));
