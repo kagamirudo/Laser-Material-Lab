@@ -35,8 +35,8 @@ static const char *TAG = "LASER_ADC";
 
 #define WIFI 1
 #define HOST 2
-// #define MODE WIFI
-#define MODE HOST
+#define MODE WIFI
+// #define MODE HOST
 
 // Pin mapping (ESP32-S3)
 #define LASER_GPIO   5    // PWM output to laser
@@ -51,7 +51,7 @@ static const char *TAG = "LASER_ADC";
 #define LASER_DUTY_FULL   ((1 << LASER_LEDC_RES) - 1)  // 255
 
 // ADC sampling config
-#define SAMPLE_RATE_HZ    611            // Target: samples per second (minimum: ~611 Hz for ESP32-S3)
+#define SAMPLE_RATE_HZ    3000           // Target: samples per second (minimum: ~611 Hz for ESP32-S3)
 #define ADC_MIN_FREQ_HZ   611            // Minimum sampling frequency for ESP32-S3 continuous ADC
 #define ADC_CONTINUOUS_BUF_SIZE 4096     // Buffer for continuous ADC (must be multiple of SOC_ADC_DIGI_RESULT_BYTES)
 #define ADC_READ_TIMEOUT_MS 100          // Timeout for reading from continuous ADC
@@ -71,7 +71,7 @@ static const char *TAG = "LASER_ADC";
 // Chunked logging: continuous capture split into time-based chunks (no cycles, no threshold)
 #define CHUNK_CONTINUOUS_SECS 10         // Seconds per chunk (change as needed)
 #define CSV_CHUNK_QUEUE_SIZE 16          // Max pending chunks for client download
-#define CSV_CHUNK_DIR_SD    CSV_SD_DIR "/chunks"
+#define CSV_CHUNK_DIR_SD     CSV_SD_DIR "/chunks"
 #define CSV_CHUNK_DIR_SPIFFS SPIFFS_MOUNT_POINT "/chunks"
 #define TESTBENCH_DIR_SD     SDCARD_MOUNT_POINT "/tb/chunks"
 #define TESTBENCH_DIR_SPIFFS SPIFFS_MOUNT_POINT "/tb/chunks"
