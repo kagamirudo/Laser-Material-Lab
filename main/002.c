@@ -35,8 +35,8 @@ static const char *TAG = "LASER_ADC";
 
 #define WIFI 1
 #define HOST 2
-#define MODE WIFI
-// #define MODE HOST
+// #define MODE WIFI
+#define MODE HOST
 
 // Pin mapping (ESP32-S3)
 #define LASER_GPIO   5    // PWM output to laser
