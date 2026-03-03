@@ -35,8 +35,8 @@ static const char *TAG = "LASER_ADC";
 
 #define WIFI 1
 #define HOST 2
-// #define MODE WIFI
-#define MODE HOST
+#define MODE WIFI
+// #define MODE HOST
 
 // Pin mapping (ESP32-S3)
 #define LASER_GPIO   5    // PWM output to laser
@@ -69,7 +69,7 @@ static const char *TAG = "LASER_ADC";
 #define CSV_FLUSH_INTERVAL 5             // Flush every N batches (reduces flash wear)
 
 // Chunked logging: continuous capture split into time-based chunks (no cycles, no threshold)
-#define CHUNK_CONTINUOUS_SECS 10         // Seconds per chunk (change as needed)
+#define CHUNK_CONTINUOUS_SECS 50         // Seconds per chunk (change as needed)
 #define CSV_CHUNK_QUEUE_SIZE 16          // Max pending chunks for client download
 #define CSV_CHUNK_DIR_SD     CSV_SD_DIR "/chunks"
 #define CSV_CHUNK_DIR_SPIFFS SPIFFS_MOUNT_POINT "/chunks"
@@ -511,12 +511,15 @@ static void csv_writer_task(void *pvParameters) {
                     continue;
                 }
 
-                // At high sample rates (>= 1 kHz), pause 1s to let client fetch before next chunk.
-                // At lower rates the buffer easily absorbs close overhead — no pause needed.
-                if (s_actual_sample_rate_hz >= 1000) {
-                    ESP_LOGI(TAG, "Rate >= 1 kHz (%lu Hz): pausing 1s for client fetch",
-                             (unsigned long)s_actual_sample_rate_hz);
-                    vTaskDelay(pdMS_TO_TICKS(1000));
+                // Adaptive pause: only delay if queue is filling up (SD contention risk)
+                uint32_t pending = uxQueueMessagesWaiting(s_csv_queue);
+                uint32_t threshold_half = CSV_QUEUE_SIZE / 2;
+                uint32_t threshold_high = CSV_QUEUE_SIZE * 3 / 4;
+                if (pending > threshold_half) {
+                    uint32_t pause_ms = (pending > threshold_high) ? 1000 : 500;
+                    ESP_LOGW(TAG, "Queue pressure %lu/%d, pausing %lu ms for client fetch",
+                             (unsigned long)pending, CSV_QUEUE_SIZE, (unsigned long)pause_ms);
+                    vTaskDelay(pdMS_TO_TICKS(pause_ms));
                 }
 
                 // Open next chunk file (buffer samples accumulated during close are
