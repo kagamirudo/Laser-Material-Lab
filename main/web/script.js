@@ -111,7 +111,7 @@ function startLogging() {
         .then(response => response.json())
         .then(data => {
             isLoggingActive = true;
-            let statusMsg = `Recording started. Target rate: ${data.rate_target || 4000} Hz`;
+            let statusMsg = `Recording started. Sample rate: ${data.rate_target ?? '?'} Hz`;
             updateStatus(statusMsg);
             document.getElementById('elapsedTime').textContent = 'Recording: 0 min';
             document.getElementById('elapsedTime').style.display = '';
@@ -254,6 +254,7 @@ function startChunkMode() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+            testbench: false,
             client_time: clientTimeISO,
             client_timestamp: clientTimestamp,
             timezone_offset: timezoneOffset
@@ -262,10 +263,9 @@ function startChunkMode() {
         .then(response => response.json())
         .then(data => {
             isLoggingActive = true;
-            updateStatus(`Chunk mode: waiting for ADC threshold, then ${data.peak || 10} cycles...`);
-            // Chunk mode on its own line; recording time stays on elapsedTime (from updateADC)
+            updateStatus(`Chunk mode: recording (${data.chunk_secs || 10}s/chunk, ${data.rate_hz || '?'} Hz)`);
             const chunkLine = document.getElementById('chunkModeLine');
-            chunkLine.textContent = 'Chunk mode: polling for chunks...';
+            chunkLine.textContent = 'Chunk mode: recording...';
             chunkLine.style.display = '';
             document.getElementById('elapsedTime').style.display = '';
             if (!adcUpdateInterval) {
@@ -321,16 +321,8 @@ async function pollForChunks() {
             updateStatus(`Chunk mode: downloaded ${downloadedChunks.size} chunk(s)...`);
         }
         
-        // Update chunk mode line only (recording time stays on elapsedTime from updateADC)
         const chunkLine = document.getElementById('chunkModeLine');
-        if (status.triggered) {
-            // current_cycle is 0-based (0..PEAK-1); show 1-based (1..PEAK)
-            const cycleDisplay = (status.current_cycle != null) ? (status.current_cycle + 1) : '?';
-            chunkLine.textContent = 
-                `Chunk mode: active (chunk ${currentChunkCount}, cycle ${cycleDisplay})`;
-        } else {
-            chunkLine.textContent = 'Chunk mode: waiting for threshold...';
-        }
+        chunkLine.textContent = `Chunk mode: recording (${currentChunkCount} chunk(s) ready)`;
     } catch (error) {
         // Silently handle errors - they're expected with frequent polling
         if (error.name !== 'TypeError' && !error.message.includes('Failed to fetch')) {
@@ -472,5 +464,346 @@ function stopChunkModeAndDownload() {
             console.error('Stop chunk error:', err);
             downloadAllChunks();
         });
+}
+
+
+// ===== Download Test Bench (Chunked continuous capture) =====
+//
+// Conditions:  5 min, 30 min, 2 hours  (in the plastic box)
+// Replicates:  n = 2
+//
+// Flow per trial:
+//   1. POST /api/start_chunk {testbench:true}  (begin recording)
+//   2. Poll /api/chunks + download each chunk during recording
+//   3. After duration: POST /api/stop_chunk
+//   4. Fetch remaining chunks, save individual + combined CSV
+
+const TB_CONDITIONS = [
+    { label: '5 min',   durationMs: 5  * 60 * 1000 },
+    { label: '30 min',  durationMs: 30 * 60 * 1000 },
+    { label: '2 hours', durationMs: 2  * 60 * 60 * 1000 },
+];
+const TB_REPLICATES = 2;
+
+let tbAbortController = null;
+let tbRunning = false;
+let tbCountdownInterval = null;
+
+function tbLog(html) {
+    const el = document.getElementById('testBenchResults');
+    el.innerHTML += html + '\n';
+    el.scrollTop = el.scrollHeight;
+}
+
+function tbClear() {
+    document.getElementById('testBenchResults').innerHTML = '';
+}
+
+function formatDuration(ms) {
+    if (ms >= 3600000) {
+        const h = Math.floor(ms / 3600000);
+        const m = Math.floor((ms % 3600000) / 60000);
+        const s = Math.floor((ms % 60000) / 1000);
+        return `${h}h ${m}m ${s}s`;
+    }
+    if (ms >= 60000) {
+        const m = Math.floor(ms / 60000);
+        const s = Math.floor((ms % 60000) / 1000);
+        return `${m}m ${s}s`;
+    }
+    return (ms / 1000).toFixed(2) + 's';
+}
+
+function tbSleep(ms, signal) {
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(resolve, ms);
+        if (signal) {
+            signal.addEventListener('abort', () => {
+                clearTimeout(timer);
+                reject(new DOMException('Aborted', 'AbortError'));
+            });
+        }
+    });
+}
+
+function tbSaveBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+// Download a single chunk, stripping the CSV header so chunks can be combined.
+// Returns { text, size } or null on failure.
+async function tbDownloadChunk(index) {
+    try {
+        const resp = await fetch(`${API_BASE}/api/chunk?index=${index}`);
+        if (!resp.ok) return null;
+        const text = await resp.text();
+        const size = text.length;
+        // Strip header for combining later
+        const lines = text.trim().split('\n');
+        if (lines.length > 0 && lines[0].toLowerCase().includes('timestamp_us')) {
+            lines.shift();
+        }
+        return { text: lines.join('\n').trimEnd(), size };
+    } catch (e) {
+        return null;
+    }
+}
+
+async function generateTestBench() {
+    if (tbRunning) {
+        updateStatus('Test bench is already running.');
+        return;
+    }
+
+    tbRunning = true;
+    tbAbortController = new AbortController();
+    const signal = tbAbortController.signal;
+    document.getElementById('stopTestBenchBtn').disabled = false;
+
+    tbClear();
+    tbLog('<b>===== Download Test Bench (Chunked Continuous) =====</b>');
+    tbLog(`Conditions: ${TB_CONDITIONS.map(c => c.label).join(', ')} | Replicates: n=${TB_REPLICATES}`);
+    tbLog('Environment: in the plastic box');
+    tbLog('---');
+
+    const results = [];
+
+    try {
+        for (let ci = 0; ci < TB_CONDITIONS.length; ci++) {
+            const cond = TB_CONDITIONS[ci];
+            for (let rep = 1; rep <= TB_REPLICATES; rep++) {
+                if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
+
+                const trialTag = `[${cond.label} | rep ${rep}/${TB_REPLICATES}]`;
+                const safeLabel = cond.label.replace(/\s+/g, '_');
+                tbLog(`\n<b>${trialTag}</b>`);
+
+                // 1. Start chunk recording in testbench mode
+                tbLog(`${trialTag} Starting chunked recording...`);
+                const clientTime = new Date();
+                const startResp = await fetch(`${API_BASE}/api/start_chunk`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        testbench: true,
+                        client_time: clientTime.toISOString(),
+                        client_timestamp: clientTime.getTime(),
+                        timezone_offset: -clientTime.getTimezoneOffset()
+                    }),
+                    signal
+                });
+                const startData = await startResp.json();
+                if (startData.status === 'error') {
+                    tbLog(`${trialTag} <span style="color:#ff6b6b">Failed to start: ${startData.error}</span>`);
+                    results.push({ condition: cond.label, replicate: rep, error: startData.error });
+                    await tbSleep(2000, signal);
+                    continue;
+                }
+                const chunkSecs = startData.chunk_secs || 10;
+                tbLog(`${trialTag} Recording started (rate: ${startData.rate_hz ?? '?'} Hz, ${chunkSecs}s/chunk)`);
+                updateStatus(`Test bench: ${trialTag} recording...`);
+
+                // Enable live ADC display (value, samples, elapsed time)
+                isLoggingActive = true;
+                if (!adcUpdateInterval) {
+                    updateADC();
+                    adcUpdateInterval = setInterval(updateADC, 100);
+                }
+
+                // 2. Record for the condition duration while polling chunks
+                const trialChunks = new Map(); // index -> { text, size }
+                let lastChunkIdx = -1;
+                let totalChunkBytes = 0;
+                const trialStart = performance.now();
+                const totalWaitMs = cond.durationMs;
+
+                // Countdown + chunk polling combined
+                const countdownEl = document.getElementById('testBenchResults');
+                let countdownLine = document.createElement('span');
+                countdownLine.id = 'tbCountdown';
+                countdownEl.appendChild(countdownLine);
+
+                const pollAndCountdown = async () => {
+                    while (!signal.aborted) {
+                        const elapsed = performance.now() - trialStart;
+                        const remaining = Math.max(0, totalWaitMs - elapsed);
+
+                        countdownLine.textContent = `${trialTag} Recording... ${formatDuration(Math.round(elapsed))} / ${formatDuration(totalWaitMs)} (${formatDuration(Math.round(remaining))} left) | chunks: ${trialChunks.size}`;
+                        countdownEl.scrollTop = countdownEl.scrollHeight;
+
+                        // Poll for new chunks (download to memory, save files at the end)
+                        try {
+                            const statusResp = await fetch(`${API_BASE}/api/chunks`);
+                            if (statusResp.ok) {
+                                const st = await statusResp.json();
+                                const count = st.chunks || 0;
+                                for (let i = lastChunkIdx + 1; i < count; i++) {
+                                    const chunk = await tbDownloadChunk(i);
+                                    if (chunk) {
+                                        trialChunks.set(i, chunk);
+                                        totalChunkBytes += chunk.size;
+                                        lastChunkIdx = i;
+                                        tbLog(`${trialTag} Chunk ${i} downloaded (${formatBytes(chunk.size)})`);
+                                    }
+                                }
+                            }
+                        } catch (_) {}
+
+                        if (elapsed >= totalWaitMs) break;
+                        await tbSleep(Math.min(1000, remaining), signal);
+                    }
+                };
+
+                await pollAndCountdown();
+                countdownLine.textContent = `${trialTag} Recording done: ${formatDuration(totalWaitMs)} | chunks: ${trialChunks.size}`;
+                tbLog('');
+
+                // 3. Stop recording (server waits for writer to finish)
+                isLoggingActive = false;
+                if (adcUpdateInterval) { clearInterval(adcUpdateInterval); adcUpdateInterval = null; }
+                tbLog(`${trialTag} Stopping recording...`);
+                const stopStart = performance.now();
+                const stopResp = await fetch(`${API_BASE}/api/stop_chunk`, { method: 'POST', signal });
+                const stopData = await stopResp.json().catch(() => ({}));
+                if (stopData.confirmed) {
+                    tbLog(`${trialTag} Stop confirmed by server`);
+                } else {
+                    tbLog(`${trialTag} <span style="color:#ffa502">Stop may not be fully confirmed, waiting...</span>`);
+                    for (let w = 0; w < 10; w++) {
+                        await tbSleep(500, signal);
+                        const chk = await fetch(`${API_BASE}/api/chunks`).then(r => r.json()).catch(() => null);
+                        if (chk && !chk.active) break;
+                    }
+                }
+
+                // 4. Fetch remaining chunks after stop
+                await tbSleep(500, signal);
+                try {
+                    const finalResp = await fetch(`${API_BASE}/api/chunks`);
+                    if (finalResp.ok) {
+                        const finalSt = await finalResp.json();
+                        const finalCount = finalSt.chunks || 0;
+                        for (let i = lastChunkIdx + 1; i < finalCount; i++) {
+                            const chunk = await tbDownloadChunk(i);
+                            if (chunk) {
+                                trialChunks.set(i, chunk);
+                                totalChunkBytes += chunk.size;
+                                lastChunkIdx = i;
+                                tbLog(`${trialTag} Chunk ${i} downloaded (${formatBytes(chunk.size)})`);
+                            }
+                        }
+                    }
+                } catch (_) {}
+
+                const stopEnd = performance.now();
+                const remainingDlMs = stopEnd - stopStart;
+
+                // 5. Save individual chunk files + combined CSV
+                tbLog(`${trialTag} Saving ${trialChunks.size} chunk files...`);
+                const sortedEntries = Array.from(trialChunks.entries()).sort((a, b) => a[0] - b[0]);
+                for (const [idx, chunk] of sortedEntries) {
+                    tbSaveBlob(
+                        new Blob([`timestamp_us,adc_value\n${chunk.text}`], { type: 'text/csv' }),
+                        `testbench_${safeLabel}_rep${rep}_chunk${idx}.csv`
+                    );
+                    // Brief delay so browser doesn't block rapid downloads
+                    await tbSleep(200, signal);
+                }
+
+                const sortedChunks = sortedEntries.map(e => e[1].text);
+                const combinedCsv = 'timestamp_us,adc_value\n' + sortedChunks.join('\n');
+                const combinedBlob = new Blob([combinedCsv], { type: 'text/csv' });
+                const combinedFilename = `testbench_${safeLabel}_rep${rep}_combined.csv`;
+                tbSaveBlob(combinedBlob, combinedFilename);
+
+                tbLog(`${trialTag} <span style="color:#7bed9f">Complete</span> — ${trialChunks.size} chunks | Combined: <b>${formatBytes(combinedBlob.size)}</b> | After-stop download: <b>${formatDuration(remainingDlMs)}</b> → ${combinedFilename}`);
+
+                results.push({
+                    condition: cond.label,
+                    replicate: rep,
+                    fileSize: combinedBlob.size,
+                    fileSizeStr: formatBytes(combinedBlob.size),
+                    numChunks: trialChunks.size,
+                    remainingDlMs: remainingDlMs,
+                    remainingDlStr: formatDuration(remainingDlMs),
+                });
+
+                if (rep < TB_REPLICATES) {
+                    tbLog(`${trialTag} Waiting 3s before next replicate...`);
+                    await tbSleep(3000, signal);
+                }
+            }
+
+            if (ci < TB_CONDITIONS.length - 1) {
+                tbLog('\n--- Waiting 5s before next condition ---');
+                await tbSleep(5000, signal);
+            }
+        }
+
+        // Summary table
+        tbLog('\n<b>===== RESULTS SUMMARY =====</b>');
+        tbLog(padRow('Condition', 'Rep', 'Combined Size', 'Chunks', 'After-stop DL'));
+        tbLog('─'.repeat(70));
+        for (const r of results) {
+            if (r.error) {
+                tbLog(padRow(r.condition, r.replicate, 'ERROR', '-', r.error));
+            } else {
+                tbLog(padRow(r.condition, r.replicate, r.fileSizeStr, r.numChunks, r.remainingDlStr));
+            }
+        }
+        tbLog('─'.repeat(70));
+        tbLog('<b>Test bench complete.</b>');
+        isLoggingActive = false;
+        if (adcUpdateInterval) { clearInterval(adcUpdateInterval); adcUpdateInterval = null; }
+        updateStatus('Test bench complete.');
+
+    } catch (e) {
+        if (e.name === 'AbortError') {
+            isLoggingActive = false;
+            if (adcUpdateInterval) { clearInterval(adcUpdateInterval); adcUpdateInterval = null; }
+            if (tbCountdownInterval) { clearInterval(tbCountdownInterval); tbCountdownInterval = null; }
+            tbLog('\n<span style="color:#ffa502"><b>Test bench stopped by user.</b></span>');
+            if (results.length > 0) {
+                tbLog('\n<b>===== RESULTS SO FAR =====</b>');
+                tbLog(padRow('Condition', 'Rep', 'Combined Size', 'Chunks', 'After-stop DL'));
+                tbLog('─'.repeat(70));
+                for (const r of results) {
+                    if (r.error) {
+                        tbLog(padRow(r.condition, r.replicate, 'ERROR', '-', r.error));
+                    } else {
+                        tbLog(padRow(r.condition, r.replicate, r.fileSizeStr, r.numChunks, r.remainingDlStr));
+                    }
+                }
+                tbLog('─'.repeat(70));
+                tbLog(`<i>${results.length} trial(s) completed before stop.</i>`);
+            }
+            try { await fetch(`${API_BASE}/api/stop_chunk`, { method: 'POST' }); } catch (_) {}
+            updateStatus('Test bench stopped. ' + (results.length > 0 ? results.length + ' trial(s) completed.' : ''));
+        } else {
+            tbLog(`\n<span style="color:#ff6b6b"><b>Error:</b> ${e.message}</span>`);
+            updateStatus('Test bench error: ' + e.message);
+        }
+    } finally {
+        tbRunning = false;
+        tbAbortController = null;
+        document.getElementById('stopTestBenchBtn').disabled = true;
+    }
+}
+
+function padRow(cond, rep, size, chunks, dlTime) {
+    return `${String(cond).padEnd(12)} ${String(rep).padEnd(5)} ${String(size).padEnd(16)} ${String(chunks).padEnd(10)} ${dlTime}`;
+}
+
+function stopTestBench() {
+    if (tbAbortController) {
+        tbAbortController.abort();
+    }
 }
 

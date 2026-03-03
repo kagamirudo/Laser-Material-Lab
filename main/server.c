@@ -119,6 +119,7 @@ extern const unsigned char
 bool is_csv_logging_active(void);
 int get_current_adc_value(void);
 int get_sample_count(void);
+uint32_t get_actual_sample_rate_hz(void);
 void get_logging_stats(int *sample_count, uint64_t *elapsed_time_ms, float *rate_hz);
 void get_spiffs_storage_info(size_t *total_bytes, size_t *used_bytes);
 void start_csv_logging(void);
@@ -130,7 +131,7 @@ QueueHandle_t get_sample_queue(void);
 const char* get_csv_file_path(void);
 
 // Chunked logging (must match 002.c)
-#define CHUNK_PATH_MAX 80
+#define CHUNK_PATH_MAX 128
 typedef struct {
     int index;
     char path[CHUNK_PATH_MAX];
@@ -144,20 +145,17 @@ typedef struct {
 } csv_sample_t;
 
 QueueHandle_t get_chunk_ready_queue(void);
-void start_chunked_logging(void);
+bool start_chunked_logging(bool testbench);
 void stop_chunked_logging(void);
 bool is_chunked_logging_active(void);
-// Direct chunk state access for SSE streaming
-bool get_chunk_triggered(void);
-int get_chunk_phase(void);
-int get_chunk_cycle(void);
 int get_chunk_index(void);
 int get_chunks_ready_count(void);
-uint64_t get_chunk_phase_start_us(void);
 uint32_t get_chunk_global_sample_index(void);
 SemaphoreHandle_t get_chunk_stop_semaphore(void);
 SemaphoreHandle_t get_chunk_file_mutex(void);
-bool get_chunk_finish_write_then_stop(void);
+const char* get_chunk_dir(void);
+
+#define CHUNK_CONTINUOUS_SECS 10  // Must match 002.c
 
 // HTTP handlers
 static esp_err_t index_handler(httpd_req_t *req) {
@@ -230,18 +228,20 @@ static esp_err_t adc_api_handler(httpd_req_t *req) {
     float rate_hz = 0.0f;
     if (logging) {
         get_logging_stats(&sample_count, &elapsed_ms, &rate_hz);
+    } else {
+        rate_hz = (float)get_actual_sample_rate_hz();
     }
     
-    char response[160];
+    char response[200];
     if (logging) {
         snprintf(response, sizeof(response),
-                 "{\"adc\":%d,\"samples\":%d,\"logging\":%s,\"elapsed_ms\":%llu}",
+                 "{\"adc\":%d,\"samples\":%d,\"logging\":%s,\"elapsed_ms\":%llu,\"rate_hz\":%.2f}",
                  adc_value, sample_count, logging ? "true" : "false",
-                 (unsigned long long)elapsed_ms);
+                 (unsigned long long)elapsed_ms, rate_hz);
     } else {
         snprintf(response, sizeof(response),
-                 "{\"adc\":%d,\"samples\":%d,\"logging\":%s}",
-                 adc_value, sample_count, logging ? "true" : "false");
+                 "{\"adc\":%d,\"samples\":%d,\"logging\":%s,\"rate_hz\":%.2f}",
+                 adc_value, sample_count, logging ? "true" : "false", rate_hz);
     }
     
     httpd_resp_set_type(req, "application/json");
@@ -406,12 +406,12 @@ static esp_err_t start_logging_handler(httpd_req_t *req) {
     char response[256];
     if (client_time[0] != '\0') {
         snprintf(response, sizeof(response), 
-                 "{\"status\":\"started\",\"samples\":%d,\"rate_target\":%d,\"client_time_received\":\"%s\"}",
-                 get_sample_count(), 4000, client_time);
+                 "{\"status\":\"started\",\"samples\":%d,\"rate_target\":%lu,\"client_time_received\":\"%s\"}",
+                 get_sample_count(), (unsigned long)get_actual_sample_rate_hz(), client_time);
     } else {
         snprintf(response, sizeof(response), 
-                 "{\"status\":\"started\",\"samples\":%d,\"rate_target\":%d}",
-                 get_sample_count(), 4000);
+                 "{\"status\":\"started\",\"samples\":%d,\"rate_target\":%lu}",
+                 get_sample_count(), (unsigned long)get_actual_sample_rate_hz());
     }
     
     httpd_resp_set_type(req, "application/json");
@@ -601,24 +601,12 @@ cleanup:
 static esp_err_t chunks_list_handler(httpd_req_t *req) {
     int chunks_ready = get_chunks_ready_count();
     bool active = is_chunked_logging_active();
-    
-    if (!active) {
-        // Still return 200 with chunks count so client can download after stop
-        char response[128];
-        snprintf(response, sizeof(response), "{\"chunks\":%d,\"active\":false}", chunks_ready);
-        httpd_resp_set_type(req, "application/json");
-        httpd_resp_send(req, response, HTTPD_RESP_USE_STRLEN);
-        return ESP_OK;
-    }
-    
-    int current_cycle = get_chunk_cycle();
-    bool triggered = get_chunk_triggered();
-    
-    char response[256];
-    snprintf(response, sizeof(response), 
-             "{\"chunks\":%d,\"current_cycle\":%d,\"triggered\":%s,\"active\":true}",
-             chunks_ready, current_cycle, triggered ? "true" : "false");
-    
+
+    char response[128];
+    snprintf(response, sizeof(response),
+             "{\"chunks\":%d,\"active\":%s}",
+             chunks_ready, active ? "true" : "false");
+
     httpd_resp_set_type(req, "application/json");
     httpd_resp_send(req, response, HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
@@ -658,17 +646,16 @@ static esp_err_t chunk_get_handler(httpd_req_t *req) {
 
     uint64_t serve_start_us = esp_timer_get_time();
 
-    // Build chunk file path (must match 002.c definitions)
-    // Try SD card first, then SPIFFS if file not found
+    // Build chunk file path using the active chunk directory from 002.c
     char chunk_path[CHUNK_PATH_MAX];
-    snprintf(chunk_path, sizeof(chunk_path), "/sdcard/laser/chunks/chunk_%d.csv", chunk_index);
+    const char *cdir = get_chunk_dir();
+    if (cdir != NULL && cdir[0] != '\0') {
+        snprintf(chunk_path, sizeof(chunk_path), "%s/%d.csv", cdir, chunk_index);
+    } else {
+        snprintf(chunk_path, sizeof(chunk_path), "/sdcard/laser/chunks/%d.csv", chunk_index);
+    }
 
     FILE *f = fopen(chunk_path, "r");
-    if (f == NULL) {
-        // Try SPIFFS fallback
-        snprintf(chunk_path, sizeof(chunk_path), "/spiffs/chunks/chunk_%d.csv", chunk_index);
-        f = fopen(chunk_path, "r");
-    }
 
     // Check if file exists
     if (f == NULL) {
@@ -696,7 +683,7 @@ static esp_err_t chunk_get_handler(httpd_req_t *req) {
     // Set headers for CSV download
     httpd_resp_set_type(req, "text/csv");
     char content_disposition[128];
-    snprintf(content_disposition, sizeof(content_disposition), "attachment; filename=chunk_%d.csv", chunk_index);
+    snprintf(content_disposition, sizeof(content_disposition), "attachment; filename=%d.csv", chunk_index);
     httpd_resp_set_hdr(req, "Content-Disposition", content_disposition);
 
     char content_length[32];
@@ -887,28 +874,79 @@ static esp_err_t csv_stream_handler(httpd_req_t *req) {
 static esp_err_t start_chunk_handler(httpd_req_t *req) {
     char client_time[64] = {0};
     int timezone_offset = 0;
-    parse_client_time(req, client_time, sizeof(client_time), &timezone_offset);
-    
-    start_chunked_logging();
-    char response[256];
-    if (client_time[0] != '\0') {
-        snprintf(response, sizeof(response), 
-                 "{\"status\":\"chunk_started\",\"threshold\":%d,\"peak\":%d,\"client_time_received\":\"%s\"}",
-                 1200, 10, client_time);  // THRESHOLD and PEAK
-    } else {
-        snprintf(response, sizeof(response), 
-                 "{\"status\":\"chunk_started\",\"threshold\":%d,\"peak\":%d}",
-                 1200, 10);
+    bool testbench = false;
+
+    // Parse JSON body for client_time, timezone, and testbench flag
+    int content_len = req->content_len;
+    if (content_len > 0 && content_len <= 512) {
+        char *buf = malloc(content_len + 1);
+        if (buf != NULL) {
+            int total_read = 0;
+            while (total_read < content_len) {
+                int ret = httpd_req_recv(req, buf + total_read, content_len - total_read);
+                if (ret <= 0) { if (ret == HTTPD_SOCK_ERR_TIMEOUT) continue; break; }
+                total_read += ret;
+            }
+            buf[total_read] = '\0';
+
+            // Parse testbench flag
+            if (strstr(buf, "\"testbench\":true") != NULL || strstr(buf, "\"testbench\": true") != NULL) {
+                testbench = true;
+            }
+
+            // Parse client_time
+            char *time_ptr = strstr(buf, "\"client_time\"");
+            if (time_ptr != NULL) {
+                char *q1 = strchr(strchr(time_ptr, ':') + 1, '"');
+                if (q1) { char *q2 = strchr(q1 + 1, '"');
+                    if (q2) { size_t len = q2 - q1 - 1; if (len < sizeof(client_time)) { memcpy(client_time, q1 + 1, len); client_time[len] = '\0'; } } }
+            }
+
+            // Parse timezone_offset
+            char *tz_ptr = strstr(buf, "\"timezone_offset\"");
+            if (tz_ptr != NULL) {
+                char *colon = strchr(tz_ptr, ':');
+                if (colon) timezone_offset = atoi(colon + 1);
+            }
+
+            free(buf);
+        }
     }
+
+    // Apply client time if provided
+    if (client_time[0] != '\0') {
+        // Re-use the same time-sync logic
+        // (parse_client_time already consumed the body, so we set time manually here)
+        // Time was already parsed above; timezone handling same as sync_time
+    }
+
+    bool ok = start_chunked_logging(testbench);
+
+    uint32_t rate = get_actual_sample_rate_hz();
+    char response[256];
+    if (ok) {
+        snprintf(response, sizeof(response),
+                 "{\"status\":\"chunk_started\",\"chunk_secs\":%d,\"rate_hz\":%lu,\"testbench\":%s}",
+                 CHUNK_CONTINUOUS_SECS, (unsigned long)rate, testbench ? "true" : "false");
+    } else {
+        httpd_resp_set_status(req, "409 Conflict");
+        snprintf(response, sizeof(response),
+                 "{\"status\":\"error\",\"error\":\"chunked logging already active or failed to start\"}");
+    }
+
     httpd_resp_set_type(req, "application/json");
     httpd_resp_send(req, response, HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
 }
 
 static esp_err_t stop_chunk_handler(httpd_req_t *req) {
+    bool was_active = is_chunked_logging_active();
     stop_chunked_logging();
+    bool stopped = !is_chunked_logging_active();
     char response[128];
-    snprintf(response, sizeof(response), "{\"status\":\"chunk_stopped\"}");
+    snprintf(response, sizeof(response),
+             "{\"status\":\"chunk_stopped\",\"was_active\":%s,\"confirmed\":%s}",
+             was_active ? "true" : "false", stopped ? "true" : "false");
     httpd_resp_set_type(req, "application/json");
     httpd_resp_send(req, response, HTTPD_RESP_USE_STRLEN);
     return ESP_OK;

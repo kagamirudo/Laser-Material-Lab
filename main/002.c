@@ -35,8 +35,8 @@ static const char *TAG = "LASER_ADC";
 
 #define WIFI 1
 #define HOST 2
-#define MODE WIFI
-// #define MODE HOST
+// #define MODE WIFI
+#define MODE HOST
 
 // Pin mapping (ESP32-S3)
 #define LASER_GPIO   5    // PWM output to laser
@@ -51,7 +51,7 @@ static const char *TAG = "LASER_ADC";
 #define LASER_DUTY_FULL   ((1 << LASER_LEDC_RES) - 1)  // 255
 
 // ADC sampling config
-#define SAMPLE_RATE_HZ    4000           // Target: 4000 samples per second (minimum: ~611 Hz for ESP32-S3)
+#define SAMPLE_RATE_HZ    611            // Target: samples per second (minimum: ~611 Hz for ESP32-S3)
 #define ADC_MIN_FREQ_HZ   611            // Minimum sampling frequency for ESP32-S3 continuous ADC
 #define ADC_CONTINUOUS_BUF_SIZE 4096     // Buffer for continuous ADC (must be multiple of SOC_ADC_DIGI_RESULT_BYTES)
 #define ADC_READ_TIMEOUT_MS 100          // Timeout for reading from continuous ADC
@@ -68,14 +68,13 @@ static const char *TAG = "LASER_ADC";
 #define CSV_WRITE_BATCH_SIZE 500         // Write CSV in batches to reduce flash wear
 #define CSV_FLUSH_INTERVAL 5             // Flush every N batches (reduces flash wear)
 
-// Chunked logging: threshold-triggered, write 1s / skip 1s for PEAK cycles per chunk
-#define PEAK 10                          // Number of write/skip cycles per chunk (change as needed)
-#define THRESHOLD 200                    // ADC value to trigger writing
-#define CHUNK_TIME_ON  1                 // Seconds to record per cycle (easy to change)
-#define CHUNK_TIME_OFF 1                 // Seconds to skip per cycle (easy to change)
-#define CSV_CHUNK_QUEUE_SIZE 16          // Max pending chunks for SSE
+// Chunked logging: continuous capture split into time-based chunks (no cycles, no threshold)
+#define CHUNK_CONTINUOUS_SECS 10         // Seconds per chunk (change as needed)
+#define CSV_CHUNK_QUEUE_SIZE 16          // Max pending chunks for client download
 #define CSV_CHUNK_DIR_SD    CSV_SD_DIR "/chunks"
 #define CSV_CHUNK_DIR_SPIFFS SPIFFS_MOUNT_POINT "/chunks"
+#define TESTBENCH_DIR_SD     SDCARD_MOUNT_POINT "/tb/chunks"
+#define TESTBENCH_DIR_SPIFFS SPIFFS_MOUNT_POINT "/tb/chunks"
 
 static adc_continuous_handle_t adc_handle = NULL;
 static adc_channel_t adc_chan;
@@ -172,7 +171,7 @@ static char s_csv_file_path[CSV_FILE_PATH_MAX_LEN] = "/spiffs/data.csv";  // Dyn
 static uint32_t s_csv_sample_index = 0;
 
 // Chunked logging state
-#define CHUNK_PATH_MAX 80
+#define CHUNK_PATH_MAX 128
 typedef struct {
     int index;  // -1 = stream complete (no more chunks)
     char path[CHUNK_PATH_MAX];
@@ -182,31 +181,31 @@ typedef struct {
 static QueueHandle_t s_chunk_ready_queue = NULL;  // Server reads from this for SSE
 static SemaphoreHandle_t s_chunk_stop_semaphore = NULL;  // FreeRTOS semaphore for immediate stop signal
 static volatile bool s_chunked_logging_enabled = false;
-static volatile bool s_chunk_triggered = false;   // Set when ADC >= THRESHOLD
 static volatile bool s_chunk_stop_requested = false;
 
 // Chunked writer state (only valid when s_chunked_logging_enabled)
 static FILE *s_chunk_file = NULL;
 static char s_chunk_file_path[CHUNK_PATH_MAX] = {0};
+#define CHUNK_DIR_MAX 100
+static char s_chunk_dir[CHUNK_DIR_MAX] = {0};  // Active chunk directory (set in start_chunked_logging)
 static int s_chunk_index = 0;
-static int s_chunks_ready_count = 0;  // Number of chunks completed and available for download (for /api/chunks)
-static int s_chunk_phase = 0;       // 0=WRITE, 1=SKIP, 2=POST_CHUNK_PAUSE
-static int s_chunk_cycle = 0;
-static uint64_t s_chunk_phase_start_us = 0;
-static uint64_t s_chunk_pause_until_us = 0;   // End of post-chunk pause window
-static uint32_t s_chunk_sample_index = 0;   // Per-chunk index (for local use)
+static int s_chunks_ready_count = 0;
+static uint64_t s_chunk_write_start_us = 0;   // When current chunk started writing
+static uint32_t s_chunk_sample_index = 0;     // Per-chunk sample count
 static uint32_t s_chunk_global_sample_index = 0;  // Never reset; timestamps continue across chunks
-static bool s_chunk_finish_write_then_stop = false;  // Finish current WRITE cycle then stop
-// Per-cycle debug: samples written in current WRITE phase and last timestamp
-static uint32_t s_chunk_cycle_write_count = 0;
-static uint64_t s_chunk_cycle_last_ts_us = 0;
+static int s_testbench_run_index = 0;         // Persists across calls; incremented per test bench run
+static bool s_testbench_mode = false;
+
+// Legacy getters kept for server.c compatibility (simplified for continuous mode)
+// s_chunk_triggered is always true once logging starts (no threshold)
+// s_chunk_phase is always 0 (always writing, no skip/pause)
 
 // Forward declarations (used before definitions)
 void clear_spiffs_storage(void);
 void stop_csv_logging(void);
 static void generate_csv_filename(void);
 static void bench_laser_run_one(bench_fmt_t fmt);
-void start_chunked_logging(void);
+bool start_chunked_logging(bool testbench);
 void stop_chunked_logging(void);
 
 static void laser_init_full_on(void) {
@@ -374,12 +373,6 @@ static void adc_task(void *pvParameters) {
                     s_current_adc_value = raw_value;
                 }
 
-                // Chunked mode: trigger when ADC crosses threshold
-                if (s_chunked_logging_enabled && !s_chunk_triggered && raw_value >= THRESHOLD) {
-                    s_chunk_triggered = true;
-                    s_chunk_phase_start_us = esp_timer_get_time();
-                    ESP_LOGI(TAG, "Chunked: threshold (%d) crossed, ADC=%d - starting write cycles", THRESHOLD, raw_value);
-                }
                 
                 // Increment sample count for rate calculation
                 s_sample_count++;
@@ -412,7 +405,6 @@ static void adc_task(void *pvParameters) {
                 // Send to CSV queue if logging is enabled (continuous or chunked mode).
                 // In chunk mode, skip-phase (1 sec off) data is not wanted: do not enqueue, so queue does not fill and nothing gets written.
                 if ((s_csv_logging_enabled || s_chunked_logging_enabled) && s_csv_queue != NULL) {
-                    if (s_chunked_logging_enabled && s_chunk_phase == 1) continue;  // SKIP phase: don't enqueue
                     csv_sample_t sample = {
                         .adc_value = raw_value,
                         .timestamp_us = esp_timer_get_time()
@@ -462,271 +454,111 @@ static void csv_writer_task(void *pvParameters) {
     ESP_LOGI(TAG, "CSV writer task started");
     
     while (1) {
-        /* ========== Chunked mode ========== */
+        /* ========== Chunked mode (continuous capture, time-based chunks) ========== */
         if (s_chunked_logging_enabled && s_csv_queue != NULL) {
-            // In chunked mode: manage chunk state transitions based on time
-            // Phases:
-            //   0 = WRITE, 1 = SKIP, 2 = POST_CHUNK_PAUSE (no SD writes; give 1s window for client to fetch chunk)
             uint64_t now_us = esp_timer_get_time();
 
-            // Stop requested: flush current chunk immediately (even mid-cycle) so client can download partial data
-            if ((s_chunk_stop_requested || s_chunk_finish_write_then_stop) && s_chunk_file != NULL) {
-                goto chunk_close_and_push;
+            // Check if current chunk should be closed (time expired or stop requested)
+            bool close_chunk = false;
+            if (s_chunk_stop_requested && s_chunk_file != NULL) {
+                close_chunk = true;
+            } else if (s_chunk_file != NULL) {
+                uint64_t elapsed_us = now_us - s_chunk_write_start_us;
+                if (elapsed_us >= (uint64_t)CHUNK_CONTINUOUS_SECS * 1000000ULL) {
+                    close_chunk = true;
+                }
             }
 
-            // Handle post-chunk pause window (no SD writes; drain queue only)
-            if (s_chunk_triggered && s_chunk_phase == 2) {
-                if (now_us < s_chunk_pause_until_us) {
-                    // During pause: drop samples quickly to avoid queue backup
-                    csv_sample_t sample;
-                    uint32_t drained = 0;
-                    while (xQueueReceive(s_csv_queue, &sample, 0) == pdTRUE) { 
-                        (void)sample;
-                        drained++;
-                    }
-                    if (drained > 0 && (drained % 1000 == 0)) {
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] Pause phase: drained %u samples (remaining pause: %llu us)", 
-                                 drained, (unsigned long long)(s_chunk_pause_until_us - now_us));
-                    }
-                    vTaskDelay(pdMS_TO_TICKS(5));
+            if (close_chunk) {
+                uint32_t samples_in_chunk = s_chunk_sample_index;
+
+                // Close current chunk file
+                if (s_chunk_file_mutex != NULL) xSemaphoreTake(s_chunk_file_mutex, portMAX_DELAY);
+                if (s_chunk_file != NULL) {
+                    fflush(s_chunk_file);
+                    fsync(fileno(s_chunk_file));
+                    fclose(s_chunk_file);
+                    s_chunk_file = NULL;
+                }
+                if (s_chunk_file_mutex != NULL) xSemaphoreGive(s_chunk_file_mutex);
+
+                set_file_mtime_now(s_chunk_file_path);
+                struct stat st;
+                size_t sz = 0;
+                if (stat(s_chunk_file_path, &st) == 0) sz = (size_t)st.st_size;
+
+                // Notify: update count (polling API) + non-blocking push to legacy SSE queue
+                s_chunks_ready_count = s_chunk_index + 1;
+                chunk_ready_item_t item = { .index = s_chunk_index, .size_bytes = sz };
+                strncpy(item.path, s_chunk_file_path, CHUNK_PATH_MAX - 1);
+                item.path[CHUNK_PATH_MAX - 1] = '\0';
+                if (s_chunk_ready_queue != NULL) {
+                    xQueueSend(s_chunk_ready_queue, &item, 0);
+                }
+                ESP_LOGI(TAG, "Chunk %d ready: %zu bytes, %lu samples",
+                         s_chunk_index, sz, (unsigned long)samples_in_chunk);
+
+                // If stop was requested, we're done
+                if (s_chunk_stop_requested) {
+                    stop_sampling_timer();
+                    chunk_ready_item_t done = { .index = -1, .path = {0}, .size_bytes = 0 };
+                    if (s_chunk_ready_queue != NULL) xQueueSend(s_chunk_ready_queue, &done, 0);
+                    s_chunk_stop_requested = false;
+                    if (s_chunk_stop_semaphore != NULL) xSemaphoreTake(s_chunk_stop_semaphore, 0);
+                    ESP_LOGI(TAG, "Chunked logging stopped. Total samples: %lu",
+                             (unsigned long)s_chunk_global_sample_index);
+                    s_chunked_logging_enabled = false;
                     continue;
+                }
+
+                // At high sample rates (>= 1 kHz), pause 1s to let client fetch before next chunk.
+                // At lower rates the buffer easily absorbs close overhead — no pause needed.
+                if (s_actual_sample_rate_hz >= 1000) {
+                    ESP_LOGI(TAG, "Rate >= 1 kHz (%lu Hz): pausing 1s for client fetch",
+                             (unsigned long)s_actual_sample_rate_hz);
+                    vTaskDelay(pdMS_TO_TICKS(1000));
+                }
+
+                // Open next chunk file (buffer samples accumulated during close are
+                // naturally dequeued on the next loop iterations — no data loss)
+                s_chunk_index++;
+                s_chunk_sample_index = 0;
+                s_chunk_write_start_us = esp_timer_get_time();
+
+                snprintf(s_chunk_file_path, CHUNK_PATH_MAX, "%s/%d.csv",
+                         s_chunk_dir, s_chunk_index);
+                if (s_chunk_file_mutex != NULL) xSemaphoreTake(s_chunk_file_mutex, portMAX_DELAY);
+                s_chunk_file = fopen(s_chunk_file_path, "w");
+                if (s_chunk_file != NULL) {
+                    if (s_fprintf_mutex != NULL) xSemaphoreTake(s_fprintf_mutex, portMAX_DELAY);
+                    fprintf(s_chunk_file, "timestamp_us,adc_value\n");
+                    if (s_fprintf_mutex != NULL) xSemaphoreGive(s_fprintf_mutex);
+                    fflush(s_chunk_file);
+                    fsync(fileno(s_chunk_file));
                 } else {
-                    // Pause window over -> resume ADC and start next chunk (WRITE phase)
-                    uint64_t pause_elapsed = now_us - (s_chunk_pause_until_us - 1000000ULL);
-                    ESP_LOGI(TAG, "[CHUNK_DEBUG] Pause window expired (elapsed: %llu us), starting next chunk...", 
-                             (unsigned long long)pause_elapsed);
-                    s_chunk_index++;
-                    s_chunk_cycle = 0;
-                    s_chunk_phase = 0;
-                    s_chunk_sample_index = 0;
-                    s_chunk_phase_start_us = now_us;
-                    ESP_LOGI(TAG, "[CHUNK_DEBUG] Next chunk: index=%d, cycle=%d, phase=%d", 
-                             s_chunk_index, s_chunk_cycle, s_chunk_phase);
-
-                    // Open next chunk file (protect SD I/O with mutex)
-                    ESP_LOGI(TAG, "[CHUNK_DEBUG] Taking mutex to open next chunk file...");
-                    if (s_chunk_file_mutex != NULL) {
-                        if (xSemaphoreTake(s_chunk_file_mutex, portMAX_DELAY) == pdTRUE) {
-                            ESP_LOGI(TAG, "[CHUNK_DEBUG] Mutex taken, opening file...");
-                        } else {
-                            ESP_LOGE(TAG, "[CHUNK_DEBUG] Failed to take mutex for next chunk!");
-                        }
-                    }
-                    snprintf(s_chunk_file_path, CHUNK_PATH_MAX, "%s/chunk_%d.csv",
-                             (sdcard_is_mounted() ? CSV_CHUNK_DIR_SD : CSV_CHUNK_DIR_SPIFFS), s_chunk_index);
-                    ESP_LOGI(TAG, "[CHUNK_DEBUG] Opening chunk file: %s", s_chunk_file_path);
-                    uint64_t open_start_us = esp_timer_get_time();
-                    s_chunk_file = fopen(s_chunk_file_path, "w");
-                    uint64_t fopen_done_us = esp_timer_get_time();
-                    ESP_LOGI(TAG, "[CHUNK_DEBUG] fopen took %llu us", (unsigned long long)(fopen_done_us - open_start_us));
-                    if (s_chunk_file) {
-                        s_chunk_cycle_write_count = 0;
-                        s_chunk_cycle_last_ts_us = 0;
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] File opened, writing header...");
-                        uint64_t write_start_us = esp_timer_get_time();
-                        if (s_fprintf_mutex != NULL) xSemaphoreTake(s_fprintf_mutex, portMAX_DELAY);
-                        fprintf(s_chunk_file, "timestamp_us,adc_value\n");
-                        if (s_fprintf_mutex != NULL) xSemaphoreGive(s_fprintf_mutex);
-                        fflush(s_chunk_file);
-                        uint64_t flush_done_us = esp_timer_get_time();
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] fprintf+fflush took %llu us", (unsigned long long)(flush_done_us - write_start_us));
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] Syncing directory metadata...");
-                        uint64_t sync_start_us = esp_timer_get_time();
-                        // fsync() ensures directory metadata is written before releasing mutex
-                        fsync(fileno(s_chunk_file));
-                        uint64_t sync_done_us = esp_timer_get_time();
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] fsync took %llu us", (unsigned long long)(sync_done_us - sync_start_us));
-                        uint64_t total_open_us = sync_done_us - open_start_us;
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] Total file open sequence: %llu us (%.2f ms)", 
-                                 (unsigned long long)total_open_us, (double)total_open_us / 1000.0);
-                    } else {
-                        ESP_LOGE(TAG, "[CHUNK_DEBUG] Failed to open chunk file: errno=%d", errno);
-                    }
-                    if (s_chunk_file_mutex != NULL) {
-                        xSemaphoreGive(s_chunk_file_mutex);
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] Mutex released after opening next chunk");
-                    }
+                    ESP_LOGE(TAG, "Failed to open chunk file: %s (errno=%d)", s_chunk_file_path, errno);
                 }
+                if (s_chunk_file_mutex != NULL) xSemaphoreGive(s_chunk_file_mutex);
             }
 
-            uint64_t elapsed_us = 0;
-            elapsed_us = now_us - s_chunk_phase_start_us;
-            uint64_t phase_duration_us = (s_chunk_phase == 0) ? (CHUNK_TIME_ON * 1000000ULL) : (CHUNK_TIME_OFF * 1000000ULL);
-
-            if (elapsed_us >= phase_duration_us && s_chunk_triggered && s_chunk_file != NULL) {
-                if (s_chunk_phase == 0) {  // WRITE -> SKIP
-                    ESP_LOGI(TAG, "[CHUNK_CYCLE] chunk=%d cycle=%d samples_written=%lu last_timestamp_us=%llu",
-                            s_chunk_index, s_chunk_cycle, (unsigned long)s_chunk_cycle_write_count,
-                            (unsigned long long)s_chunk_cycle_last_ts_us);
-                    s_chunk_cycle_write_count = 0;
-                    s_chunk_phase = 1;
-                    s_chunk_phase_start_us = now_us;
-                    // Don't increment cycle here - increment after SKIP completes (a cycle = WRITE+SKIP pair)
-                    if (s_chunk_finish_write_then_stop) {
-                        // Stop was requested during write - we finished the cycle, now close
-                        goto chunk_close_and_push;
-                    }
-                } else {  // SKIP -> next cycle or close
-                    s_chunk_phase_start_us = now_us;
-                    // Increment cycle AFTER completing SKIP (cycle = complete WRITE+SKIP pair)
-                    s_chunk_cycle++;
-                    // Close chunk if: reached PEAK cycles OR stop requested (ensures chunk 0 gets sent even if early)
-                    if (s_chunk_cycle >= PEAK || s_chunk_stop_requested) {
-chunk_close_and_push:;
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] chunk_close_and_push: chunk_index=%d, cycle=%d, phase=%d", 
-                                 s_chunk_index, s_chunk_cycle, s_chunk_phase);
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] Taking mutex for file close...");
-                        // Take mutex only for fflush/fclose (actual SD I/O)
-                        if (s_chunk_file_mutex != NULL) {
-                            if (xSemaphoreTake(s_chunk_file_mutex, portMAX_DELAY) == pdTRUE) {
-                                ESP_LOGI(TAG, "[CHUNK_DEBUG] Mutex taken successfully");
-                            } else {
-                                ESP_LOGE(TAG, "[CHUNK_DEBUG] Failed to take mutex!");
-                            }
-                        }
-                        if (s_chunk_file != NULL) {
-                            uint64_t close_start_us = esp_timer_get_time();
-                            ESP_LOGI(TAG, "[CHUNK_DEBUG] Flushing chunk file...");
-                            uint64_t flush_start_us = esp_timer_get_time();
-                            fflush(s_chunk_file);
-                            uint64_t flush_done_us = esp_timer_get_time();
-                            ESP_LOGI(TAG, "[CHUNK_DEBUG] fflush took %llu us", (unsigned long long)(flush_done_us - flush_start_us));
-                            ESP_LOGI(TAG, "[CHUNK_DEBUG] Syncing directory metadata...");
-                            uint64_t sync_start_us = esp_timer_get_time();
-                            // fsync() ensures directory metadata is written before releasing mutex
-                            fsync(fileno(s_chunk_file));
-                            uint64_t sync_done_us = esp_timer_get_time();
-                            ESP_LOGI(TAG, "[CHUNK_DEBUG] fsync took %llu us", (unsigned long long)(sync_done_us - sync_start_us));
-                            ESP_LOGI(TAG, "[CHUNK_DEBUG] Directory metadata synced, closing file...");
-                            uint64_t close_start2_us = esp_timer_get_time();
-                            fclose(s_chunk_file);
-                            uint64_t close_done_us = esp_timer_get_time();
-                            ESP_LOGI(TAG, "[CHUNK_DEBUG] fclose took %llu us", (unsigned long long)(close_done_us - close_start2_us));
-                            s_chunk_file = NULL;
-                            uint64_t total_close_us = close_done_us - close_start_us;
-                            ESP_LOGI(TAG, "[CHUNK_DEBUG] Total file close sequence: %llu us (%.2f ms)", 
-                                     (unsigned long long)total_close_us, (double)total_close_us / 1000.0);
-                        } else {
-                            ESP_LOGW(TAG, "[CHUNK_DEBUG] s_chunk_file is NULL, nothing to close");
-                        }
-                        // Release mutex immediately after file close, before queue operations
-                        // (queue operations can trigger priority inheritance which conflicts with held mutex)
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] Releasing mutex...");
-                        if (s_chunk_file_mutex != NULL) {
-                            xSemaphoreGive(s_chunk_file_mutex);
-                            ESP_LOGI(TAG, "[CHUNK_DEBUG] Mutex released");
-                        }
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] Getting file size via stat()...");
-                        struct stat st;
-                        size_t sz = 0;
-                        if (stat(s_chunk_file_path, &st) == 0) {
-                            sz = (size_t)st.st_size;
-                            ESP_LOGI(TAG, "[CHUNK_DEBUG] File size: %zu bytes", sz);
-                        } else {
-                            ESP_LOGW(TAG, "[CHUNK_DEBUG] stat() failed: errno=%d", errno);
-                        }
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] Setting file mtime...");
-                        set_file_mtime_now(s_chunk_file_path);
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] Preparing chunk_ready_item...");
-                        chunk_ready_item_t item = { .index = s_chunk_index, .size_bytes = sz };
-                        strncpy(item.path, s_chunk_file_path, CHUNK_PATH_MAX - 1);
-                        item.path[CHUNK_PATH_MAX - 1] = '\0';
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] Sending to chunk_ready_queue (queue=%p)...", (void*)s_chunk_ready_queue);
-                        if (s_chunk_ready_queue != NULL) {
-                            if (xQueueSend(s_chunk_ready_queue, &item, portMAX_DELAY) == pdTRUE) {
-                                ESP_LOGI(TAG, "[CHUNK_DEBUG] Item sent to queue successfully");
-                            } else {
-                                ESP_LOGE(TAG, "[CHUNK_DEBUG] Failed to send item to queue!");
-                            }
-                        } else {
-                            ESP_LOGW(TAG, "[CHUNK_DEBUG] chunk_ready_queue is NULL, skipping");
-                        }
-                        s_chunks_ready_count = s_chunk_index + 1;  // So /api/chunks returns count client can download
-                        ESP_LOGI(TAG, "Chunk %d ready: %zu bytes | Packaging and sending to client", s_chunk_index, sz);
-
-                        if (s_chunk_stop_requested || s_chunk_finish_write_then_stop) {
-                            ESP_LOGI(TAG, "[CHUNK_DEBUG] Stop requested, sending done signal...");
-                            chunk_ready_item_t done = { .index = -1, .path = {0}, .size_bytes = 0 };
-                            if (s_chunk_ready_queue != NULL) xQueueSend(s_chunk_ready_queue, &done, portMAX_DELAY);
-                            ESP_LOGI(TAG, "[CHUNK_DEBUG] Disabling chunked logging...");
-                            s_chunked_logging_enabled = false;
-                            s_chunk_stop_requested = false;
-                            s_chunk_finish_write_then_stop = false;
-                            s_chunk_triggered = false;
-                            // Reset stop semaphore (take any pending signals)
-                            if (s_chunk_stop_semaphore != NULL) {
-                                xSemaphoreTake(s_chunk_stop_semaphore, 0);
-                            }
-                            ESP_LOGI(TAG, "[CHUNK_DEBUG] Chunked logging stopped, continuing loop");
-                            continue;
-                        }
-                        // Start a 1s post-chunk pause window before opening the next chunk
-                        uint64_t pause_start = esp_timer_get_time();
-                        uint64_t close_ops_us = pause_start - s_chunk_phase_start_us;  // Time from phase start to end of close
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] Starting 1s post-chunk pause window...");
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] Close operations took ~%llu us (%.2f ms) before pause", 
-                                 (unsigned long long)close_ops_us, (double)close_ops_us / 1000.0);
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] Entering pause window (ADC continues running, samples will be drained)");
-                        s_chunk_cycle = 0;
-                        s_chunk_phase = 2;  // POST_CHUNK_PAUSE
-                        s_chunk_sample_index = 0;
-                        s_chunk_pause_until_us = pause_start + 1000000ULL;
-                        ESP_LOGI(TAG, "[CHUNK_DEBUG] Pause window: start=%llu, end=%llu (1s duration for client fetch)", 
-                                 (unsigned long long)pause_start, (unsigned long long)s_chunk_pause_until_us);
-                    } else {
-                        s_chunk_phase = 0;
-                        // Do NOT increment cycle here - already incremented when SKIP completed (one cycle = WRITE+SKIP)
-                    }
+            // Batch-dequeue samples and write to current chunk (reduces mutex overhead)
+            {
+                csv_sample_t chunk_batch[64];
+                int n = 0;
+                while (n < 64 && xQueueReceive(s_csv_queue, &chunk_batch[n],
+                        n == 0 ? pdMS_TO_TICKS(50) : 0) == pdTRUE) {
+                    n++;
                 }
-            }
-            
-            // In chunked mode: consume samples, write to files, and manage state
-            csv_sample_t sample;
-            if (xQueueReceive(s_csv_queue, &sample, pdMS_TO_TICKS(50)) != pdTRUE) {
-                // Timeout - continue to check phase transitions
-                continue;
-            }
-
-            if (!s_chunk_triggered) continue;  // Drop until threshold
-
-            if (s_chunk_phase == 1) {
-                /* SKIP phase: drain queue aggressively (0 timeout) to avoid backup and ADC drops */
-                while (xQueueReceive(s_csv_queue, &sample, 0) == pdTRUE) { (void)sample; }
-                continue;
-            }
-
-            // WRITE phase: write sample to file
-            if (s_chunk_file != NULL && s_chunk_phase == 0) {
-                const uint64_t interval_us = 1000000ULL / s_actual_sample_rate_hz;
-                uint64_t ts = (uint64_t)s_chunk_global_sample_index * interval_us;
-                if (s_fprintf_mutex != NULL) xSemaphoreTake(s_fprintf_mutex, portMAX_DELAY);
-                fprintf(s_chunk_file, "%llu,%d\n", (unsigned long long)ts, sample.adc_value);
-                if (s_fprintf_mutex != NULL) xSemaphoreGive(s_fprintf_mutex);
-                s_chunk_global_sample_index++;
-                s_chunk_sample_index++;
-                s_chunk_cycle_write_count++;
-                s_chunk_cycle_last_ts_us = ts;
-                
-                // Check if WRITE phase duration exceeded (transition to SKIP)
-                uint64_t now_us = esp_timer_get_time();
-                uint64_t elapsed_us = now_us - s_chunk_phase_start_us;
-                if (elapsed_us >= CHUNK_TIME_ON * 1000000ULL) {
-                    ESP_LOGI(TAG, "[CHUNK_CYCLE] chunk=%d cycle=%d samples_written=%lu last_timestamp_us=%llu",
-                            s_chunk_index, s_chunk_cycle, (unsigned long)s_chunk_cycle_write_count,
-                            (unsigned long long)s_chunk_cycle_last_ts_us);
-                    s_chunk_cycle_write_count = 0;
-                    s_chunk_phase = 1;
-                    s_chunk_phase_start_us = now_us;
-                    // Don't increment cycle here - already done in time-based check at top of loop
-                    // Take mutex only for fflush/fsync (actual SD I/O), not for buffered fprintf
-                    if (s_chunk_file_mutex != NULL) xSemaphoreTake(s_chunk_file_mutex, portMAX_DELAY);
-                    fflush(s_chunk_file);  // Flush before transitioning to SKIP
-                    // Note: No fsync() here - we flush periodically during WRITE, full sync happens on close
-                    if (s_chunk_file_mutex != NULL) xSemaphoreGive(s_chunk_file_mutex);
-                    // If stop requested during WRITE: finish current WRITE cycle and close chunk (ensures chunk 0 gets sent)
-                    if (s_chunk_finish_write_then_stop || s_chunk_stop_requested) {
-                        goto chunk_close_and_push;
+                if (n > 0 && s_chunk_file != NULL) {
+                    const uint64_t interval_us = 1000000ULL / s_actual_sample_rate_hz;
+                    if (s_fprintf_mutex != NULL) xSemaphoreTake(s_fprintf_mutex, portMAX_DELAY);
+                    for (int i = 0; i < n; i++) {
+                        uint64_t ts = (uint64_t)s_chunk_global_sample_index * interval_us;
+                        fprintf(s_chunk_file, "%llu,%d\n", (unsigned long long)ts, chunk_batch[i].adc_value);
+                        s_chunk_global_sample_index++;
+                        s_chunk_sample_index++;
                     }
+                    if (s_fprintf_mutex != NULL) xSemaphoreGive(s_fprintf_mutex);
                 }
             }
             continue;
@@ -853,23 +685,23 @@ bool is_csv_logging_active(void) {
 }
 
 int get_sample_count(void) {
-    // Return the number of samples actually written to the CSV file,
-    // not the total number of ADC samples seen. This aligns the count
-    // with what the client downloads.
+    if (s_chunked_logging_enabled) {
+        return (int)s_chunk_global_sample_index;
+    }
     return (int)s_csv_sample_index;
+}
+
+uint32_t get_actual_sample_rate_hz(void) {
+    return s_actual_sample_rate_hz;
 }
 
 // Get logging statistics (sample count, elapsed time, and rate)
 void get_logging_stats(int *sample_count, uint64_t *elapsed_time_ms, float *rate_hz) {
-    // Use the number of CSV-written samples for stats so that rate and
-    // sample count match what is in the file.
-    *sample_count = (int)s_csv_sample_index;
+    uint32_t idx = s_chunked_logging_enabled ? s_chunk_global_sample_index : s_csv_sample_index;
+    *sample_count = (int)idx;
 
-    // Derive elapsed time directly from the CSV sample count and the actual
-    // sample rate so that the duration shown in the web UI matches the CSV
-    // (e.g. 16.67 s instead of the slightly longer wall-clock interval).
-    if (s_csv_sample_index > 0 && s_actual_sample_rate_hz > 0) {
-        uint64_t elapsed_us = ((uint64_t)s_csv_sample_index * 1000000ULL) / s_actual_sample_rate_hz;
+    if (idx > 0 && s_actual_sample_rate_hz > 0) {
+        uint64_t elapsed_us = ((uint64_t)idx * 1000000ULL) / s_actual_sample_rate_hz;
         *elapsed_time_ms = elapsed_us / 1000;
         *rate_hz = (float)s_actual_sample_rate_hz;
     } else {
@@ -1084,19 +916,6 @@ bool is_chunked_logging_active(void) {
     return s_chunked_logging_enabled;
 }
 
-// Get chunk state for SSE streaming (direct queue access)
-bool get_chunk_triggered(void) {
-    return s_chunk_triggered;
-}
-
-int get_chunk_phase(void) {
-    return s_chunk_phase;
-}
-
-int get_chunk_cycle(void) {
-    return s_chunk_cycle;
-}
-
 int get_chunk_index(void) {
     return s_chunk_index;
 }
@@ -1105,100 +924,113 @@ int get_chunks_ready_count(void) {
     return s_chunks_ready_count;
 }
 
-uint64_t get_chunk_phase_start_us(void) {
-    return s_chunk_phase_start_us;
-}
-
 uint32_t get_chunk_global_sample_index(void) {
     return s_chunk_global_sample_index;
 }
 
-// Get chunk stop semaphore (for SSE handler to check stop immediately)
 SemaphoreHandle_t get_chunk_stop_semaphore(void) {
     return s_chunk_stop_semaphore;
 }
 
-// Get chunk file mutex (serialize SD access between csv_writer and HTTP chunk_get_handler)
 SemaphoreHandle_t get_chunk_file_mutex(void) {
     return s_chunk_file_mutex;
 }
 
-// Check if we should finish current WRITE cycle before stopping
-bool get_chunk_finish_write_then_stop(void) {
-    return s_chunk_finish_write_then_stop;
+const char* get_chunk_dir(void) {
+    return s_chunk_dir;
 }
 
-// Start chunked logging: wait for threshold, then write 1s/skip 1s for PEAK cycles per chunk
-void start_chunked_logging(void) {
+bool start_chunked_logging(bool testbench) {
     if (s_chunked_logging_enabled) {
         ESP_LOGW(TAG, "Chunked logging already active");
-        return;
+        return false;
     }
     s_chunk_stop_requested = false;
-    s_chunk_finish_write_then_stop = false;
-    s_chunk_triggered = false;
     s_chunk_index = 0;
     s_chunks_ready_count = 0;
-    s_chunk_cycle = 0;
-    s_chunk_phase = 0;
     s_chunk_sample_index = 0;
-    s_chunk_global_sample_index = 0;  /* Timestamps start at 0 for new session */
-    s_chunk_pause_until_us = 0;
-    
-    // Reset stop semaphore (take any pending signals)
+    s_chunk_global_sample_index = 0;
+    s_testbench_mode = testbench;
+
     if (s_chunk_stop_semaphore != NULL) {
         xSemaphoreTake(s_chunk_stop_semaphore, 0);
     }
 
-    const char *chunk_dir = sdcard_is_mounted() ? CSV_CHUNK_DIR_SD : CSV_CHUNK_DIR_SPIFFS;
-    if (mkdir(chunk_dir, 0) != 0 && errno != EEXIST) {
-        ESP_LOGE(TAG, "mkdir %s failed (errno=%d)", chunk_dir, errno);
-        return;
+    // Determine chunk directory (create each level; FAT requires parents to exist)
+    if (testbench) {
+        const char *mount = sdcard_is_mounted() ? SDCARD_MOUNT_POINT : SPIFFS_MOUNT_POINT;
+        char p[CHUNK_DIR_MAX];
+
+        snprintf(p, sizeof(p), "%s/tb", mount);
+        if (mkdir(p, 0) != 0 && errno != EEXIST) {
+            ESP_LOGW(TAG, "mkdir %s failed (errno=%d %s)", p, errno, strerror(errno));
+        }
+        snprintf(p, sizeof(p), "%s/tb/chunks", mount);
+        if (mkdir(p, 0) != 0 && errno != EEXIST) {
+            ESP_LOGW(TAG, "mkdir %s failed (errno=%d %s)", p, errno, strerror(errno));
+        }
+        snprintf(s_chunk_dir, CHUNK_DIR_MAX, "%s/tb/chunks/run_%d", mount, s_testbench_run_index);
+        if (mkdir(s_chunk_dir, 0) != 0 && errno != EEXIST) {
+            ESP_LOGE(TAG, "mkdir %s failed (errno=%d %s)", s_chunk_dir, errno, strerror(errno));
+            return false;
+        }
+        s_testbench_run_index++;
+    } else {
+        const char *dir = sdcard_is_mounted() ? CSV_CHUNK_DIR_SD : CSV_CHUNK_DIR_SPIFFS;
+        snprintf(s_chunk_dir, CHUNK_DIR_MAX, "%s", dir);
+        if (sdcard_is_mounted()) mkdir(CSV_SD_DIR, 0);
+        if (mkdir(s_chunk_dir, 0) != 0 && errno != EEXIST) {
+            ESP_LOGE(TAG, "mkdir %s failed (errno=%d)", s_chunk_dir, errno);
+            return false;
+        }
     }
 
-    // Take mutex only for fopen/fflush (actual SD I/O)
+    // Open first chunk file
     if (s_chunk_file_mutex != NULL) xSemaphoreTake(s_chunk_file_mutex, portMAX_DELAY);
-    snprintf(s_chunk_file_path, CHUNK_PATH_MAX, "%s/chunk_0.csv", chunk_dir);
+    snprintf(s_chunk_file_path, CHUNK_PATH_MAX, "%s/0.csv", s_chunk_dir);
     s_chunk_file = fopen(s_chunk_file_path, "w");
     if (s_chunk_file == NULL) {
         if (s_chunk_file_mutex != NULL) xSemaphoreGive(s_chunk_file_mutex);
-        ESP_LOGE(TAG, "Failed to open chunk file: %s", s_chunk_file_path);
-        return;
+        ESP_LOGE(TAG, "Failed to open chunk file: %s (errno=%d)", s_chunk_file_path, errno);
+        return false;
     }
     if (s_fprintf_mutex != NULL) xSemaphoreTake(s_fprintf_mutex, portMAX_DELAY);
     fprintf(s_chunk_file, "timestamp_us,adc_value\n");
     if (s_fprintf_mutex != NULL) xSemaphoreGive(s_fprintf_mutex);
     fflush(s_chunk_file);
-    // fsync() ensures directory metadata is written before releasing mutex
     fsync(fileno(s_chunk_file));
-    // Release mutex after file operations (fprintf is buffered, doesn't need mutex)
     if (s_chunk_file_mutex != NULL) xSemaphoreGive(s_chunk_file_mutex);
 
     if (s_csv_queue) xQueueReset(s_csv_queue);
-    s_chunk_phase_start_us = esp_timer_get_time();
+    if (s_chunk_ready_queue) xQueueReset(s_chunk_ready_queue);
+    s_chunk_write_start_us = esp_timer_get_time();
     s_chunked_logging_enabled = true;
     start_sampling_timer();
-    ESP_LOGI(TAG, "Chunked logging started: waiting for ADC >= %d, then %d cycles (on %ds / off %ds)", THRESHOLD, PEAK, CHUNK_TIME_ON, CHUNK_TIME_OFF);
+    ESP_LOGI(TAG, "Chunked logging started: continuous capture, %d s/chunk, dir=%s%s",
+             CHUNK_CONTINUOUS_SECS, s_chunk_dir, testbench ? " [TESTBENCH]" : "");
+    return true;
 }
 
 void stop_chunked_logging(void) {
-    if (!s_chunked_logging_enabled) return;
-    s_chunk_stop_requested = true;
-    // Always finish current WRITE cycle if in WRITE phase (ensures chunk 0 gets sent even if early)
-    if (s_chunk_phase == 0) {
-        s_chunk_finish_write_then_stop = true;  // Finish current WRITE cycle then stop (for csv_writer_task)
+    if (!s_chunked_logging_enabled) {
+        stop_sampling_timer();
+        return;
     }
-    // Special case: if chunk 0 is active, ensure it gets sent even if not in WRITE phase
-    // (will be handled by cycle check: s_chunk_index == 0 && s_chunk_stop_requested)
-    // Signal stop semaphore immediately for high-priority stop handling (SSE handler stops immediately)
+    s_chunk_stop_requested = true;
     if (s_chunk_stop_semaphore != NULL) {
         xSemaphoreGive(s_chunk_stop_semaphore);
-        // Give semaphore multiple times to ensure it's seen even if already taken
-        // (binary semaphore can only hold one, but this ensures it's available)
-        vTaskDelay(pdMS_TO_TICKS(1));
-        xSemaphoreGive(s_chunk_stop_semaphore);
     }
-    ESP_LOGI(TAG, "Chunked logging stop requested (semaphore signaled - SSE will stop immediately)");
+    ESP_LOGI(TAG, "Chunked logging stop requested, waiting for writer...");
+    for (int i = 0; i < 100 && s_chunked_logging_enabled; i++) {
+        vTaskDelay(pdMS_TO_TICKS(50));
+    }
+    stop_sampling_timer();
+    if (s_chunked_logging_enabled) {
+        ESP_LOGE(TAG, "Chunked logging stop TIMED OUT (5s) — forcing off");
+        s_chunked_logging_enabled = false;
+    } else {
+        ESP_LOGI(TAG, "Chunked logging stop confirmed");
+    }
 }
 
 /**
