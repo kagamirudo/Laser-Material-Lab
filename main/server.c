@@ -150,12 +150,11 @@ void stop_chunked_logging(void);
 bool is_chunked_logging_active(void);
 int get_chunk_index(void);
 int get_chunks_ready_count(void);
+int get_chunk_continuous_secs(void);
 uint32_t get_chunk_global_sample_index(void);
 SemaphoreHandle_t get_chunk_stop_semaphore(void);
 SemaphoreHandle_t get_chunk_file_mutex(void);
 const char* get_chunk_dir(void);
-
-#define CHUNK_CONTINUOUS_SECS 10  // Must match 002.c
 
 // HTTP handlers
 static esp_err_t index_handler(httpd_req_t *req) {
@@ -927,7 +926,7 @@ static esp_err_t start_chunk_handler(httpd_req_t *req) {
     if (ok) {
         snprintf(response, sizeof(response),
                  "{\"status\":\"chunk_started\",\"chunk_secs\":%d,\"rate_hz\":%lu,\"testbench\":%s}",
-                 CHUNK_CONTINUOUS_SECS, (unsigned long)rate, testbench ? "true" : "false");
+                 get_chunk_continuous_secs(), (unsigned long)rate, testbench ? "true" : "false");
     } else {
         httpd_resp_set_status(req, "409 Conflict");
         snprintf(response, sizeof(response),

@@ -698,6 +698,10 @@ uint32_t get_actual_sample_rate_hz(void) {
     return s_actual_sample_rate_hz;
 }
 
+int get_chunk_continuous_secs(void) {
+    return CHUNK_CONTINUOUS_SECS;
+}
+
 // Get logging statistics (sample count, elapsed time, and rate)
 void get_logging_stats(int *sample_count, uint64_t *elapsed_time_ms, float *rate_hz) {
     uint32_t idx = s_chunked_logging_enabled ? s_chunk_global_sample_index : s_csv_sample_index;
