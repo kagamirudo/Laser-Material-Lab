@@ -64,6 +64,24 @@ Wi-Fi credentials are set in `main/wifi.h`.
 - ESP-IDF v5.0+
 - Python 3.8+
 
+### First-time Setup
+
+If you have **conda**, **virtualenv**, or another Python environment manager active, use the
+included setup script to avoid conflicts:
+
+```bash
+source setup_idf.sh
+```
+
+The script will:
+1. Deactivate any active conda / virtualenv / pyenv environments (current shell only).
+2. Locate your ESP-IDF installation (or offer to clone it).
+3. Run `install.sh` if the toolchain is missing.
+4. Source `export.sh` so `idf.py` is ready to use.
+
+> **Note:** The script must be **sourced**, not executed — environment changes only persist in the
+> current shell when sourced.
+
 ### Quick Start
 
 ```bash

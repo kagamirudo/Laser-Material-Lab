@@ -20,9 +20,14 @@
 /** Set TZ env from offset minutes so localtime_r() shows local time.
  *  offset_min: e.g. -300 for EST (UTC-5). POSIX format: "XXX5" = 5h behind UTC. */
 static void set_tz_from_offset_min(int offset_min) {
-    int offset_hours = -offset_min / 60;  /* -(-300)/60 = 5 for EST (UTC-5) */
+    int posix_total = -offset_min;  /* POSIX sign: west-of-UTC is positive */
+    int hours = posix_total / 60;
+    int mins  = abs(posix_total % 60);
     char tz_buf[24];
-    snprintf(tz_buf, sizeof(tz_buf), "XXX%d", offset_hours);  /* XXX5=UTC-5, XXX-1=UTC+1 */
+    if (mins != 0)
+        snprintf(tz_buf, sizeof(tz_buf), "XXX%d:%02d", hours, mins);
+    else
+        snprintf(tz_buf, sizeof(tz_buf), "XXX%d", hours);
     setenv("TZ", tz_buf, 1);
     tzset();
 }
@@ -872,6 +877,7 @@ static esp_err_t csv_stream_handler(httpd_req_t *req) {
 
 static esp_err_t start_chunk_handler(httpd_req_t *req) {
     char client_time[64] = {0};
+    long long client_timestamp_ms = 0;
     int timezone_offset = 0;
     bool testbench = false;
 
@@ -896,9 +902,27 @@ static esp_err_t start_chunk_handler(httpd_req_t *req) {
             // Parse client_time
             char *time_ptr = strstr(buf, "\"client_time\"");
             if (time_ptr != NULL) {
-                char *q1 = strchr(strchr(time_ptr, ':') + 1, '"');
-                if (q1) { char *q2 = strchr(q1 + 1, '"');
-                    if (q2) { size_t len = q2 - q1 - 1; if (len < sizeof(client_time)) { memcpy(client_time, q1 + 1, len); client_time[len] = '\0'; } } }
+                char *colon = strchr(time_ptr, ':');
+                if (colon) {
+                    char *q1 = strchr(colon + 1, '"');
+                    if (q1) {
+                        char *q2 = strchr(q1 + 1, '"');
+                        if (q2) {
+                            size_t len = q2 - q1 - 1;
+                            if (len < sizeof(client_time)) {
+                                memcpy(client_time, q1 + 1, len);
+                                client_time[len] = '\0';
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Parse client_timestamp (milliseconds since epoch, UTC)
+            char *ts_ptr = strstr(buf, "\"client_timestamp\"");
+            if (ts_ptr != NULL) {
+                char *colon2 = strchr(ts_ptr, ':');
+                if (colon2) client_timestamp_ms = strtoll(colon2 + 1, NULL, 10);
             }
 
             // Parse timezone_offset
@@ -913,10 +937,26 @@ static esp_err_t start_chunk_handler(httpd_req_t *req) {
     }
 
     // Apply client time if provided
-    if (client_time[0] != '\0') {
-        // Re-use the same time-sync logic
-        // (parse_client_time already consumed the body, so we set time manually here)
-        // Time was already parsed above; timezone handling same as sync_time
+    if (client_timestamp_ms > 0) {
+        s_timezone_offset_min = timezone_offset;
+        set_tz_from_offset_min(timezone_offset);
+
+        time_t timestamp_sec = client_timestamp_ms / 1000;
+        struct timeval tv = {
+            .tv_sec = timestamp_sec,
+            .tv_usec = (client_timestamp_ms % 1000) * 1000
+        };
+        settimeofday(&tv, NULL);
+        ESP_LOGI(SERVER_TAG, "System time set from start_chunk: %lld ms (UTC), tz offset: %d min (%s)",
+                 client_timestamp_ms, timezone_offset, client_time);
+
+        if (s_time_sync_mutex != NULL) {
+            xSemaphoreTake(s_time_sync_mutex, portMAX_DELAY);
+        }
+        s_time_synced = true;
+        if (s_time_sync_mutex != NULL) {
+            xSemaphoreGive(s_time_sync_mutex);
+        }
     }
 
     bool ok = start_chunked_logging(testbench);
