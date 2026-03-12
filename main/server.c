@@ -464,19 +464,20 @@ static esp_err_t csv_download_handler(httpd_req_t *req) {
         filename++;  // Skip the '/'
     }
     
-    // Set headers for file download
-    httpd_resp_set_type(req, "text/csv");
-    char content_disposition[128];
-    snprintf(content_disposition, sizeof(content_disposition), "attachment; filename=%s", filename);
-    httpd_resp_set_hdr(req, "Content-Disposition", content_disposition);
-    
-    // Get file size and set Content-Length header
+    // Get file size
     fseek(file, 0, SEEK_END);
     long file_size = ftell(file);
     fseek(file, 0, SEEK_SET);
-    
+
+    // Header value buffers — must outlive all httpd_resp_send_chunk calls
+    // (httpd_resp_set_hdr stores pointers, not copies)
+    char content_disposition[128];
     char content_length[32];
+    snprintf(content_disposition, sizeof(content_disposition), "attachment; filename=%s", filename);
     snprintf(content_length, sizeof(content_length), "%ld", file_size);
+
+    httpd_resp_set_type(req, "text/csv");
+    httpd_resp_set_hdr(req, "Content-Disposition", content_disposition);
     httpd_resp_set_hdr(req, "Content-Length", content_length);
     
     // Read and send file in chunks
@@ -684,14 +685,15 @@ static esp_err_t chunk_get_handler(httpd_req_t *req) {
     long file_size = ftell(f);
     fseek(f, 0, SEEK_SET);
 
-    // Set headers for CSV download
-    httpd_resp_set_type(req, "text/csv");
+    // Header value buffers — must outlive all httpd_resp_send_chunk calls
+    // (httpd_resp_set_hdr stores pointers, not copies)
     char content_disposition[128];
-    snprintf(content_disposition, sizeof(content_disposition), "attachment; filename=%d.csv", chunk_index);
-    httpd_resp_set_hdr(req, "Content-Disposition", content_disposition);
-
     char content_length[32];
+    snprintf(content_disposition, sizeof(content_disposition), "attachment; filename=%d.csv", chunk_index);
     snprintf(content_length, sizeof(content_length), "%ld", file_size);
+
+    httpd_resp_set_type(req, "text/csv");
+    httpd_resp_set_hdr(req, "Content-Disposition", content_disposition);
     httpd_resp_set_hdr(req, "Content-Length", content_length);
 
     // Stream file in chunks (non-blocking)

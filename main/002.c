@@ -554,6 +554,7 @@ static void csv_writer_task(void *pvParameters) {
                 }
                 if (n > 0 && s_chunk_file != NULL) {
                     const uint64_t interval_us = 1000000ULL / s_actual_sample_rate_hz;
+                    if (s_chunk_file_mutex != NULL) xSemaphoreTake(s_chunk_file_mutex, portMAX_DELAY);
                     if (s_fprintf_mutex != NULL) xSemaphoreTake(s_fprintf_mutex, portMAX_DELAY);
                     for (int i = 0; i < n; i++) {
                         uint64_t ts = (uint64_t)s_chunk_global_sample_index * interval_us;
@@ -562,6 +563,7 @@ static void csv_writer_task(void *pvParameters) {
                         s_chunk_sample_index++;
                     }
                     if (s_fprintf_mutex != NULL) xSemaphoreGive(s_fprintf_mutex);
+                    if (s_chunk_file_mutex != NULL) xSemaphoreGive(s_chunk_file_mutex);
                 }
             }
             continue;
