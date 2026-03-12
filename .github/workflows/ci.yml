@@ -51,5 +51,6 @@ jobs:
 
       - name: Check formatting
         run: |
-          find main/ -name '*.c' -o -name '*.h' | \
+          find main/ -type f \( -name '*.c' -o -name '*.h' \) \
+            ! -path '*/build/*' | \
             xargs clang-format --dry-run --Werror --style=file
