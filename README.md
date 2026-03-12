@@ -1,5 +1,7 @@
 # Laser Material Lab — ESP32-S3 Data Logger
 
+[![CI](https://github.com/kagamirudo/Laser-Material-Lab/actions/workflows/ci.yml/badge.svg)](https://github.com/kagamirudo/Laser-Material-Lab/actions/workflows/ci.yml)
+
 High-speed ADC data acquisition system for laser/material interaction studies using ESP32-S3. Captures continuous ADC samples from a photodiode, writes time-based CSV chunks to SD card, and streams them to a client over Wi-Fi.
 
 ## Hardware Setup
@@ -94,7 +96,7 @@ make bf       # Build and flash (no monitor)
 make clean    # Clean build artifacts
 make menuconfig  # ESP-IDF configuration menu
 make size     # Show binary size
-make push MSG="your message"  # Git commit and push
+make push MSG="fix: ADC timing"  # Git commit and push (MSG required)
 ```
 
 ## Usage
