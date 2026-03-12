@@ -18,13 +18,13 @@ jobs:
       - name: Build firmware
         uses: espressif/esp-idf-ci-action@v1
         with:
-          esp_idf_version: v5.5.1
+          esp_idf_version: v5.5.2
           target: esp32s3
 
       - name: Report binary size
         uses: espressif/esp-idf-ci-action@v1
         with:
-          esp_idf_version: v5.5.1
+          esp_idf_version: v5.5.2
           target: esp32s3
           command: idf.py size
 
