@@ -64,18 +64,16 @@ erase:
 partition-table:
 	idf.py partition-table
 
-# Git commit + push (default branch: main)
+# Git commit + push (default branch: main, MSG is required)
 # Usage:
-#   make push
-#   make push main
-#   make push test
-#   make push MSG="your custom commit message"
+#   make push MSG="fix: correct ADC timing"
+#   make push main MSG="add: OLED status page"
+#   make push test MSG="wip: bench mode tweaks"
 #
 # Notes:
 # - `make push test` works because Make treats `test` as an extra goal; the `test` target
 #   is a no-op, and `push` reads the second goal as the branch name.
 # - For safety, this target refuses to push if you are not currently on the requested branch.
-MSG ?= Update code
 BRANCH ?= main
 
 # If the first goal is `push`, treat the second goal as the branch name.
@@ -87,6 +85,9 @@ ifeq ($(firstword $(MAKECMDGOALS)),push)
 endif
 
 push:
+ifndef MSG
+	$(error Commit message required. Usage: make push MSG="fix: correct ADC timing")
+endif
 	@current="$$(git branch --show-current)"; \
 	if [ "$$current" != "$(BRANCH)" ]; then \
 	  echo "ERROR: you are on '$$current' but asked to push '$(BRANCH)'."; \
@@ -124,7 +125,7 @@ help:
 	@echo "  size-files        - Show size by file"
 	@echo "  erase             - Erase flash"
 	@echo "  partition-table   - Show partition table"
-	@echo "  push              - Commit and push to main (default) or to a branch"
+	@echo "  push MSG=\"...\"    - Commit and push (MSG required)"
 	@echo "  help              - Show this help message"
 	@echo ""
 	@echo "Examples:"
@@ -133,7 +134,5 @@ help:
 	@echo "  make build        - Just build"
 	@echo "  make flash        - Just flash"
 	@echo "  make monitor      - Just monitor"
-	@echo "  make push         - Commit and push with default message"
-	@echo "  make push test    - Commit and push the 'test' branch"
-	@echo "  make push main    - Commit and push the 'main' branch"
-	@echo "  make push MSG=\"fix: update ADC config\" - Commit and push with custom message"
+	@echo "  make push MSG=\"fix: ADC timing\"        - Commit and push to main"
+	@echo "  make push test MSG=\"add: bench mode\"   - Commit and push to test branch"

@@ -37,8 +37,8 @@ extern "C" {
 #define SDCARD_SPI_HOST SPI2_HOST
 #define SDCARD_PIN_MOSI GPIO_NUM_11
 #define SDCARD_PIN_MISO GPIO_NUM_13
-#define SDCARD_PIN_SCK  GPIO_NUM_12
-#define SDCARD_PIN_CS   GPIO_NUM_14
+#define SDCARD_PIN_SCK GPIO_NUM_12
+#define SDCARD_PIN_CS GPIO_NUM_14
 
 /**
  * @brief Initialize SPI bus, attach SD card, and mount FAT filesystem.
@@ -77,10 +77,10 @@ static esp_err_t sdcard_read_file(const char *filename);
 
 /**
  * @brief Test SD card by reading capacity and performing read/write test
- * 
+ *
  * Verifies the card can be detected, shows capacity (should show ~32GB),
  * and performs a simple write/read/delete test to confirm functionality.
- * 
+ *
  * @return ESP_OK on success, ESP_FAIL on error
  */
 esp_err_t sdcard_test_read(void);

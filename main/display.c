@@ -1,10 +1,10 @@
-#include <string.h>
+#include "display.h"
 #include "driver/i2c.h"
 #include "esp_err.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "display.h"
+#include <string.h>
 
 static const char *TAG = "display";
 
@@ -33,8 +33,7 @@ static bool s_display_ready = false;
 static char s_status_lines[DISPLAY_MAX_LINES][DISPLAY_CHARS_PER_LINE + 1];
 static int s_status_count = 0;
 
-static void push_status_line(const char *text)
-{
+static void push_status_line(const char *text) {
     if (!text) {
         return;
     }
@@ -156,28 +155,28 @@ static const uint8_t font5x7[][5] = {
     {0x00, 0x06, 0x09, 0x09, 0x06}, // 127
 };
 
-static esp_err_t i2c_write(uint8_t control, const uint8_t *data, size_t len)
-{
+static esp_err_t i2c_write(uint8_t control, const uint8_t *data, size_t len) {
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     if (!cmd) {
         return ESP_ERR_NO_MEM;
     }
     i2c_master_start(cmd);
-    i2c_master_write_byte(cmd, (DISPLAY_I2C_ADDR << 1) | I2C_MASTER_WRITE, true);
+    i2c_master_write_byte(cmd, (DISPLAY_I2C_ADDR << 1) | I2C_MASTER_WRITE,
+                          true);
     i2c_master_write_byte(cmd, control, true);
     if (len > 0) {
         i2c_master_write(cmd, (uint8_t *)data, len, true);
     }
     i2c_master_stop(cmd);
-    esp_err_t err = i2c_master_cmd_begin(DISPLAY_I2C_PORT, cmd, pdMS_TO_TICKS(100));
+    esp_err_t err =
+        i2c_master_cmd_begin(DISPLAY_I2C_PORT, cmd, pdMS_TO_TICKS(100));
     i2c_cmd_link_delete(cmd);
     return err;
 }
 
 static esp_err_t ssd1306_cmd(uint8_t cmd);
 
-static esp_err_t ssd1306_cmd_with_retry(uint8_t cmd, int max_retries)
-{
+static esp_err_t ssd1306_cmd_with_retry(uint8_t cmd, int max_retries) {
     esp_err_t ret = ESP_FAIL;
     for (int i = 0; i < max_retries; i++) {
         ret = ssd1306_cmd(cmd);
@@ -191,25 +190,19 @@ static esp_err_t ssd1306_cmd_with_retry(uint8_t cmd, int max_retries)
     return ret;
 }
 
-static esp_err_t ssd1306_cmd(uint8_t cmd)
-{
-    return i2c_write(0x00, &cmd, 1);
-}
+static esp_err_t ssd1306_cmd(uint8_t cmd) { return i2c_write(0x00, &cmd, 1); }
 
-static esp_err_t ssd1306_data(const uint8_t *data, size_t len)
-{
+static esp_err_t ssd1306_data(const uint8_t *data, size_t len) {
     return i2c_write(0x40, data, len);
 }
 
-static void ssd1306_set_cursor(uint8_t col, uint8_t page)
-{
+static void ssd1306_set_cursor(uint8_t col, uint8_t page) {
     ssd1306_cmd(0xB0 | (page & 0x07));
     ssd1306_cmd(0x00 | (col & 0x0F));
     ssd1306_cmd(0x10 | ((col >> 4) & 0x0F));
 }
 
-static void ssd1306_clear(void)
-{
+static void ssd1306_clear(void) {
     uint8_t zeros[SSD1306_WIDTH];
     memset(zeros, 0x00, sizeof(zeros));
     for (uint8_t page = 0; page < SSD1306_PAGES; page++) {
@@ -218,8 +211,21 @@ static void ssd1306_clear(void)
     }
 }
 
-static void ssd1306_draw_text(uint8_t col, uint8_t page, const char *text)
-{
+/* Clear only a range of pages (e.g. 2 pages per line) to avoid full-screen
+ * blink */
+static void ssd1306_clear_pages(uint8_t start_page, uint8_t end_page) {
+    if (start_page > end_page || end_page >= SSD1306_PAGES) {
+        return;
+    }
+    uint8_t zeros[SSD1306_WIDTH];
+    memset(zeros, 0x00, sizeof(zeros));
+    for (uint8_t page = start_page; page <= end_page; page++) {
+        ssd1306_set_cursor(0, page);
+        ssd1306_data(zeros, sizeof(zeros));
+    }
+}
+
+static void ssd1306_draw_text(uint8_t col, uint8_t page, const char *text) {
     if (!text) {
         return;
     }
@@ -237,8 +243,7 @@ static void ssd1306_draw_text(uint8_t col, uint8_t page, const char *text)
     }
 }
 
-esp_err_t display_init(void)
-{
+esp_err_t display_init(void) {
     i2c_config_t conf = {
         .mode = I2C_MODE_MASTER,
         .sda_io_num = DISPLAY_SDA_GPIO,
@@ -250,56 +255,87 @@ esp_err_t display_init(void)
     };
     esp_err_t ret = i2c_param_config(DISPLAY_I2C_PORT, &conf);
     if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to configure I2C parameters: %s", esp_err_to_name(ret));
+        ESP_LOGE(TAG, "Failed to configure I2C parameters: %s",
+                 esp_err_to_name(ret));
         return ret;
     }
-    
+
     ret = i2c_driver_install(DISPLAY_I2C_PORT, conf.mode, 0, 0, 0);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "Failed to install I2C driver: %s", esp_err_to_name(ret));
         return ret;
     }
-    
+
     // Give I2C bus time to stabilize after driver install
     vTaskDelay(pdMS_TO_TICKS(100));
 
     // Basic SSD1306 init sequence with retry logic
     ret = ssd1306_cmd_with_retry(0xAE, 3); // Display off
     if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to communicate with SSD1306 at address 0x%02X (SDA=%d SCL=%d): %s", 
-                 DISPLAY_I2C_ADDR, DISPLAY_SDA_GPIO, DISPLAY_SCL_GPIO, esp_err_to_name(ret));
+        ESP_LOGE(TAG,
+                 "Failed to communicate with SSD1306 at address 0x%02X (SDA=%d "
+                 "SCL=%d): %s",
+                 DISPLAY_I2C_ADDR, DISPLAY_SDA_GPIO, DISPLAY_SCL_GPIO,
+                 esp_err_to_name(ret));
         ESP_LOGW(TAG, "Display may not be connected. Check wiring and power.");
         i2c_driver_delete(DISPLAY_I2C_PORT);
         return ret;
     }
     // Continue with initialization sequence (use retry for critical commands)
-    if ((ret = ssd1306_cmd_with_retry(0x20, 3)) != ESP_OK) goto fail; // Set memory addressing mode
-    if ((ret = ssd1306_cmd(0x00)) != ESP_OK) goto fail; // Horizontal addressing
-    if ((ret = ssd1306_cmd(0xB0)) != ESP_OK) goto fail; // Set page start
-    if ((ret = ssd1306_cmd(0xC8)) != ESP_OK) goto fail; // COM scan direction
-    if ((ret = ssd1306_cmd(0x00)) != ESP_OK) goto fail; // Low column
-    if ((ret = ssd1306_cmd(0x10)) != ESP_OK) goto fail; // High column
-    if ((ret = ssd1306_cmd(0x40)) != ESP_OK) goto fail; // Start line
-    if ((ret = ssd1306_cmd(0x81)) != ESP_OK) goto fail; // Contrast
-    if ((ret = ssd1306_cmd(0x7F)) != ESP_OK) goto fail;
-    if ((ret = ssd1306_cmd(0xA1)) != ESP_OK) goto fail; // Segment remap
-    if ((ret = ssd1306_cmd(0xA6)) != ESP_OK) goto fail; // Normal display
-    if ((ret = ssd1306_cmd(0xA8)) != ESP_OK) goto fail; // Multiplex
-    if ((ret = ssd1306_cmd(0x3F)) != ESP_OK) goto fail;
-    if ((ret = ssd1306_cmd(0xA4)) != ESP_OK) goto fail; // Display follows RAM
-    if ((ret = ssd1306_cmd(0xD3)) != ESP_OK) goto fail; // Display offset
-    if ((ret = ssd1306_cmd(0x00)) != ESP_OK) goto fail;
-    if ((ret = ssd1306_cmd(0xD5)) != ESP_OK) goto fail; // Display clock
-    if ((ret = ssd1306_cmd(0x80)) != ESP_OK) goto fail;
-    if ((ret = ssd1306_cmd(0xD9)) != ESP_OK) goto fail; // Pre-charge
-    if ((ret = ssd1306_cmd(0xF1)) != ESP_OK) goto fail;
-    if ((ret = ssd1306_cmd(0xDA)) != ESP_OK) goto fail; // COM pins
-    if ((ret = ssd1306_cmd(0x12)) != ESP_OK) goto fail;
-    if ((ret = ssd1306_cmd(0xDB)) != ESP_OK) goto fail; // VCOM detect
-    if ((ret = ssd1306_cmd(0x40)) != ESP_OK) goto fail;
-    if ((ret = ssd1306_cmd(0x8D)) != ESP_OK) goto fail; // Charge pump
-    if ((ret = ssd1306_cmd(0x14)) != ESP_OK) goto fail;
-    if ((ret = ssd1306_cmd(0xAF)) != ESP_OK) goto fail; // Display on
+    if ((ret = ssd1306_cmd_with_retry(0x20, 3)) != ESP_OK)
+        goto fail; // Set memory addressing mode
+    if ((ret = ssd1306_cmd(0x00)) != ESP_OK)
+        goto fail; // Horizontal addressing
+    if ((ret = ssd1306_cmd(0xB0)) != ESP_OK)
+        goto fail; // Set page start
+    if ((ret = ssd1306_cmd(0xC8)) != ESP_OK)
+        goto fail; // COM scan direction
+    if ((ret = ssd1306_cmd(0x00)) != ESP_OK)
+        goto fail; // Low column
+    if ((ret = ssd1306_cmd(0x10)) != ESP_OK)
+        goto fail; // High column
+    if ((ret = ssd1306_cmd(0x40)) != ESP_OK)
+        goto fail; // Start line
+    if ((ret = ssd1306_cmd(0x81)) != ESP_OK)
+        goto fail; // Contrast
+    if ((ret = ssd1306_cmd(0x7F)) != ESP_OK)
+        goto fail;
+    if ((ret = ssd1306_cmd(0xA1)) != ESP_OK)
+        goto fail; // Segment remap
+    if ((ret = ssd1306_cmd(0xA6)) != ESP_OK)
+        goto fail; // Normal display
+    if ((ret = ssd1306_cmd(0xA8)) != ESP_OK)
+        goto fail; // Multiplex
+    if ((ret = ssd1306_cmd(0x3F)) != ESP_OK)
+        goto fail;
+    if ((ret = ssd1306_cmd(0xA4)) != ESP_OK)
+        goto fail; // Display follows RAM
+    if ((ret = ssd1306_cmd(0xD3)) != ESP_OK)
+        goto fail; // Display offset
+    if ((ret = ssd1306_cmd(0x00)) != ESP_OK)
+        goto fail;
+    if ((ret = ssd1306_cmd(0xD5)) != ESP_OK)
+        goto fail; // Display clock
+    if ((ret = ssd1306_cmd(0x80)) != ESP_OK)
+        goto fail;
+    if ((ret = ssd1306_cmd(0xD9)) != ESP_OK)
+        goto fail; // Pre-charge
+    if ((ret = ssd1306_cmd(0xF1)) != ESP_OK)
+        goto fail;
+    if ((ret = ssd1306_cmd(0xDA)) != ESP_OK)
+        goto fail; // COM pins
+    if ((ret = ssd1306_cmd(0x12)) != ESP_OK)
+        goto fail;
+    if ((ret = ssd1306_cmd(0xDB)) != ESP_OK)
+        goto fail; // VCOM detect
+    if ((ret = ssd1306_cmd(0x40)) != ESP_OK)
+        goto fail;
+    if ((ret = ssd1306_cmd(0x8D)) != ESP_OK)
+        goto fail; // Charge pump
+    if ((ret = ssd1306_cmd(0x14)) != ESP_OK)
+        goto fail;
+    if ((ret = ssd1306_cmd(0xAF)) != ESP_OK)
+        goto fail; // Display on
 
     ssd1306_clear();
     s_display_ready = true;
@@ -313,8 +349,7 @@ fail:
     return ret;
 }
 
-void display_clear(void)
-{
+void display_clear(void) {
     if (!s_display_ready) {
         return;
     }
@@ -322,8 +357,7 @@ void display_clear(void)
     ssd1306_clear();
 }
 
-void display_show_status(const char *line1, const char *line2)
-{
+void display_show_status(const char *line1, const char *line2) {
     if (!s_display_ready) {
         return;
     }
@@ -332,5 +366,35 @@ void display_show_status(const char *line1, const char *line2)
     ssd1306_clear();
     for (int i = 0; i < s_status_count; i++) {
         ssd1306_draw_text(0, (uint8_t)i * 2, s_status_lines[i]);
+    }
+}
+
+void display_show_3lines(const char *line1, const char *line2,
+                         const char *line3) {
+    if (!s_display_ready) {
+        return;
+    }
+    /* Clear and draw each line in turn to avoid full-screen blink */
+    ssd1306_clear_pages(0, 1);
+    if (line1) {
+        ssd1306_draw_text(0, 0, line1);
+    }
+    ssd1306_clear_pages(2, 3);
+    if (line2) {
+        ssd1306_draw_text(0, 2, line2);
+    }
+    ssd1306_clear_pages(4, 5);
+    if (line3) {
+        ssd1306_draw_text(0, 4, line3);
+    }
+}
+
+void display_update_3rd_line(const char *line3) {
+    if (!s_display_ready) {
+        return;
+    }
+    ssd1306_clear_pages(4, 5);
+    if (line3) {
+        ssd1306_draw_text(0, 4, line3);
     }
 }

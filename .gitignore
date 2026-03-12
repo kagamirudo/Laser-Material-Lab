@@ -2,3 +2,5 @@ build/
 .cache/
 __pycache__/
 files/
+idf.sh
+.vscode/

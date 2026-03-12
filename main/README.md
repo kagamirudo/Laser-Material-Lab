@@ -1,353 +1,127 @@
-## Laser Logger – Simple Explanation
+## Laser Logger — Simple Explanation
 
-This folder contains the firmware that runs on a small ESP32‑S3 board.  
+This folder contains the firmware that runs on a small ESP32-S3 board.
 Its job is to:
 - turn the laser on,
 - read how bright the reflected light is with a sensor,
-- save those readings into a simple table file (CSV) on the SD card,  
+- save those readings into simple table files (CSV) on the SD card,
 so you can open the data later in Excel, Google Sheets, or another data program.
 
 ### 1. What hardware is involved?
 
-- **Laser**: A diode the ESP32 turns on with a steady brightness.
-- **Light sensor (photodiode)**: Sits where the laser shines, and produces a tiny electrical signal that changes with the reflected light.
-- **ESP32‑S3 board**: The “brain” that:
-  - reads the sensor,
-  - stores data,
-  - serves a small web page you can use as a control panel.
-- **SD card**: Where the data files are stored when present.
-- **SPIFFS (internal flash)**: Backup storage inside the ESP32, used when no SD card is available.
-- **Wi‑Fi + Web page**: Lets you connect from a phone or laptop and start/stop logging.
+- **Laser**: A diode the ESP32 turns on at full brightness via PWM on GPIO5.
+- **Light sensor (photodiode)**: Sits where the laser shines and produces a signal that changes with reflected light intensity.
+- **ESP32-S3 board**: The "brain" that reads the sensor, stores data, and serves a web control panel.
+- **SD card**: Primary storage for CSV data files.
+- **SPIFFS (internal flash)**: Backup storage used when no SD card is available.
+- **OLED display** (optional): Shows Wi-Fi status and IP address on boot.
+- **Wi-Fi + Web page**: Lets you connect from a phone or laptop to start/stop recording and download data.
 
 ### 2. How often are measurements taken?
 
-The code in `002.c` configures the ESP32’s **ADC** (analog‑to‑digital converter) to:
-- sample the sensor at about **4000 measurements per second** (4 kHz),
-- use only one input pin (`GPIO4`) for the sensor.
+The code in `002.c` configures the ESP32's ADC (analog-to-digital converter) to sample the sensor at **3000 measurements per second** (3 kHz) on GPIO4.
 
-You can think of this as the board taking **4,000 “brightness photos” every second**, but in numbers instead of images.
-
-**Code snippet** - ADC configuration:
-
-```c
-// ADC sampling config
-#define SAMPLE_RATE_HZ    4000           // Target: 4000 samples per second
-#define ADC_GPIO          4              // ADC input from photodiode/sensor
-
-// Configure continuous ADC
-adc_continuous_config_t cont_cfg = {
-    .pattern_num = 1,
-    .adc_pattern = &adc_pattern,
-    .sample_freq_hz = s_actual_sample_rate_hz,  // 4000 Hz
-    .conv_mode = ADC_CONV_SINGLE_UNIT_1,
-    .format = ADC_DIGI_OUTPUT_FORMAT_TYPE1,
-};
-ESP_ERROR_CHECK(adc_continuous_config(adc_handle, &cont_cfg));
-```
-
+Think of this as the board taking 3,000 "brightness snapshots" every second, but as numbers instead of images.
 
 ### 3. What happens to each measurement?
 
-For each raw measurement coming from the sensor:
-- The ADC produces a number (the **ADC value**) that represents how bright the laser reflection is at that moment.
-- The firmware keeps track of how many samples have been taken.
-- When logging is enabled, each sample is:
-  - packaged with a **timestamp** (time in microseconds since logging started), and
-  - placed into a **queue** (a first‑in/first‑out buffer) so writing to storage does not slow down the measurements.
+For each raw ADC reading:
+1. The firmware gets a number (0–4095) representing how bright the laser reflection is.
+2. The number is placed into a **queue** (a first-in/first-out buffer with 48,000 slots stored in SPIRAM) so writing to storage does not slow down the measurements.
 
-If the queue ever fills up, a few samples may be dropped. The firmware prefers to **keep sampling fast** rather than pause and risk timing gaps.
+If the queue ever fills up, new samples are dropped rather than pausing the ADC. The firmware keeps sampling fast rather than risking timing gaps.
 
-**Code snippet** - ADC reading and queue processing:
+### 4. How does data get written to CSV files?
 
-```c
-// Structure for queued samples
-typedef struct {
-    int adc_value;
-    uint64_t timestamp_us;
-} csv_sample_t;
-
-// In ADC task: read samples and enqueue them
-esp_err_t parse_ret = adc_continuous_read_parse(adc_handle, parsed_samples, 256, 
-                                                 &num_samples, ADC_READ_TIMEOUT_MS);
-
-if (parse_ret == ESP_OK && num_samples > 0) {
-    for (uint32_t i = 0; i < num_samples; i++) {
-        if (!parsed_samples[i].valid) {
-            dropped_samples++;  // Skip invalid samples
-            continue;
-        }
-        
-        int raw_value = (int)parsed_samples[i].raw_data;
-        s_sample_count++;  // Track total samples
-        
-        // Send to CSV queue if logging enabled (non-blocking)
-        if (s_csv_logging_enabled && s_csv_queue != NULL) {
-            csv_sample_t sample = {
-                .adc_value = raw_value,
-                .timestamp_us = esp_timer_get_time()
-            };
-            // Non-blocking send - drops sample if queue is full
-            if (xQueueSend(s_csv_queue, &sample, 0) != pdTRUE) {
-                // Queue full - sample dropped to maintain ADC rate
-            }
-        }
-    }
-}
-```
-
-### 4. How does the data get written to a CSV file?
-
-There is a dedicated **CSV writer task** that:
-- waits for samples to appear in the queue,
-- collects them in a **batch** (for example 500 samples at a time),
-- writes the batch to the CSV file as text lines.
+A dedicated **CSV writer task** continuously:
+- pulls samples from the queue,
+- writes them to the current chunk CSV file on the SD card.
 
 Each line in the CSV looks like:
 
-```text
+```
 timestamp_us,adc_value
-12345,2048
-12600,2055
-...
+0,2048
+333,2055
+666,2060
 ```
 
-- **`timestamp_us`**: time in microseconds from the moment logging started.  
-  - Example: `1000000` means 1 second after logging began.
-- **`adc_value`**: the sensor reading. Higher numbers mean more light, lower numbers mean less light.
+- **`timestamp_us`**: time in microseconds since logging started. Continues across chunks (never resets mid-session).
+- **`adc_value`**: the sensor reading (0–4095). Higher = more light, lower = less light.
 
-The writer:
-- writes regularly to avoid losing data,
-- but **flushes** (forces data to storage) only every few batches, to reduce wear on the SD card / flash.
+### 5. What is chunked logging?
 
-**Code snippet** - CSV writer task (batch writing):
+Instead of one giant file, recordings are split into **time-based chunks** (default: 50 seconds each):
 
-```c
-#define CSV_WRITE_BATCH_SIZE 500    // Write CSV in batches
-#define CSV_FLUSH_INTERVAL 5        // Flush every N batches
+- Chunk `0.csv` covers seconds 0–50
+- Chunk `1.csv` covers seconds 50–100
+- ...and so on
 
-static void csv_writer_task(void *pvParameters) {
-    csv_sample_t batch[CSV_WRITE_BATCH_SIZE];
-    uint32_t batch_count = 0;
-    const uint64_t sample_interval_us = 1000000ULL / s_actual_sample_rate_hz;
-    
-    while (1) {
-        // Wait for samples from queue
-        csv_sample_t sample;
-        if (xQueueReceive(s_csv_queue, &sample, pdMS_TO_TICKS(100)) == pdTRUE) {
-            batch[batch_count] = sample;
-            batch_count++;
-            
-            // Write batch when full
-            if (batch_count >= CSV_WRITE_BATCH_SIZE) {
-                // Write batch to CSV file
-                for (uint32_t i = 0; i < batch_count; i++) {
-                    uint64_t timestamp_us = s_csv_sample_index * sample_interval_us;
-                    fprintf(s_csv_file, "%llu,%d\n",
-                           (unsigned long long)timestamp_us,
-                           batch[i].adc_value);
-                    s_csv_sample_index++;
-                }
-                // Flush periodically to reduce flash wear
-                static uint32_t flush_counter = 0;
-                if (++flush_counter >= CSV_FLUSH_INTERVAL) {
-                    fflush(s_csv_file);
-                    flush_counter = 0;
-                }
-                batch_count = 0;
-            }
-        }
-    }
-}
-```
+**Why chunks?**
+- The web client downloads each finished chunk while the next one is being recorded.
+- If something goes wrong, you only lose the current chunk, not the whole recording.
+- Smaller files are easier to handle on the ESP32 and over Wi-Fi.
 
-### 5. Where is the CSV stored?
+When a chunk's time window expires:
+1. The current chunk file is closed and announced as ready for download.
+2. The next chunk file is opened immediately.
+3. Samples that accumulated in the queue during the transition are written into the new chunk — no data is lost.
 
-The firmware chooses the storage location automatically:
-- **If SD card is mounted**:
-  - Directory: a `laser` folder on the SD card.
-  - File name: `data.csv` inside that folder.
-- **If no SD card is present**:
-  - Storage: **SPIFFS**, the ESP32’s internal flash filesystem.
-  - File path: `/spiffs/data.csv`.
+**Adaptive pause**: Between chunks, the writer only pauses if the queue is filling up (>50% full). At 3000 Hz the queue has ~16 seconds of headroom, so no pause is normally needed.
 
-You do **not** need to worry about paths when using the device:
-- the firmware checks whether the SD card is available,
-- picks the correct folder,
-- deletes any older `data.csv` file before starting a new logging session.
+### 6. Where are the CSV files stored?
 
-**Code snippet** - Storage location selection:
+The firmware chooses automatically:
+- **SD card mounted** → `/sdcard/laser/chunks/` (chunked mode) or `/sdcard/laser/data.csv` (continuous mode)
+- **No SD card** → `/spiffs/chunks/` or `/spiffs/data.csv`
 
-```c
-#define CSV_SD_DIR          SDCARD_MOUNT_POINT "/laser"
-#define SPIFFS_MOUNT_POINT  "/spiffs"
+Test bench recordings go to `/sdcard/tb/chunks/run_N/`.
 
-static void generate_csv_filename(void) {
-    const char *base_dir;
-    if (sdcard_is_mounted()) {
-        base_dir = CSV_SD_DIR;  // Use SD card: /sdcard/laser/data.csv
-    } else {
-        base_dir = SPIFFS_MOUNT_POINT;  // Use SPIFFS: /spiffs/data.csv
-    }
-    snprintf(s_csv_file_path, sizeof(s_csv_file_path), "%s/data.csv", base_dir);
-    ESP_LOGI(TAG, "CSV path: %s", s_csv_file_path);
-}
-```
+### 7. How do you start and stop recording?
 
-### 6. How do you start and stop logging?
+From the **web interface**:
+1. The ESP32 connects to Wi-Fi (or creates its own hotspot).
+2. Open the displayed IP address in a browser.
+3. Press **Start** → the firmware begins sampling and writing chunks.
+4. Press **Stop** → the current partial chunk is saved, closed, and made available for download.
 
-You control logging from the **web interface**:
-- The ESP32 connects to Wi‑Fi (or creates its own hotspot, depending on build mode).
-- It starts a small **web server**.
-- On the web page, there are controls to **Start** and **Stop** logging.
+When you stop mid-chunk:
+- The partial chunk is saved with however many samples were collected.
+- A "done" signal tells the client there are no more chunks.
+- No data is silently lost.
 
-When you press **Start**:
-- the firmware:
-  - creates / opens the CSV file,
-  - writes the column header line (`timestamp_us,adc_value`),
-  - resets the internal counters and timestamps,
-  - starts putting samples into the queue and writing them to the CSV.
+### 8. Why don't chunks have exactly the same number of samples?
 
-When you press **Stop**:
-- the firmware:
-  - stops sending new data into the queue,
-  - waits a short time so any remaining samples in the queue are written,  
-  - closes the file cleanly and updates its “last modified” time,  
-  - records how long the logging lasted and how many samples were collected.
+Chunks are closed based on **elapsed time**, not a fixed sample count. At 3000 Hz for 50 seconds you expect ~150,000 samples per chunk, but small variations occur due to:
+- Scheduling and queue contention
+- SD card write latency
+- The first chunk (chunk 0) loses a fraction of its window to ADC startup, so it may have slightly fewer samples
 
-**Code snippet** - Start logging:
+This is normal. Typical variation is within ±1%.
 
-```c
-void start_csv_logging(void) {
-    generate_csv_filename();  // Choose SD card or SPIFFS
-    
-    // Open CSV file and write header
-    s_csv_file = fopen(s_csv_file_path, "w");
-    if (s_csv_file != NULL) {
-        fprintf(s_csv_file, "timestamp_us,adc_value\n");
-        fflush(s_csv_file);
-    }
-    
-    // Reset counters and enable logging
-    s_logging_start_time_us = esp_timer_get_time();
-    s_sample_count = 0;
-    s_csv_sample_index = 0;
-    s_csv_logging_enabled = true;
-    start_sampling_timer();  // Start ADC sampling
-}
-```
+### 9. What is bench mode?
 
-**Code snippet** - Stop logging:
+For lab throughput testing, there is a bench mode that:
+- Runs the laser and ADC for a fixed duration (default 30 seconds)
+- Writes to either a CSV file or a compact binary file (12-byte records)
 
-```c
-void stop_csv_logging(void) {
-    s_csv_logging_enabled = false;  // Stop sending samples to queue
-    
-    // Wait for queue to drain
-    while (uxQueueMessagesWaiting(s_csv_queue) > 0) {
-        vTaskDelay(pdMS_TO_TICKS(10));
-    }
-    
-    // Close file and update modification time
-    if (s_csv_file != NULL) {
-        fflush(s_csv_file);
-        fclose(s_csv_file);
-        set_file_mtime_now(s_csv_file_path);
-    }
-    
-    s_logging_stop_time_us = esp_timer_get_time();
-    ESP_LOGI(TAG, "Logging stopped. Total samples: %d", s_sample_count);
-}
-```
+The binary file is smaller and faster to write. Use `tools/bin2csv.py` to convert it to CSV on your computer.
 
-### 7. What is the logging rate and duration?
+### 10. How do I analyze the data?
 
-- **Target sampling rate**: about **4000 samples per second**.
-- **Auto‑stop safety**: if the number of samples reaches a large limit (a built‑in safety cap), logging stops automatically so the storage does not fill forever.
-- The firmware can compute:
-  - how many samples were taken,
-  - how long logging ran,
-  - the actual average samples‑per‑second.
+1. Remove the SD card from the device (or download chunks via the web UI).
+2. Open the CSV files in Excel, Google Sheets, LibreOffice, Python, etc.
+3. Plot with:
+   - **X axis**: `timestamp_us` (divide by 1,000,000 for seconds)
+   - **Y axis**: `adc_value`
 
-These values can be displayed in the web UI or logs to help you confirm that the experiment ran as expected.
+Use `tools/graph_csv.py` for quick plotting from the command line.
 
-#### Why don't I get exactly 1,200,000 samples after 300 seconds?
-
-Even though the target rate is **4000 samples per second**, you might notice that after 300 seconds you get around **1,170,000 samples** instead of exactly **1,200,000** (which would be 300 × 4000). This is normal and happens for several reasons:
-
-1. **Invalid samples are filtered out**: Sometimes the ADC hardware produces readings that are not valid (due to electrical noise or timing issues). The firmware automatically skips these bad readings to keep your data accurate.
-
-2. **Queue can fill up**: The system uses a queue (a waiting line) to temporarily store samples before writing them to the SD card. If the SD card writes slower than samples arrive, the queue can fill up. When this happens, new samples are **dropped** (not saved) rather than slowing down the measurement rate. This ensures the timing stays consistent for the samples that **are** saved.
-
-3. **Buffer overflows**: Occasionally, the ADC's internal buffer can overflow if the system is very busy. When this happens, a small number of samples may be lost.
-
-4. **System overhead**: The ESP32 is doing many things at once (Wi‑Fi, web server, file writing). Small delays from these other tasks can cause tiny gaps in sampling.
-
-5. **Actual rate may vary slightly**: The hardware might run at **3900 Hz** instead of exactly **4000 Hz** due to clock accuracy and system timing.
-
-**This is expected behavior** — the firmware prioritizes **keeping accurate timing** for the samples that are saved, rather than forcing exactly 4000 samples per second. The actual rate (like ~3900 Hz in this example) is still very consistent and suitable for most experiments. You can check the actual rate by dividing your total sample count by the logging duration shown in the web interface.
-
-### 8. What is the “bench” mode with CSV and BIN files?
-
-For lab testing, there is a **bench mode**:
-- It runs the laser and ADC for a **fixed amount of time** (for example 30 seconds),
-- Writes to either:
-  - a **CSV file** (`data.csv`) with text lines like above, or
-  - a **binary file** (`data.bin`) with compact 12‑byte records (`timestamp_us` + `adc_value`).
-
-The binary file is smaller and quicker to write.  
-Later, a helper script (`tools/bin2csv.py`) on your computer can:
-- read the binary file,
-- convert it into a normal CSV with the same columns (`timestamp_us,adc_value`).
-
-**Code snippet** - Bench mode binary record format:
-
-```c
-// Binary bench record (12 bytes: uint64 timestamp + int32 adc_value)
-typedef struct {
-    uint64_t timestamp_us;
-    int32_t  adc_value;
-} __attribute__((packed)) bench_record_t;
-
-// Write binary record
-bench_record_t rec = {
-    .timestamp_us = s_bench_buffer[i].timestamp_us,
-    .adc_value    = (int32_t)s_bench_buffer[i].adc_value,
-};
-fwrite(&rec, 1, sizeof(rec), f);  // Write 12-byte record
-
-// Or write CSV format
-fprintf(f, "%llu,%d\n",
-        (unsigned long long)s_bench_buffer[i].timestamp_us,
-        s_bench_buffer[i].adc_value);
-```
-
-### 9. How do I use the CSV in a spreadsheet?
-
-1. **Remove the SD card** from the device (or, if using SPIFFS, copy `/spiffs/data.csv` via a PC tool).
-2. Insert the SD card into your computer.
-3. Open `data.csv` in:
-   - Excel,
-   - Google Sheets,
-   - LibreOffice Calc, or
-   - any data analysis program that accepts CSV files.
-4. You will see two columns:
-   - `timestamp_us` (x‑axis, time),
-   - `adc_value` (y‑axis, laser intensity).
-5. Plot a graph with:
-   - **X axis**: `timestamp_us` (you may want to divide by 1,000,000 to show seconds),
-   - **Y axis**: `adc_value`.
-
-This lets you see how the laser reflection changes over time, and you can compare different runs by loading multiple CSV files.
-
-### 10. Summary in everyday words
+### 11. Summary in everyday words
 
 - The board shines a **constant laser** onto your sample.
 - A **light sensor** watches how bright the reflection is.
-- The board takes **4,000 readings every second** and remembers each one as a number.
-- Those numbers, together with precise **timestamps**, are saved into a **spreadsheet‑friendly CSV file**.
-- You can then put the SD card into your computer and use Excel or a similar program to analyze or graph how the signal changes over time.
-
-### 11. Additional Resources
-
-For more review and analysis tools, refer to the **`tools`** folder outside this `main` directory. The tools folder contains scripts and utilities for processing and visualizing the CSV data files.
-
+- The board takes **3,000 readings every second** and saves them as numbers with timestamps.
+- The data is split into **chunks** (one CSV file per 50 seconds) and stored on the **SD card**.
+- You can download chunks in real time over **Wi-Fi**, or pull the SD card later.
+- Open the CSV files in any spreadsheet or data program to see how the signal changes over time.

@@ -1,231 +1,192 @@
-# Laser Material Lab - ESP32-S3 Data Logger
+# Laser Material Lab — ESP32-S3 Data Logger
 
-A high-speed ADC data acquisition system for laser/material interaction studies using ESP32-S3. Features continuous ADC sampling, CSV file logging to SPIFFS, and a web-based control interface.
+[![CI](https://github.com/kagamirudo/Laser-Material-Lab/actions/workflows/ci.yml/badge.svg)](https://github.com/kagamirudo/Laser-Material-Lab/actions/workflows/ci.yml)
+
+High-speed ADC data acquisition system for laser/material interaction studies using ESP32-S3. Captures continuous ADC samples from a photodiode, writes time-based CSV chunks to SD card, and streams them to a client over Wi-Fi.
 
 ## Hardware Setup
 
 ### Wiring
 
 - **Laser module**
-  - **VCC** → ESP32-S3 **3V3**
-  - **GND** → ESP32-S3 **GND**
-  - **Signal (laser enable)** → **GPIO5**
+  - VCC → ESP32-S3 3V3
+  - GND → ESP32-S3 GND
+  - Signal (laser enable) → **GPIO5** (PWM @ 5 kHz)
 
-- **Light sensor / receiver (photodiode / phototransistor module)**
-  - **VCC** → ESP32-S3 **3V3**
-  - **GND** → ESP32-S3 **GND**
-  - **Analog output** → **GPIO4** (ADC1_CH3 on ESP32-S3)
+- **Photodiode / phototransistor**
+  - VCC → ESP32-S3 3V3
+  - GND → ESP32-S3 GND
+  - Analog output → **GPIO4** (ADC1_CH3)
 
-> **Note:** GPIO44 is *not* ADC-capable on ESP32-S3; use GPIO4 (or another ADC pin) for the analog signal.
+- **SD card** (SPI) — primary storage for CSV chunks
+- **OLED display** (I2C, optional) — shows IP address and status
+
+> GPIO44 is *not* ADC-capable on ESP32-S3. Use GPIO4 or another ADC1 pin.
 
 ## Features
 
-- **High-speed continuous ADC sampling**: Configurable sample rate (minimum 611 Hz, hardware-dependent rounding)
-- **CSV file logging**: Automatic logging to SPIFFS (1MB partition) with auto-download on stop
-- **Web-based control interface**: HTTPS web server for remote monitoring and control
-- **Dual-core RTOS architecture**: 
-  - Core 0: CSV writer task, HTTP server, Wi-Fi
-  - Core 1: ADC sampling task
-- **Auto-stop functionality**: Automatically stops logging after reaching sample limit
-- **Dynamic filenames**: CSV files named with actual vs attempted sample rate (e.g., `data_3000Hz_attempt_3200.csv`)
-- **Real-time monitoring**: Live ADC values displayed on web UI and serial terminal
+- **Continuous ADC sampling** at 3000 Hz (configurable, minimum 611 Hz)
+- **Time-based chunked logging**: recording is split into fixed-duration CSV chunks (default 50 s) written to SD card
+- **Adaptive queue-based pause**: writer only pauses between chunks when the sample queue is under pressure (>50% full), instead of a fixed delay
+- **SD card primary, SPIFFS fallback**: CSV files go to SD when mounted, internal flash otherwise
+- **OLED display**: shows Wi-Fi status and IP address on boot
+- **SNTP time sync**: file timestamps are correct when connected to the internet (STA mode)
+- **Web-based control**: HTTP server for start/stop, live ADC display, and chunk download
+- **Dual-core RTOS architecture**:
+  - Core 1: ADC sampling task (priority 5)
+  - Core 0: CSV writer task (priority 3), HTTP server, Wi-Fi
+- **Bench mode**: fixed-duration ADC capture to a single CSV or compact binary file for throughput testing
 
 ## Configuration
 
-### Sample Rate
+Key constants in `main/002.c`:
 
-Edit `main/002.c` to configure the target sample rate:
-
-```c
-#define SAMPLE_RATE_HZ    3200    // Target sample rate (Hz)
-#define ADC_MIN_FREQ_HZ   611     // Minimum supported frequency
-```
-
-**Important:** The ESP32-S3 continuous ADC hardware only supports specific frequencies. If you request a frequency that's not supported, the driver will round to the nearest supported value. The actual rate used will be shown in the CSV filename.
-
-### Sample Limit
-
-Configure auto-stop limit:
-
-```c
-#define SAMPLE_LIMIT 10000    // Auto-stop after this many samples
-```
+| Constant | Default | Description |
+|---|---|---|
+| `SAMPLE_RATE_HZ` | 3000 | Target ADC sample rate (Hz) |
+| `CHUNK_CONTINUOUS_SECS` | 50 | Seconds per CSV chunk |
+| `CSV_QUEUE_SIZE` | 48000 | Sample queue slots (SPIRAM, ~16 s buffer @ 3 kHz) |
+| `CSV_WRITE_BATCH_SIZE` | 500 | Samples per CSV write batch |
+| `SAMPLE_LIMIT` | 10000000 | Auto-stop after this many samples |
 
 ### Wi-Fi Mode
 
-Configure Wi-Fi or Access Point mode in `main/002.c`:
-
 ```c
-#define MODE WIFI   // Connect to existing Wi-Fi network
+#define MODE WIFI   // Connect to existing network (STA)
 // or
-#define MODE HOST   // Create access point (default)
+#define MODE HOST   // Create access point (AP)
 ```
+
+Wi-Fi credentials are set in `main/wifi.h`.
 
 ## Building and Flashing
 
 ### Prerequisites
 
-- ESP-IDF v5.0 or later
+- ESP-IDF v5.0+
 - Python 3.8+
+
+### First-time Setup
+
+If you have **conda**, **virtualenv**, or another Python environment manager active, use the
+included setup script to avoid conflicts:
+
+```bash
+source setup_idf.sh
+```
+
+The script will:
+1. Deactivate any active conda / virtualenv / pyenv environments (current shell only).
+2. Locate your ESP-IDF installation (or offer to clone it).
+3. Run `install.sh` if the toolchain is missing.
+4. Source `export.sh` so `idf.py` is ready to use.
+
+> **Note:** The script must be **sourced**, not executed — environment changes only persist in the
+> current shell when sourced.
 
 ### Quick Start
 
 ```bash
-# Build, flash, and monitor
-make
-
-# Or step by step:
-make build      # Build the project
-make flash      # Flash to device
-make monitor    # Monitor serial output
-```
-
-### Makefile Targets
-
-```bash
-make              # Build, flash, and monitor (default)
-make build        # Build only
-make flash        # Flash only
-make monitor      # Monitor serial output
-make bfm          # Build, flash, and monitor
-make bf           # Build and flash (no monitor)
-make clean        # Clean build artifacts
-make menuconfig   # Open configuration menu
-make size         # Show binary size
-make push         # Commit and push to git (default message)
-make push MSG="your message"  # Commit and push with custom message
+make          # Build, flash, and monitor (default)
+make build    # Build only
+make flash    # Flash only
+make monitor  # Monitor serial output
+make bfm      # Build, flash, and monitor
+make bf       # Build and flash (no monitor)
+make clean    # Clean build artifacts
+make menuconfig  # ESP-IDF configuration menu
+make size     # Show binary size
+make push MSG="fix: ADC timing"  # Git commit and push (MSG required)
 ```
 
 ## Usage
 
-### 1. Initial Setup
+### 1. Power on and connect
 
-1. Wire the hardware as described above
-2. Configure Wi-Fi settings if using `MODE WIFI`
-3. Build and flash the firmware
+1. Flash the firmware.
+2. The OLED (if present) shows the IP address once Wi-Fi connects.
+3. Open a browser and navigate to the displayed IP.
 
-### 2. Starting Data Collection
+### 2. Recording (chunked mode)
 
-**Via Web Interface:**
-1. Connect to the ESP32-S3 Wi-Fi network (or connect to the same network if using WIFI mode)
-2. Open a browser and navigate to `https://192.168.4.1` (or the assigned IP)
-3. Click "Start Recording" to begin data collection
-4. Click "Stop Recording" to stop and automatically download the CSV file
+1. Press **Start** in the web UI.
+2. The firmware begins continuous ADC sampling and writes CSV chunks to SD.
+3. Each chunk is announced as ready; the client downloads it automatically.
+4. Press **Stop** to end recording. The current partial chunk is saved and downloadable.
 
-**Via Serial Terminal:**
-- Monitor the serial output to see real-time ADC values and status messages
+### 3. CSV chunk format
 
-### 3. CSV File Format
+Each chunk file (`0.csv`, `1.csv`, …) contains:
 
-The CSV file contains two columns:
-- `timestamp_us`: Timestamp in microseconds (starts at 0, consistent interval based on sample rate)
-- `adc_value`: 12-bit ADC reading (0-4095, representing 0V to ~3.3V)
-
-**Example:**
 ```csv
 timestamp_us,adc_value
 0,1234
-250,1235
-500,1236
-750,1237
+333,1235
+666,1236
 ```
 
-**ADC Value Interpretation:**
-- Range: 0 to 4095 (12-bit ADC)
-- Voltage: `voltage = (adc_value / 4095.0) * 3.3V`
-- Example: `adc_value = 2048` ≈ 1.65V
+- `timestamp_us`: microseconds since logging started (global, continuous across chunks).
+- `adc_value`: 12-bit ADC reading (0–4095, ≈ 0–3.3 V).
 
-### 4. Filename Convention
+### 4. Storage layout
 
-CSV files are automatically named based on the actual and attempted sample rates:
-- `data_3000Hz_attempt_3200.csv` - Requested 3200 Hz, got 3000 Hz (hardware rounding)
-- `data_1600Hz_attempt_1600.csv` - Requested 1600 Hz, got exactly 1600 Hz
-- `data_611Hz_attempt_400.csv` - Requested 400 Hz, clamped to minimum 611 Hz
+```
+/sdcard/laser/chunks/     Chunked recording (default)
+/sdcard/laser/data.csv    Continuous single-file recording
+/sdcard/tb/chunks/run_N/  Test bench chunked recordings
+/spiffs/...               Fallback when SD card absent
+```
 
 ## Architecture
-
-### RTOS Tasks
-
-- **`adc_task`** (Core 1, Priority 5)
-  - Reads samples from continuous ADC buffer
-  - Enqueues samples to CSV queue (non-blocking)
-  - Updates current ADC value for web UI
-  - Handles auto-stop when sample limit reached
-
-- **`csv_writer_task`** (Core 0, Priority 3)
-  - Dequeues samples from queue
-  - Writes batches to CSV file on SPIFFS
-  - Calculates consistent timestamps based on sample index
-  - Handles file flushing and closing
-
-- **HTTP Server** (Core 0)
-  - Serves web UI and API endpoints
-  - Provides real-time ADC values via JSON API
-  - Handles CSV file downloads
 
 ### Data Flow
 
 ```
-ADC Hardware → adc_task → Queue → csv_writer_task → SPIFFS (CSV file)
-                      ↓
-                  Web UI (real-time display)
+ADC hardware → adc_task (CPU1) → s_csv_queue (48k slots, SPIRAM)
+                    ↓                        ↓
+              Web UI (live value)    csv_writer_task (CPU0) → chunk .csv on SD
+                                                                    ↓
+                                                          HTTP server → client download
 ```
 
-### Storage
+### Queue & Chunking
 
-- **SPIFFS Partition**: 1MB for CSV file storage
-- **Auto-cleanup**: Old CSV files are deleted when starting new logging session
-- **Auto-format**: SPIFFS is automatically reformatted if full
+- The queue bridges ADC producer and CSV writer consumer. At 3000 Hz the 48,000-slot queue provides ~16 seconds of buffer.
+- Chunks close on a time basis. During close/open transitions (~100–500 ms), samples accumulate in the queue and are drained into the next chunk — no data loss.
+- An adaptive pause (0 / 500 / 1000 ms) is inserted between chunks only when queue fill exceeds 50%, reducing unnecessary latency at lower sample rates.
 
-## Troubleshooting
-
-### "ADC sampling frequency out of range" Error
-
-The requested sample rate is below the minimum (611 Hz). The code will automatically clamp to the minimum, but you'll see a warning. Use a rate ≥ 611 Hz.
-
-### "Failed to open CSV file (errno: 28)"
-
-SPIFFS is full. The system will attempt to auto-format, but you may need to manually clear files or increase the SPIFFS partition size.
-
-### Sample Rate Doesn't Match Requested
-
-The ESP32-S3 ADC hardware only supports specific frequencies. The driver rounds to the nearest supported value. Check the CSV filename to see the actual rate used.
-
-### Lost Samples
-
-If you notice missing samples at the end of a recording:
-- The system waits for the queue to drain before closing the file
-- Ensure sufficient SPIFFS space is available
-- Check that the sample limit wasn't reached mid-batch
-
-## Development
-
-### Project Structure
+## Project Structure
 
 ```
 .
 ├── main/
-│   ├── 002.c          # Main application code (ADC, CSV logging, RTOS tasks)
-│   ├── server.c       # HTTP server and API endpoints
-│   ├── wifi.c         # Wi-Fi configuration
-│   ├── web/           # Web UI files (HTML, CSS, JS)
+│   ├── 002.c          # ADC, chunked logging, RTOS tasks, bench mode
+│   ├── server.c/h     # HTTP server, API endpoints, chunk download
+│   ├── wifi.c/h       # Wi-Fi STA/AP configuration
+│   ├── sdcard.c/h     # SD card SPI driver
+│   ├── display.c/h    # OLED display driver
+│   ├── web/           # Web UI (index.html, script.js, style.css)
 │   └── certs/         # HTTPS certificates
-├── partitions.csv     # Partition table (SPIFFS configuration)
-├── Makefile          # Build shortcuts
-└── CMakeLists.txt    # ESP-IDF build configuration
+├── tools/
+│   ├── graph_csv.py   # Plot CSV data
+│   └── bin2csv.py     # Convert bench binary to CSV
+├── partitions.csv     # Partition table
+├── Makefile           # Build shortcuts
+├── agent.md           # Developer notes for test branch
+└── CMakeLists.txt     # ESP-IDF build config
 ```
 
-### Key Constants
+## Troubleshooting
 
-- `SAMPLE_RATE_HZ`: Target sampling frequency
-- `SAMPLE_LIMIT`: Auto-stop sample count
-- `CSV_QUEUE_SIZE`: Queue buffer size (3000 samples)
-- `CSV_WRITE_BATCH_SIZE`: Batch size for CSV writes (500 samples)
+| Symptom | Cause / Fix |
+|---|---|
+| "ADC buffer overflow" warnings | ADC internal buffer overrun — SD card or writer too slow; reduce sample rate or increase `max_store_buf_size` |
+| "CSV queue nearly full" | Writer can't keep up; check SD card speed or reduce `SAMPLE_RATE_HZ` |
+| Chunk 0 has fewer samples | Normal — ADC spin-up overhead consumes part of the first chunk window |
+| Different sample counts per chunk | Normal — time-based chunking with scheduling jitter |
+| "Failed to open CSV file (errno: 28)" | Storage full; SPIFFS auto-formats, or free space on SD |
+| File dates show 1970 | SNTP not synced; ensure STA mode has internet access |
 
 ## License
 
-This project is licensed under the **MIT License**. See `LICENSE`.
-
-## Acknowledgments
-
-Originally adapted from an Arduino UNO sketch for laser/material interaction studies.
+MIT License. See `LICENSE`.
