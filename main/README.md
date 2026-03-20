@@ -73,7 +73,7 @@ When a chunk's time window expires:
 
 The firmware chooses automatically:
 - **SD card mounted** → `/sdcard/laser/chunks/` (chunked mode) or `/sdcard/laser/data.csv` (continuous mode)
-- **No SD card** → `/spiffs/chunks/` or `/spiffs/data.csv`
+- **No SD card** → `/spiffs/` (chunked mode) or `/spiffs/data.csv`
 
 Test bench recordings go to `/sdcard/tb/chunks/run_N/`.
 

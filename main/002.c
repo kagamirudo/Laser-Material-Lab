@@ -79,9 +79,9 @@ static const char *TAG = "LASER_ADC";
 #define CHUNK_CONTINUOUS_SECS 50 // Seconds per chunk (change as needed)
 #define CSV_CHUNK_QUEUE_SIZE 16  // Max pending chunks for client download
 #define CSV_CHUNK_DIR_SD CSV_SD_DIR "/chunks"
-#define CSV_CHUNK_DIR_SPIFFS SPIFFS_MOUNT_POINT "/chunks"
+#define CSV_CHUNK_DIR_SPIFFS SPIFFS_MOUNT_POINT
 #define TESTBENCH_DIR_SD SDCARD_MOUNT_POINT "/tb/chunks"
-#define TESTBENCH_DIR_SPIFFS SPIFFS_MOUNT_POINT "/tb/chunks"
+#define TESTBENCH_DIR_SPIFFS SPIFFS_MOUNT_POINT "/tb/cks"
 
 static adc_continuous_handle_t adc_handle = NULL;
 static adc_channel_t adc_chan;
@@ -1108,11 +1108,17 @@ bool start_chunked_logging(bool testbench) {
         const char *dir =
             sdcard_is_mounted() ? CSV_CHUNK_DIR_SD : CSV_CHUNK_DIR_SPIFFS;
         snprintf(s_chunk_dir, CHUNK_DIR_MAX, "%s", dir);
-        if (sdcard_is_mounted())
+        if (sdcard_is_mounted()) {
+            // FAT requires parent directories to exist.
             mkdir(CSV_SD_DIR, 0);
-        if (mkdir(s_chunk_dir, 0) != 0 && errno != EEXIST) {
-            ESP_LOGE(TAG, "mkdir %s failed (errno=%d)", s_chunk_dir, errno);
-            return false;
+            if (mkdir(s_chunk_dir, 0) != 0 && errno != EEXIST) {
+                ESP_LOGE(TAG, "mkdir %s failed (errno=%d)", s_chunk_dir,
+                         errno);
+                return false;
+            }
+        } else {
+            // SPIFFS mount point already exists; write chunk files directly as
+            // "/spiffs/<index>.csv" (no "/spiffs/chunks" subdir).
         }
     }
 
