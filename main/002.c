@@ -366,6 +366,9 @@ static void adc_task(void *pvParameters) {
     }
 
     uint32_t dropped_samples = 0;
+    const uint64_t chunk_interval_us =
+        (s_actual_sample_rate_hz > 0) ? (1000000ULL / s_actual_sample_rate_hz)
+                                       : 0;
 
     ESP_LOGI(TAG, "ADC processing task started");
 
@@ -450,18 +453,32 @@ static void adc_task(void *pvParameters) {
                     continue;
                 }
 
-                // Send to CSV queue if logging is enabled (continuous or
-                // chunked mode). In chunk mode, skip-phase (1 sec off) data is
-                // not wanted: do not enqueue, so queue does not fill and
-                // nothing gets written.
-                if ((s_csv_logging_enabled || s_chunked_logging_enabled) &&
-                    s_csv_queue != NULL) {
+                // No-buffer chunked mode:
+                // - ADC writes directly to the active chunk file.
+                // - If the chunk mutex is held by HTTP/rotation, we drop samples
+                //   immediately (intentional "ACCEPT lost").
+                if (s_chunked_logging_enabled) {
+                    if (s_chunk_file_mutex != NULL &&
+                        xSemaphoreTake(s_chunk_file_mutex, 0) == pdTRUE) {
+                        if (s_chunk_file != NULL) {
+                            uint64_t ts =
+                                (uint64_t)s_chunk_global_sample_index *
+                                chunk_interval_us;
+                            fprintf(s_chunk_file, "%llu,%d\n",
+                                    (unsigned long long)ts, raw_value);
+                            s_chunk_global_sample_index++;
+                            s_chunk_sample_index++;
+                        }
+                        xSemaphoreGive(s_chunk_file_mutex);
+                    } else {
+                        dropped_samples++;
+                    }
+                } else if (s_csv_logging_enabled && s_csv_queue != NULL) {
+                    // Continuous mode keeps the queue to avoid SD/HTTP latency
+                    // blocking the ADC.
                     csv_sample_t sample = {.adc_value = raw_value,
                                            .timestamp_us =
                                                esp_timer_get_time()};
-                    // Non-blocking send (0 timeout) - maintains target ADC rate
-                    // If queue is full, sample is dropped rather than blocking
-                    // ADC task
                     if (xQueueSend(s_csv_queue, &sample, 0) != pdTRUE) {
                         // Queue full - log warning periodically
                         static uint32_t queue_full_count = 0;
@@ -513,7 +530,7 @@ static void csv_writer_task(void *pvParameters) {
     while (1) {
         /* ========== Chunked mode (continuous capture, time-based chunks)
          * ========== */
-        if (s_chunked_logging_enabled && s_csv_queue != NULL) {
+        if (s_chunked_logging_enabled) {
             uint64_t now_us = esp_timer_get_time();
 
             // Check if current chunk should be closed (time expired or stop
@@ -530,41 +547,84 @@ static void csv_writer_task(void *pvParameters) {
             }
 
             if (close_chunk) {
-                uint32_t samples_in_chunk = s_chunk_sample_index;
+                uint32_t samples_in_chunk = 0;
+                size_t sz = 0;
+                int ready_index = -1;
+                bool stop_now = false;
+                char closed_path[CHUNK_PATH_MAX] = {0};
 
-                // Close current chunk file
+                // Hold mutex across close+rotate so ADC never writes to the
+                // wrong chunk file.
                 if (s_chunk_file_mutex != NULL)
                     xSemaphoreTake(s_chunk_file_mutex, portMAX_DELAY);
+
+                samples_in_chunk = s_chunk_sample_index;
+                ready_index = s_chunk_index;
+                strncpy(closed_path, s_chunk_file_path,
+                        CHUNK_PATH_MAX - 1);
+                closed_path[CHUNK_PATH_MAX - 1] = '\0';
+
                 if (s_chunk_file != NULL) {
                     fflush(s_chunk_file);
                     fsync(fileno(s_chunk_file));
                     fclose(s_chunk_file);
                     s_chunk_file = NULL;
                 }
-                if (s_chunk_file_mutex != NULL)
-                    xSemaphoreGive(s_chunk_file_mutex);
 
+                // Update timestamp + size for the closed chunk
                 set_file_mtime_now(s_chunk_file_path);
                 struct stat st;
-                size_t sz = 0;
                 if (stat(s_chunk_file_path, &st) == 0)
                     sz = (size_t)st.st_size;
 
+                s_chunks_ready_count = ready_index + 1;
+                stop_now = s_chunk_stop_requested;
+
+                if (!stop_now) {
+                    // Open next chunk file while still holding mutex.
+                    s_chunk_index++;
+                    s_chunk_sample_index = 0;
+                    s_chunk_write_start_us = esp_timer_get_time();
+
+                    snprintf(s_chunk_file_path, CHUNK_PATH_MAX, "%s/%d.csv",
+                             s_chunk_dir, s_chunk_index);
+
+                    s_chunk_file = fopen(s_chunk_file_path, "w");
+                    if (s_chunk_file != NULL) {
+                        if (s_fprintf_mutex != NULL)
+                            xSemaphoreTake(s_fprintf_mutex, portMAX_DELAY);
+                        fprintf(s_chunk_file, "timestamp_us,adc_value\n");
+                        if (s_fprintf_mutex != NULL)
+                            xSemaphoreGive(s_fprintf_mutex);
+                        fflush(s_chunk_file);
+                        fsync(fileno(s_chunk_file));
+                    } else {
+                        ESP_LOGE(TAG,
+                                 "Failed to open chunk file: %s (errno=%d)",
+                                 s_chunk_file_path, errno);
+                    }
+                }
+
+                if (s_chunk_file_mutex != NULL)
+                    xSemaphoreGive(s_chunk_file_mutex);
+
                 // Notify: update count (polling API) + non-blocking push to
                 // legacy SSE queue
-                s_chunks_ready_count = s_chunk_index + 1;
-                chunk_ready_item_t item = {.index = s_chunk_index,
-                                           .size_bytes = sz};
-                strncpy(item.path, s_chunk_file_path, CHUNK_PATH_MAX - 1);
+                chunk_ready_item_t item = {
+                    .index = ready_index,
+                    .size_bytes = sz,
+                };
+                strncpy(item.path, closed_path, CHUNK_PATH_MAX - 1);
                 item.path[CHUNK_PATH_MAX - 1] = '\0';
                 if (s_chunk_ready_queue != NULL) {
                     xQueueSend(s_chunk_ready_queue, &item, 0);
                 }
                 ESP_LOGI(TAG, "Chunk %d ready: %zu bytes, %lu samples",
-                         s_chunk_index, sz, (unsigned long)samples_in_chunk);
+                         ready_index, sz,
+                         (unsigned long)samples_in_chunk);
 
                 // If stop was requested, we're done
-                if (s_chunk_stop_requested) {
+                if (stop_now) {
                     stop_sampling_timer();
                     chunk_ready_item_t done = {
                         .index = -1, .path = {0}, .size_bytes = 0};
@@ -578,82 +638,12 @@ static void csv_writer_task(void *pvParameters) {
                     s_chunked_logging_enabled = false;
                     continue;
                 }
-
-                // Adaptive pause: only delay if queue is filling up (SD
-                // contention risk)
-                uint32_t pending = uxQueueMessagesWaiting(s_csv_queue);
-                uint32_t threshold_half = CSV_QUEUE_SIZE / 2;
-                uint32_t threshold_high = CSV_QUEUE_SIZE * 3 / 4;
-                if (pending > threshold_half) {
-                    uint32_t pause_ms = (pending > threshold_high) ? 1000 : 500;
-                    ESP_LOGW(TAG,
-                             "Queue pressure %lu/%d, pausing %lu ms for client "
-                             "fetch",
-                             (unsigned long)pending, CSV_QUEUE_SIZE,
-                             (unsigned long)pause_ms);
-                    vTaskDelay(pdMS_TO_TICKS(pause_ms));
-                }
-
-                // Open next chunk file (buffer samples accumulated during close
-                // are naturally dequeued on the next loop iterations — no data
-                // loss)
-                s_chunk_index++;
-                s_chunk_sample_index = 0;
-                s_chunk_write_start_us = esp_timer_get_time();
-
-                snprintf(s_chunk_file_path, CHUNK_PATH_MAX, "%s/%d.csv",
-                         s_chunk_dir, s_chunk_index);
-                if (s_chunk_file_mutex != NULL)
-                    xSemaphoreTake(s_chunk_file_mutex, portMAX_DELAY);
-                s_chunk_file = fopen(s_chunk_file_path, "w");
-                if (s_chunk_file != NULL) {
-                    if (s_fprintf_mutex != NULL)
-                        xSemaphoreTake(s_fprintf_mutex, portMAX_DELAY);
-                    fprintf(s_chunk_file, "timestamp_us,adc_value\n");
-                    if (s_fprintf_mutex != NULL)
-                        xSemaphoreGive(s_fprintf_mutex);
-                    fflush(s_chunk_file);
-                    fsync(fileno(s_chunk_file));
-                } else {
-                    ESP_LOGE(TAG, "Failed to open chunk file: %s (errno=%d)",
-                             s_chunk_file_path, errno);
-                }
-                if (s_chunk_file_mutex != NULL)
-                    xSemaphoreGive(s_chunk_file_mutex);
             }
 
-            // Batch-dequeue samples and write to current chunk (reduces mutex
-            // overhead)
-            {
-                csv_sample_t chunk_batch[64];
-                int n = 0;
-                while (n < 64 && xQueueReceive(s_csv_queue, &chunk_batch[n],
-                                               n == 0 ? pdMS_TO_TICKS(50)
-                                                      : 0) == pdTRUE) {
-                    n++;
-                }
-                if (n > 0 && s_chunk_file != NULL) {
-                    const uint64_t interval_us =
-                        1000000ULL / s_actual_sample_rate_hz;
-                    if (s_chunk_file_mutex != NULL)
-                        xSemaphoreTake(s_chunk_file_mutex, portMAX_DELAY);
-                    if (s_fprintf_mutex != NULL)
-                        xSemaphoreTake(s_fprintf_mutex, portMAX_DELAY);
-                    for (int i = 0; i < n; i++) {
-                        uint64_t ts =
-                            (uint64_t)s_chunk_global_sample_index * interval_us;
-                        fprintf(s_chunk_file, "%llu,%d\n",
-                                (unsigned long long)ts,
-                                chunk_batch[i].adc_value);
-                        s_chunk_global_sample_index++;
-                        s_chunk_sample_index++;
-                    }
-                    if (s_fprintf_mutex != NULL)
-                        xSemaphoreGive(s_fprintf_mutex);
-                    if (s_chunk_file_mutex != NULL)
-                        xSemaphoreGive(s_chunk_file_mutex);
-                }
-            }
+            // No rotation needed; yield so ADC can acquire the mutex.
+            // With CONFIG_FREERTOS_HZ=100, pdMS_TO_TICKS(5) becomes 0, which
+            // can starve IDLE0 and trigger task_wdt.
+            vTaskDelay(pdMS_TO_TICKS(20));
             continue;
         }
 
