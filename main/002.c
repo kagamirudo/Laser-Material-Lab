@@ -1112,8 +1112,7 @@ bool start_chunked_logging(bool testbench) {
             // FAT requires parent directories to exist.
             mkdir(CSV_SD_DIR, 0);
             if (mkdir(s_chunk_dir, 0) != 0 && errno != EEXIST) {
-                ESP_LOGE(TAG, "mkdir %s failed (errno=%d)", s_chunk_dir,
-                         errno);
+                ESP_LOGE(TAG, "mkdir %s failed (errno=%d)", s_chunk_dir, errno);
                 return false;
             }
         } else {
