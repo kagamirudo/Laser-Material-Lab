@@ -4,3 +4,4 @@ __pycache__/
 files/
 idf.sh
 .vscode/
+main/.DS_Store
